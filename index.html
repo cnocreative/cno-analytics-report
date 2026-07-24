@@ -497,15 +497,15 @@ const fmtX=n=>(n===null||n===undefined)?"—":n.toFixed(2)+"×";
 const fmtMoney=n=>(n===null||n===undefined)?"—":"$"+Number(n).toFixed(2);
 const fmtDuration=s=>{if(s===null||s===undefined)return"—";s=Math.max(0,Math.round(s));const h=Math.floor(s/3600),m=Math.floor((s%3600)/60),sec=s%60;return h?`${h}h ${m}m`:m?`${m}m ${sec}s`:`${sec}s`;};
 const fmtMinutes=s=>(s===null||s===undefined)?"—":(s/60).toLocaleString(undefined,{maximumFractionDigits:1})+" min";
-function appDialog({title="CNO Reports",message="",input=false,inputType="text",value="",confirmText="OK",cancelText=null}={}){
+function appDialog({title="CNO Reports",message="",input=false,inputType="text",value="",confirmText="OK",cancelText=null,readOnly=false,selectInput=false}={}){
   return new Promise(resolve=>{
     const wrap=document.createElement("div");wrap.className="app-dialog";wrap.setAttribute("role","dialog");wrap.setAttribute("aria-modal","true");
-    wrap.innerHTML=`<div class="app-dialog-card"><h3>${escHtml(title)}</h3><p>${escHtml(message)}</p>${input?`<input type="${inputType}" value="${escHtml(value)}" aria-label="${escHtml(title)}">`:""}<div class="app-dialog-actions">${cancelText?`<button class="btn" data-cancel>${escHtml(cancelText)}</button>`:""}<button class="btn solid" data-confirm>${escHtml(confirmText)}</button></div></div>`;
+    wrap.innerHTML=`<div class="app-dialog-card"><h3>${escHtml(title)}</h3><p>${escHtml(message)}</p>${input?`<input type="${inputType}" value="${escHtml(value)}" aria-label="${escHtml(title)}"${readOnly?" readonly":""}>`:""}<div class="app-dialog-actions">${cancelText?`<button class="btn" data-cancel>${escHtml(cancelText)}</button>`:""}<button class="btn solid" data-confirm>${escHtml(confirmText)}</button></div></div>`;
     const finish=v=>{wrap.remove();resolve(v);};
     wrap.querySelector("[data-confirm]").addEventListener("click",()=>finish(input?wrap.querySelector("input").value:true));
     const cancel=wrap.querySelector("[data-cancel]");if(cancel)cancel.addEventListener("click",()=>finish(input?null:false));
     wrap.addEventListener("keydown",e=>{if(e.key==="Escape"&&cancel)finish(input?null:false);if(e.key==="Enter")finish(input?wrap.querySelector("input").value:true);});
-    document.body.appendChild(wrap);setTimeout(()=>{(input?wrap.querySelector("input"):wrap.querySelector("[data-confirm]")).focus();},0);
+    document.body.appendChild(wrap);setTimeout(()=>{const target=input?wrap.querySelector("input"):wrap.querySelector("[data-confirm]");target.focus();if(input&&selectInput)target.select();},0);
   });
 }
 const appAlert=(message,title="CNO Reports")=>appDialog({title,message,confirmText:"Close"});
@@ -683,8 +683,17 @@ async function makeShareLink(){
     try{url=shareBase()+"#edata="+await encryptStr(b64,pw.trim());}
     catch(e){appAlert("Password protection isn't available in this browser — link not created.");return;}
   }else{url=shareBase()+"#data="+b64;}
-  try{await navigator.clipboard.writeText(url);}catch(e){}
+  let copied=false;
+  try{await navigator.clipboard.writeText(url);copied=true;}catch(e){}
   const lockNote=pw.trim()?"🔒 Password-protected — it only opens with the password you set. Share the password separately.\n\n":"";
+  if(!copied){
+    await appDialog({
+      title:"Copy the client report link",
+      message:lockNote+"This browser blocked automatic copying. The complete link is selected below — press Ctrl+C (Windows) or Command+C (Mac), then paste it into your message.",
+      input:true,value:url,readOnly:true,selectInput:true,confirmText:"Done"
+    });
+    return;
+  }
   if(url.length>16000){appAlert("Share link copied to clipboard.\n\n"+lockNote+"Heads up: it's long ("+url.length.toLocaleString()+" characters). If a chat app trims it, narrow to one client first, then share.","Link ready");}
   else{appAlert("Interactive share link copied to clipboard ✓\n\n"+lockNote+"Anyone who opens it sees this exact report — live, interactive charts and all — no upload needed.","Link ready");}
 }
