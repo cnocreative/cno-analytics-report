@@ -9,12 +9,25 @@ jobs:
   refresh:
     runs-on: ubuntu-latest
     steps:
-      - name: Wake and refresh CNO native sync
+      - name: Check native sync configuration
+        id: config
         env:
           SYNC_URL: ${{ secrets.CNO_SYNC_SERVICE_URL }}
           CRON_SECRET: ${{ secrets.CNO_SYNC_CRON_SECRET }}
         run: |
-          test -n "$SYNC_URL" && test -n "$CRON_SECRET"
+          if [ -n "$SYNC_URL" ] && [ -n "$CRON_SECRET" ]; then
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::Native sync is not configured yet. Add CNO_SYNC_SERVICE_URL and CNO_SYNC_CRON_SECRET to enable automatic refreshes."
+          fi
+
+      - name: Wake and refresh CNO native sync
+        if: steps.config.outputs.ready == 'true'
+        env:
+          SYNC_URL: ${{ secrets.CNO_SYNC_SERVICE_URL }}
+          CRON_SECRET: ${{ secrets.CNO_SYNC_CRON_SECRET }}
+        run: |
           curl --fail --show-error --silent --retry 5 --retry-delay 15 \
             --request POST "${SYNC_URL%/}/v1/cron/sync" \
             --header "x-cron-secret: ${CRON_SECRET}"
