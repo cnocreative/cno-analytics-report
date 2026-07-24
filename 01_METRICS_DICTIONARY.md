@@ -17,6 +17,7 @@ This is the single reference for what each number means. Consistent definitions 
 | **Follower Growth Rate** | (End − Start) ÷ Start × 100 | Growth *pace*, comparable across account sizes | Low |
 | **Profile Visits** | # of profile views | Intent signal — people checking you out | Low |
 | **Website / Link Clicks** | Clicks on bio/link/CTA | Closest free proxy to conversion intent | Low |
+| **Reach Rate** | Reach ÷ ending followers × 100 | Shows how far content traveled relative to current audience size | Low |
 | **Posting Cadence** | # posts published in the month | Context for reach/engagement moves | — |
 | **Saves** | # times content saved | High-intent signal; algorithm-weighted | Low |
 | **Shares** | # times content shared | Strongest reach-amplifier signal | Low |
@@ -54,7 +55,7 @@ Engagement rate is the headline metric, but it has multiple valid formulas. **We
 ### Instagram
 - Accounts reached, Accounts engaged
 - Reel plays / views, Reel avg. watch time
-- Story reach, Story completion / exit rate
+- Story views, exit rate = exits ÷ Story views, and completion rate = completed views ÷ Story views. If completed views are absent, completion = 1 − exit rate.
 - Saves and Shares (track separately — high intent)
 - Profile visits, external link taps
 - Follower net growth + growth rate
@@ -95,7 +96,10 @@ Engagement rate is the headline metric, but it has multiple valid formulas. **We
 | **Lead-to-booking rate** | New bookings ÷ qualified leads | Sales/booking conversion quality |
 | **Event attendance rate** | Attendees ÷ registrations | Whether event interest became attendance |
 | **Paid CTR** | Paid clicks ÷ paid impressions | Whether paid distribution produced click action |
+| **Paid CPM** | Paid spend ÷ paid impressions × 1,000 | Cost to buy 1,000 paid impressions |
 | **Paid CPC** | Paid spend ÷ paid-attributed clicks | Cost to earn one paid click |
+| **Paid frequency** | Paid impressions ÷ paid reach | Average number of paid exposures per reached account |
+| **Cost per paid lead** | Paid spend ÷ paid-attributed leads | Paid lead-generation efficiency |
 | **Cost per paid follow** | Paid spend ÷ paid-attributed follows | Paid audience-acquisition efficiency |
 | **Cost per paid conversion** | Paid spend ÷ paid-attributed conversions | Paid outcome efficiency |
 | **ROAS** | Paid-attributed revenue ÷ paid spend | Paid-media return when attribution data is available |
@@ -128,3 +132,5 @@ Per research on client value, we **demote pure vanity metrics** (raw follower co
 - **Followers timing:** capture follower count on the same day each month (e.g., 1st) for clean growth math.
 - **Reach is non-additive:** summing daily or monthly unique reach can count the same person more than once. Use a platform total for the full reporting window when exact uniqueness matters.
 - **Paid attribution is strict:** never calculate CPC, cost per follow/conversion, or ROAS using total website clicks, total follower growth, total conversions, or total revenue. Use paid-specific denominators only.
+- **Reported paid rates are validation/fallback values:** when spend plus paid impressions/clicks/reach/leads/conversions/revenue are present, the report recalculates CPM, CPC, CTR, frequency, CPL, CPA, and ROAS. A platform-reported rate is used only when its raw denominator is absent.
+- **Conversion tracking boundary:** cost per conversion and ROAS remain unavailable when the client has no conversion/purchase event or other paid attribution source. A blank is more accurate than an invented zero.

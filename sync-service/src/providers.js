@@ -151,7 +151,7 @@ async function syncMeta(accessToken, clientRef, from, to) {
     const mediaParams = new URLSearchParams({ fields: "id,caption,media_type,media_product_type,timestamp,permalink,like_count,comments_count", since: new Date(`${from}T00:00:00Z`).toISOString(), until: new Date(`${to}T23:59:59Z`).toISOString(), limit: "100", access_token: page.access_token });
     const media = await paged(`https://graph.facebook.com/${version}/${ig.id}/media?${mediaParams}`);
     for (const item of media) {
-      const post = { record_type: "post", data_source: "meta_api", aggregation: "post", client: clientRef, platform: "instagram", date: isoDay(item.timestamp), post_id: item.id, post_type: item.media_product_type || item.media_type, caption_snippet: String(item.caption || "").slice(0, 500), caption_length: String(item.caption || "").length, likes: item.like_count, comments: item.comments_count, permalink: item.permalink };
+      const post = { record_type: "post", data_source: "meta_api", aggregation: "post", client: clientRef, platform: "instagram", date: isoDay(item.timestamp), published_hour: new Date(item.timestamp).getUTCHours(), post_id: item.id, post_type: item.media_product_type || item.media_type, caption_snippet: String(item.caption || "").slice(0, 500), caption_length: String(item.caption || "").length, likes: item.like_count, comments: item.comments_count, permalink: item.permalink };
       try {
         const ip = new URLSearchParams({ metric: "reach,impressions,plays,saved,shares,total_interactions,video_views", access_token: page.access_token });
         const details = await apiJson(`https://graph.facebook.com/${version}/${item.id}/insights?${ip}`);
@@ -165,21 +165,23 @@ async function syncMeta(accessToken, clientRef, from, to) {
   try {
     const adAccounts = await paged(`https://graph.facebook.com/${version}/me/adaccounts?fields=id,name&access_token=${encodeURIComponent(accessToken)}`);
     for (const account of adAccounts) {
-      const summaryFields = "date_start,date_stop,spend,reach,impressions,clicks,actions,action_values";
+      const summaryFields = "date_start,date_stop,spend,reach,impressions,clicks,cpm,cpc,ctr,frequency,actions,action_values";
       const summaryParams = new URLSearchParams({ level: "account", time_range: JSON.stringify({ since: from, until: to }), time_increment: "1", fields: summaryFields, limit: "100", access_token: accessToken });
       const daily = await paged(`https://graph.facebook.com/${version}/${account.id}/insights?${summaryParams}`);
       for (const item of daily) {
-        const paidConversions = actionMetric(item.actions, ["purchase", "omni_purchase", "lead", "offsite_conversion"]);
+        const paidLeads = actionMetric(item.actions, ["lead", "onsite_conversion.lead_grouped", "onsite_conversion.lead"]);
+        const paidConversions = actionMetric(item.actions, ["purchase", "omni_purchase", "offsite_conversion"]);
         const paidRevenue = actionMetric(item.action_values, ["purchase", "omni_purchase", "offsite_conversion.fb_pixel_purchase"]);
-        rows.push({ record_type: "account_daily", data_source: "meta_ads_api", aggregation: "daily", client: clientRef, platform: "instagram", date: item.date_start, spend: item.spend, paid_reach: item.reach, paid_impressions: item.impressions, paid_clicks: item.clicks, paid_conversions: paidConversions, paid_revenue: paidRevenue });
+        rows.push({ record_type: "account_daily", data_source: "meta_ads_api", aggregation: "daily", client: clientRef, platform: "instagram", date: item.date_start, spend: item.spend, paid_reach: item.reach, paid_impressions: item.impressions, paid_clicks: item.clicks, paid_leads: paidLeads, paid_conversions: paidConversions, paid_revenue: paidRevenue, paid_cpm_reported: item.cpm, paid_cpc_reported: item.cpc, paid_ctr_reported: item.ctr, paid_frequency_reported: item.frequency });
       }
-      const fields = "date_start,date_stop,campaign_id,campaign_name,ad_id,ad_name,spend,reach,impressions,clicks,actions,action_values";
+      const fields = "date_start,date_stop,campaign_id,campaign_name,ad_id,ad_name,spend,reach,impressions,clicks,cpm,cpc,ctr,frequency,actions,action_values";
       const p = new URLSearchParams({ level: "ad", time_range: JSON.stringify({ since: from, until: to }), time_increment: "1", fields, limit: "100", access_token: accessToken });
       const ads = await paged(`https://graph.facebook.com/${version}/${account.id}/insights?${p}`);
       for (const ad of ads) {
-        const paidConversions = actionMetric(ad.actions, ["purchase", "omni_purchase", "lead", "offsite_conversion"]);
+        const paidLeads = actionMetric(ad.actions, ["lead", "onsite_conversion.lead_grouped", "onsite_conversion.lead"]);
+        const paidConversions = actionMetric(ad.actions, ["purchase", "omni_purchase", "offsite_conversion"]);
         const paidRevenue = actionMetric(ad.action_values, ["purchase", "omni_purchase", "offsite_conversion.fb_pixel_purchase"]);
-        rows.push({ record_type: "post", data_source: "meta_ads_api", aggregation: "ad_daily", client: clientRef, platform: "instagram", date: ad.date_start, post_id: ad.ad_id, post_type: "PAID_AD", campaign: ad.campaign_name || "Paid campaign", campaign_id: ad.campaign_id, caption_snippet: ad.ad_name || "Paid / dark ad", spend: ad.spend, reach: ad.reach, impressions: ad.impressions, paid_clicks: ad.clicks, paid_conversions: paidConversions, paid_revenue: paidRevenue });
+        rows.push({ record_type: "post", data_source: "meta_ads_api", aggregation: "ad_daily", client: clientRef, platform: "instagram", date: ad.date_start, post_id: ad.ad_id, post_type: "PAID_AD", campaign: ad.campaign_name || "Paid campaign", campaign_id: ad.campaign_id, caption_snippet: ad.ad_name || "Paid / dark ad", spend: ad.spend, reach: ad.reach, impressions: ad.impressions, paid_clicks: ad.clicks, paid_leads: paidLeads, paid_conversions: paidConversions, paid_revenue: paidRevenue });
       }
     }
   } catch { /* ads_read is optional; organic sync should still complete. */ }

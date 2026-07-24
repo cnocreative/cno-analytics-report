@@ -17,7 +17,9 @@ This checklist records what the report supports and what the operator does each 
 - [x] Website clicks, DMs, meaningful comments, comment replies, leads, bookings, memberships, retail sales, revenue, and event outcomes are recognized.
 - [x] Current-versus-prior comparisons on headline, profile, content, and journey metrics.
 - [x] Branded wax-seal envelope and letter introduction.
-- [x] Paid/boosted data: spend, paid reach/impressions, paid clicks/follows/conversions/revenue, paid CTR, CPM, cost per paid click/follow/conversion, and ROAS. Paid efficiency never substitutes total organic-plus-paid outcomes.
+- [x] Paid/boosted data: spend, paid reach/impressions, paid clicks/leads/follows/conversions/revenue, CPM, CPC, CTR, frequency, cost per lead/follow/conversion, and ROAS. Raw paid totals are calculated first; platform-reported rates are fallback validation values, and total organic-plus-paid outcomes are never substituted.
+- [x] Prioritized organic formulas: follower net/percent growth, ER by reach, reach rate, raw interaction counts, top posts by ER, average ER by format, average engagement by weekday/hour, Instagram Story retention, TikTok watch/completion, YouTube duration/subscriber growth, and LinkedIn post CTR.
+- [x] Tracking-aware availability: cost per conversion and ROAS remain hidden when paid conversion/revenue attribution is not supplied.
 - [x] Full uploaded dataset is available as a spreadsheet at the bottom and can be downloaded in normalized form.
 - [x] Visualization-first success scorecard covering authority, audience quality, campaign momentum, and business growth, with optional per-metric monthly targets and progress-to-goal bars (`<metric>_target` columns).
 - [x] Formula-matched platform benchmark context, with warnings against blending platforms or mismatching engagement-rate denominators; client-specific peer norms can replace the reference.

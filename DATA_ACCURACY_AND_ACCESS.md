@@ -58,10 +58,16 @@ Do not add home-grown employee passwords to the static page. Introduce managed a
 7. Paid-efficiency metrics require paid-specific denominators:
    - CPM = spend / paid impressions × 1,000
    - paid CPC = spend / paid clicks
+   - paid CTR = paid clicks / paid impressions
+   - frequency = paid impressions / paid reach
+   - cost per paid lead = spend / paid-attributed leads
    - cost per paid follow = spend / paid-attributed follows
    - cost per paid conversion = spend / paid conversions
    - ROAS = paid-attributed revenue / spend
 8. Total website clicks, total follower growth, and total revenue are not assumed to have been caused by paid media.
+9. Platform-reported paid rates are fallback/validation fields. Raw paid totals win whenever the required numerator and denominator are available.
+10. Story exit rate is exits / Story views. Story completion is completed Story views / Story views, or 1 − exit rate only when direct completions are unavailable.
+11. Cost per conversion and ROAS remain unavailable when conversion/revenue attribution is not configured.
 
 ## CNO data-quality audit
 

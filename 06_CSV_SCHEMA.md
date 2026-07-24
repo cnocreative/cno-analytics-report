@@ -24,16 +24,18 @@ You do **not** need to rename columns. The tool maps common header names from Re
 - **engagement** ← `engagement`, `interactions`, `total engagement`
 - **followers** ← `followers`, `subscribers`, `audience`, `fans`
 - **follower growth** ← `net followers`, `new followers`, `followers gained`
+- **starting / ending followers** ← `followers_start`, `start followers`, `followers_end`, `end followers`
 - **profile visits** ← `profile visits`, `profile views`
 - **link clicks** ← `link clicks`, `website clicks`, `link taps`, `profile links taps`
 - **shares / saves / comments / likes / replies / reposts** ← their obvious variants
 - **date** ← `date`, `published`, `timestamp`, `post time`
 - **post type** ← `post type`, `media type`, `format`
 - plus `client`, `platform`, `caption`, `hashtags`, demographics (`gender`, `top countries`, `top cities`), etc.
+- **retention / timing** ← `published_hour`, Story views/exits/completions, video completions, total watch time, average view duration
 
 The goal scorecard also recognizes `meaningful comments`, `comment replies`, `DMs`, `leads`, `bookings`, `membership signups`, `retail sales`, `revenue`, `event reach`, `event engagement`, `event registrations`, `event attendees`, and `conversions`.
 
-Paid reporting recognizes `spend`, `paid_reach`, `paid_impressions`, `paid_clicks`, `paid_follows`, `paid_conversions`, `paid_revenue`, `organic_reach`, and `organic_impressions`. Paid-efficiency formulas require these paid-specific columns; generic `clicks`, total follower growth, total conversions, and total revenue are never assumed to be caused by ads.
+Paid reporting recognizes `spend`, `paid_reach`, `paid_impressions`, `paid_clicks`, `paid_leads`, `paid_follows`, `paid_conversions`, `paid_revenue`, `organic_reach`, and `organic_impressions`. Optional platform-reported validation/fallback fields are `paid_cpm_reported`, `paid_cpc_reported`, `paid_ctr_reported`, `paid_frequency_reported`, `cost_per_paid_lead_reported`, `cost_per_paid_conversion_reported`, and `roas_reported`. Paid-efficiency formulas require paid-specific columns; generic `clicks`, total follower growth, total conversions, and total revenue are never assumed to be caused by ads.
 
 For lineage and grain control, add `data_source` (for example `rella`, `meta_native`, or `meta_ads_export`), `aggregation` (`daily`, `monthly`, `period`, `snapshot`, `post`, or `ad_daily`), and optional `period_start` / `period_end`. An exact period-total row takes priority over daily rows for the matching date window.
 
@@ -56,7 +58,7 @@ The **Client goals & success metrics** scorecard can show a progress bar for any
 Rella returns the **current** follower total regardless of the date range, so follower *trends* are computed from monthly **growth**, not by differencing the total. The tool handles this for you.
 
 ## Templates
-Runnable examples: `resources/template_accounts.csv` and `resources/template_content.csv`. Use `resources/native_platform_comprehensive_test.csv` to exercise a combined Instagram + TikTok + LinkedIn file with daily totals, post detail, campaign/pillar tags, paid data, audience fields, and business outcomes.
+Blank schemas: `resources/template_accounts.csv` and `resources/template_content.csv`. Use `resources/native_platform_comprehensive_test.csv` to exercise a combined Instagram + TikTok + LinkedIn file with daily totals, post detail, campaign/pillar tags, paid data, audience fields, and business outcomes. Use `resources/native_platform_priority_metrics_test.csv` for a compact formula-validation set covering Instagram, TikTok, LinkedIn, and YouTube, including Story retention, watch time, posting hour, subscriber growth, LinkedIn CTR, and strict paid efficiency.
 
 ## Export
 The **Export data** button downloads your loaded data back out as normalized `accounts_normalized.csv` and `content_normalized.csv`.

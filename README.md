@@ -23,7 +23,8 @@ Most social tools show isolated platform numbers. This one turns them into a **v
 
 **Analysis the platforms don't give you.**
 - **Business journey** — reach → profile visits → website clicks → leads → bookings, using only the steps present in the upload
-- **Efficiency ratios** — amplification (reach ÷ followers), view frequency, follow conversion
+- **Organic efficiency** — engagement rate by reach, follower growth rate, reach rate, link/profile conversion, Story retention, video completion, watch time, LinkedIn CTR
+- **Paid efficiency** — CPM, CPC, CTR, frequency, cost per lead/conversion, and ROAS with paid-only denominators and tracking-aware availability
 - **Anomaly detection** — spikes/dips flagged against a rolling 3-month baseline (real signal vs. noise)
 - **Format intelligence** — which formats earn reach/engagement, by median (not outlier-skewed averages)
 - **Effort vs. return per platform** — posts published against what they actually earned; flags dead channels
@@ -62,7 +63,7 @@ Open `index.html` in any browser (or visit the deployed site with `#demo` to aut
 4. **Customize** the goal, featured KPIs, and sections; use **AI narrative** only when you want an optional, evidence-reviewed draft; edit any text inline
 5. **Export data** to download normalized CSVs, or **Print / PDF** for the client leave-behind
 
-Templates: `resources/template_accounts.csv`, `resources/template_content.csv`. A larger synthetic test file covering Instagram, TikTok, and LinkedIn is at `resources/native_platform_comprehensive_test.csv`.
+Templates: `resources/template_accounts.csv`, `resources/template_content.csv`. A larger synthetic test file covering Instagram, TikTok, and LinkedIn is at `resources/native_platform_comprehensive_test.csv`; the compact `resources/native_platform_priority_metrics_test.csv` validates every prioritized organic/paid formula plus YouTube retention.
 
 ## Keeping reports refreshed
 
