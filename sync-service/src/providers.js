@@ -58,7 +58,16 @@ export async function exchangeCode(provider, code) {
   if (provider === "meta") {
     const version = process.env.META_API_VERSION || "v25.0";
     const p = new URLSearchParams({ client_id: required("META_CLIENT_ID"), client_secret: required("META_CLIENT_SECRET"), redirect_uri: callback, code });
-    return apiJson(`https://graph.facebook.com/${version}/oauth/access_token?${p}`);
+    const shortLived = await apiJson(`https://graph.facebook.com/${version}/oauth/access_token?${p}`);
+    if (!shortLived.access_token) return shortLived;
+    const longLived = new URLSearchParams({
+      grant_type: "fb_exchange_token",
+      client_id: required("META_CLIENT_ID"),
+      client_secret: required("META_CLIENT_SECRET"),
+      fb_exchange_token: shortLived.access_token
+    });
+    try { return await apiJson(`https://graph.facebook.com/${version}/oauth/access_token?${longLived}`); }
+    catch { return shortLived; }
   }
   if (provider === "tiktok") {
     const body = new URLSearchParams({ client_key: required("TIKTOK_CLIENT_KEY"), client_secret: required("TIKTOK_CLIENT_SECRET"), code, grant_type: "authorization_code", redirect_uri: callback });
@@ -67,6 +76,49 @@ export async function exchangeCode(provider, code) {
   if (provider === "linkedin") {
     const body = new URLSearchParams({ grant_type: "authorization_code", code, redirect_uri: callback, client_id: required("LINKEDIN_CLIENT_ID"), client_secret: required("LINKEDIN_CLIENT_SECRET") });
     return apiJson("https://www.linkedin.com/oauth/v2/accessToken", { method: "POST", headers: { "content-type": "application/x-www-form-urlencoded" }, body });
+  }
+  throw new Error("Unsupported provider");
+}
+
+export async function refreshAccessToken(provider, refreshToken, accessToken = "") {
+  if (provider === "tiktok") {
+    if (!refreshToken) throw new Error("TikTok refresh authorization is unavailable; reconnect this account");
+    const body = new URLSearchParams({
+      client_key: required("TIKTOK_CLIENT_KEY"),
+      client_secret: required("TIKTOK_CLIENT_SECRET"),
+      grant_type: "refresh_token",
+      refresh_token: refreshToken
+    });
+    return apiJson("https://open.tiktokapis.com/v2/oauth/token/", {
+      method: "POST",
+      headers: { "content-type": "application/x-www-form-urlencoded" },
+      body
+    });
+  }
+  if (provider === "linkedin") {
+    if (!refreshToken) throw new Error("LinkedIn refresh authorization is unavailable; reconnect this account");
+    const body = new URLSearchParams({
+      grant_type: "refresh_token",
+      refresh_token: refreshToken,
+      client_id: required("LINKEDIN_CLIENT_ID"),
+      client_secret: required("LINKEDIN_CLIENT_SECRET")
+    });
+    return apiJson("https://www.linkedin.com/oauth/v2/accessToken", {
+      method: "POST",
+      headers: { "content-type": "application/x-www-form-urlencoded" },
+      body
+    });
+  }
+  if (provider === "meta") {
+    if (!accessToken) throw new Error("Meta authorization is unavailable; reconnect this account");
+    const version = process.env.META_API_VERSION || "v25.0";
+    const p = new URLSearchParams({
+      grant_type: "fb_exchange_token",
+      client_id: required("META_CLIENT_ID"),
+      client_secret: required("META_CLIENT_SECRET"),
+      fb_exchange_token: accessToken
+    });
+    return apiJson(`https://graph.facebook.com/${version}/oauth/access_token?${p}`);
   }
   throw new Error("Unsupported provider");
 }

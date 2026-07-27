@@ -8,7 +8,8 @@ This is the private server-side companion to the static CNO reporting dashboard.
 - Meta, TikTok, and LinkedIn OAuth authorization-code flows
 - Short-lived, one-use OAuth state values to prevent forged callbacks and replay
 - AES-256-GCM encryption before access or refresh tokens reach the database
-- HTTP-only, secure, eight-hour internal sessions
+- HTTP-only, secure, 30-day internal sessions so staff do not sign in every reporting cycle
+- Long-lived Meta token exchange plus automatic TikTok/LinkedIn refresh-token rotation where the approved provider app returns refresh access
 - Platform/account discovery after authorization
 - Organic Instagram account/content pulls, optional Meta Ads pulls, TikTok profile/video pulls, and LinkedIn Page statistics foundation
 - Normalization into the same account/post row structure used by CNO Reports
@@ -20,7 +21,7 @@ Provider APIs change frequently and require app review. Each adapter deliberatel
 
 ## Security boundary
 
-Clients authorize on Meta, TikTok, or LinkedIn itself. CNO never asks for or stores the client's platform password or 2FA code. The provider sends an authorization code to this service, the service exchanges it server-to-server, and only encrypted tokens are persisted.
+Clients authorize on Meta, TikTok, or LinkedIn itself. CNO never asks for or stores the client's platform password or 2FA code. The provider sends an authorization code to this service, the service exchanges it server-to-server, and only encrypted tokens are persisted. When a supported access token nears expiration, the service rotates it before syncing. Revoked access, provider policy changes, and Meta authorizations that can no longer be extended still require reconnection.
 
 CNO staff can see:
 
@@ -31,7 +32,7 @@ CNO staff can see:
 
 CNO staff cannot see OAuth tokens in the console. Render environment owners remain part of the infrastructure trust boundary because they can control the running service and its encryption key. Eliminating even that access requires a managed KMS/HSM with a narrowly scoped service identity; that is a later production-hardening step and is not honestly achievable with a completely free static site.
 
-The current admin token is a pilot control, not a complete employee account system. After metric and provider validation, replace it with individual managed staff identities, server-issued HTTP-only sessions, `owner` / `analyst` / `viewer` roles, and an audit log. Keep client identities in a separate tenant-scoped portal. See [`../DATA_ACCURACY_AND_ACCESS.md`](../DATA_ACCURACY_AND_ACCESS.md).
+The current admin token is a pilot control, not a complete employee account system. After metric and provider validation, replace it with individual managed staff identities, server-issued HTTP-only sessions, `owner` / `analyst` / `viewer` roles, and an audit log. Keep client identities in a separate tenant-scoped portal. See [`../CLOUD_AUTOMATION_BLUEPRINT.md`](../CLOUD_AUTOMATION_BLUEPRINT.md).
 
 ## Platform prerequisites
 
@@ -102,7 +103,7 @@ Use a local Postgres database and provider test apps. OAuth providers generally 
 
 - Complete each provider's app-review process and test with CNO-owned accounts
 - Confirm metric availability by account type and API version
-- Add refresh-token rotation where the provider supports it
+- Complete the provider approvals that determine whether refresh tokens and analytics scopes are issued
 - Add Meta/Facebook Page organic metrics and richer LinkedIn post/follower analytics
 - Add monitoring for revoked permissions, expired tokens, and API-version deprecations
 - Move the encryption key to a managed KMS before handling a large client portfolio

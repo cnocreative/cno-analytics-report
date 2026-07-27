@@ -2,7 +2,7 @@
 
 A standalone, deterministic reporting tool for CNO Creative Co. Feed it a CSV of social media data and it produces the same branded, client-ready analytics report every time.
 
-**No required install. No required API key. No build step. Works offline.**
+**No required install. No build step. Metrics work offline. An AI key is required only when publishing a client-ready report.**
 
 ---
 
@@ -32,15 +32,17 @@ Most social tools show isolated platform numbers. This one turns them into a **v
 - **No false blending** — when several platforms are checked, headline KPIs and trend charts are shown in separate platform panels instead of one cross-platform engagement rate
 
 **Story-first and yours to shape.**
-- The report **opens with the story and the client's goals**, then the numbers. A warm opening letter, a headline, and **Working Now / Needs Attention / Best Next Move**, every claim grounded in the data.
-- **Customize** panel: report goal (reorders/emphasizes KPIs), featured-KPI picker, section toggles, client display name — remembered across visits
+- **Page 1 is the client letter and essentials**: a concise “Dear [client]” explanation of the good, the bad, and the next move, plus goals, paid vs. organic, outcomes, and only the most important KPIs.
+- Deeper pages hold performance trends, audience/profile behavior, creative detail, benchmarks, and the full data for clients who want to investigate.
+- **Customize** controls the report goal, featured KPIs, client display name, section visibility, page assignment, and section order — remembered across visits.
 - **Every summary, finding, and recommendation is editable inline** and prints as edited
-- Deterministic by default: identical input always yields the identical report
+- Charts and calculations remain deterministic: identical input yields identical metrics.
 
-**Optional AI narrative (bring your own key).**
-- Open **AI narrative** as its own CNO workspace, then paste an **OpenAI or Anthropic API key**. The opening letter and takeaways are rewritten from *this client's actual numbers*, optional CNO context, campaign/pillar patterns, and data-quality cautions.
-- OpenAI uses the Responses API, configurable reasoning depth, strict JSON-schema output, `store: false`, evidence keys, and confidence labels. CNO gets a private evidence review before sharing; generated copy remains an editable draft.
-- The key is kept **only for the current browser session**. It is never included in a share link. The browser calls the chosen provider directly during the pilot; a production staff-account system should move the call and secret to the authenticated CNO backend.
+**Required AI client analysis (bring your own key during the pilot).**
+- Open **AI analysis**, paste an OpenAI or Anthropic API key, and generate the required client letter before sharing or printing. The default OpenAI model is the lower-cost `gpt-5-mini`.
+- The letter and short section explanations use this client's actual numbers, optional CNO context, campaign/pillar patterns, and data-quality cautions. Copy stays simple, concise, evidence-based, and editable.
+- OpenAI uses the Responses API, low reasoning by default, strict JSON-schema output, `store: false`, evidence keys, and confidence labels. CNO still reviews the draft before publication.
+- CNO can remember the key on one trusted device or keep it for only the current session. The key is never included in a share link. The production cloud phase moves the call and secret to the authenticated CNO backend.
 
 **Private, view-only sharing.**
 - A share link contains **only the one client's data** — never anyone else's — and opens as a **locked, view-only report**: no uploading, no client switching, no editing, no export. This holds even without a password, so one client can never reach another's results.
@@ -60,14 +62,14 @@ Open `index.html` in any browser (or visit the deployed site with `#demo` to aut
 1. Click **Import data**, then drop in the whole reporting folder or select all available CSVs at once
 2. Pick a **client** and **period** (month / last 30 / 90 / all / custom range)
 3. Run **Data audit** and reconcile its warnings against the native source
-4. **Customize** the goal, featured KPIs, and sections; use **AI narrative** only when you want an optional, evidence-reviewed draft; edit any text inline
-5. **Export data** to download normalized CSVs, or **Print / PDF** for the client leave-behind
+4. **Customize** the goal, featured KPIs, report pages, and section order
+5. Generate the required **AI analysis**, review/edit the client letter, then share or **Print / PDF**
 
 Templates: `resources/template_accounts.csv`, `resources/template_content.csv`. A larger synthetic test file covering Instagram, TikTok, and LinkedIn is at `resources/native_platform_comprehensive_test.csv`; the compact `resources/native_platform_priority_metrics_test.csv` validates every prioritized organic/paid formula plus YouTube retention.
 
 ## Keeping reports refreshed
 
-No API key or backend is required. For each reporting cycle, export the available date range from Rella and/or the native platforms, add any offline outcomes from the client’s booking/CRM/sales records, then upload the whole folder through **Import data**. The report audits and merges the files, separates platforms, removes exact duplicate rows, and recalculates the selected period. Create a new password-protected share link after the refresh; that link contains a private snapshot of the uploaded report data.
+No backend is required for manual CSV refreshes or deterministic analytics. For each reporting cycle, export the available date range from Rella and/or the native platforms, add any offline outcomes from the client’s booking/CRM/sales records, then upload the whole folder through **Import data**. The report audits and merges the files, separates platforms, removes exact duplicate rows, and recalculates the selected period. Generate and review the required AI letter, then create a new password-protected share link.
 
 For the exact recommended folder structure, refresh checklist, and the tradeoffs of a future automatic API sync, see [`DATA_IMPORT_GUIDE.md`](DATA_IMPORT_GUIDE.md).
 
@@ -97,6 +99,7 @@ Static site, no build. On [Render](https://render.com): connect the repo, choose
 | `06_CSV_SCHEMA.md` | The CSV contract (including optional `<metric>_target` goal columns) |
 | `DATA_IMPORT_GUIDE.md` | Monthly import workflow and realistic native-platform connection options |
 | `DATA_ACCURACY_AND_ACCESS.md` | Metric-governance rules and the CNO staff/client access roadmap |
+| `CLOUD_AUTOMATION_BLUEPRINT.md` | Managed accounts, report archive, monthly delivery, and production security plan |
 | `sync-service/` | Private OAuth, encrypted token storage, scheduled native-platform sync, and one-use report imports |
 
 ## Brand

@@ -23,6 +23,11 @@ get the installers. GitHub builds them for you.
 
 Published Windows and Mac installers appear on the repo's [latest release](https://github.com/joongsukkie/cno-analytics-report/releases/latest). If no release is listed yet, use the GitHub build steps below.
 
+## Updating
+
+- **Hosted site or browser-installed app:** updates automatically after the new Render deployment. Close and reopen it if an older cached screen remains.
+- **Windows `.exe` or Mac `.dmg`:** download the newest installer from the latest GitHub release and run it over the existing installation. Saved local settings remain in the app profile. The current pilot does not silently auto-install native updates.
+
 ## How GitHub builds the installers
 
 A workflow at `.github/workflows/build-desktop.yml` builds both installers on GitHub's own
@@ -31,14 +36,14 @@ Windows and macOS machines.
 **Option A — tag a release (recommended).** From the repo:
 
 ```bash
-git tag v1.1.0
-git push origin v1.1.0
+git tag v1.5.0
+git push origin v1.5.0
 ```
 
 In a few minutes a **Release** appears on GitHub with two files attached:
 
-- `CNO Reports Setup 1.1.0.exe` — Windows installer
-- `CNO Reports-1.1.0.dmg` — macOS disk image
+- `CNO Reports Setup 1.5.0.exe` — Windows installer
+- `CNO Reports-1.5.0.dmg` — macOS disk image
 
 **Option B — run it on demand.** On GitHub: **Actions → "Build desktop installers" → Run workflow.**
 When it finishes, download the installers from the run's **Artifacts** section.
@@ -60,8 +65,8 @@ team tool this is optional; the right-click-open step is a one-time thing per ma
 ## What the app does
 
 - Opens the full report generator in its own window, offline. No server, no account.
-- Everything works exactly like the web version: upload CSVs, load the demo, customize, AI
-  narrative (with your own API key), print/PDF.
+- Everything works exactly like the web version: upload CSVs, load the demo, customize report
+  pages, generate the required AI client letter with CNO's key, and print/PDF.
 - **Share links created inside the desktop app point to the hosted site**
   (`https://cno-analytics-report.onrender.com/`), so a client can open the link in a normal
   browser. If you move the hosted site, update `HOSTED_BASE` near the top of the script in

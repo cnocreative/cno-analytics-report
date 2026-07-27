@@ -24,12 +24,15 @@ This checklist records what the report supports and what the operator does each 
 - [x] Visualization-first success scorecard covering authority, audience quality, campaign momentum, and business growth, with optional per-metric monthly targets and progress-to-goal bars (`<metric>_target` columns).
 - [x] Formula-matched platform benchmark context, with warnings against blending platforms or mismatching engagement-rate denominators; client-specific peer norms can replace the reference.
 - [x] CNO website styling—including typography, color, fine rules, editorial layouts, and “Hand it over” upload action.
-- [x] Report leads with the story and the client's goals (the summarized, plain-language view) before the detailed data.
-- [x] Optional AI narrative: paste an OpenAI or Anthropic API key to rewrite the opening letter and takeaways from the client's real numbers. It includes structured evidence keys, confidence levels, sample-size rules, data-quality cautions, optional CNO context, and a CNO-only evidence review. Key stays in the browser only and never travels in a share link.
+- [x] Report opens as a concise “Dear [client]” letter and a simplified first page, with separate performance, content, and full-data pages for readers who want more depth.
+- [x] Paid vs. organic and goal progress appear near the top as compact summaries; full paid efficiency and full goal tables live on the deeper performance page.
+- [x] CNO can reorder sections, move them between pages, or hide them without changing the underlying data.
+- [x] Required AI analysis: paste an OpenAI or Anthropic API key to write the letter, key takeaways, and plain-language explanations throughout the report. It includes structured evidence keys, confidence levels, sample-size rules, data-quality cautions, optional CNO context, and a CNO-only evidence review. The key can be remembered on one trusted CNO device but never travels in a share link.
 - [x] CNO-only data-quality audit and visibly separate **CNO workspace · staff tools** versus **Client report · view only** experiences.
 - [x] Shared links are scoped to a single client's data and open view-only (no uploading, switching clients, editing, or export), so one client can never see another's results even if a password is mishandled.
 - [x] Installable, offline-capable app (PWA): add to home screen or install on Mac/Windows/phone, and bookmark to return anytime.
-- [x] Expanded paid vs. organic section: reach and impressions splits, paid share of reach, and an optional AI read on spend.
+- [x] Expanded paid vs. organic section: reach and impressions splits, paid share of reach, and an AI read on spend.
+- [x] Native OAuth service exchanges Meta authorization for a long-lived token and automatically rotates supported TikTok/LinkedIn access and refresh tokens before scheduled sync.
 
 ## Monthly refresh workflow
 
@@ -38,7 +41,7 @@ This checklist records what the report supports and what the operator does each 
 3. Add `client`, `platform`, `campaign`, `campaign_phase`, and `pillar` columns where those labels are not already present. Do not alter the source metric columns.
 4. Upload all files together. Select one platform at a time for platform-specific reporting, then select multiple only for an intentional portfolio view.
 5. Choose the report period and chart detail. Sanity-check headline totals against the native platform for the same date range.
-6. Edit the narrative where human context is required. The charts and calculations remain deterministic.
+6. Generate the required AI analysis, check its evidence, and edit the letter where human context is required. The charts and calculations remain deterministic.
 7. Create a new password-protected share link for that client and cycle. Send the password separately.
 
-Manual CSV reporting still needs no API key or server database. A shared link is a self-contained encrypted snapshot, so refreshing manual source data requires creating a fresh link. The optional native-sync service is a separate CNO-only backend and is not exposed in client reports.
+Manual CSV calculation still needs no server database, but a client-ready share link or PDF requires the AI letter. A shared link is a self-contained encrypted snapshot, so refreshing manual source data requires creating a fresh link. The optional native-sync service is a separate CNO-only backend and is not exposed in client reports.

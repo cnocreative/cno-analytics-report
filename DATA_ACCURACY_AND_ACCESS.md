@@ -85,13 +85,13 @@ Reconciliation differences are not automatically errors. Account totals can incl
 
 ## AI boundary
 
-AI is optional and CNO-side only. Deterministic metrics and visualizations continue to work without an API key.
+AI is required for a client-ready letter, share link, and PDF, but it remains CNO-side only. Deterministic metrics and visualizations continue to calculate without an API key so imports can still be audited and explored.
 
 The AI receives a compact, structured context containing selected metrics, comparisons, sample sizes, goal progress, paid-specific measures, top-post evidence, campaign/pillar summaries, data-quality warnings, the prior recommendation, and optional human context supplied by CNO.
 
 For OpenAI, the application uses the Responses API with strict JSON-schema output, explicit reasoning depth, `store: false`, and an evidence list plus confidence level for every finding. Model output is sanitized before it reaches the report. The generated narrative is still a draft: CNO reviews and edits it before publication.
 
-The current bring-your-own-key pilot keeps the key only in browser session storage. A production staff-account system should move AI calls to the authenticated CNO backend and store the provider key only in server-side secret management.
+The current bring-your-own-key pilot can remember the key in browser storage on a trusted CNO device, or keep it for only the current session. It is never included in a client share link. Browser storage is a convenience boundary, not production secret management. The authenticated cloud version must move AI calls to the CNO backend and keep the provider key only in server-side secret management. See [`CLOUD_AUTOMATION_BLUEPRINT.md`](CLOUD_AUTOMATION_BLUEPRINT.md).
 
 ## Publication gate
 

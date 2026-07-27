@@ -3,7 +3,7 @@ import express from "express";
 import helmet from "helmet";
 import { initDb, pool, q } from "./db.js";
 import { decrypt, encrypt, hash, randomToken, safeEqual } from "./crypto.js";
-import { buildAuthorizationUrl, discoverAccounts, exchangeCode, normalizeToken, providerNames, syncProvider } from "./providers.js";
+import { buildAuthorizationUrl, discoverAccounts, exchangeCode, normalizeToken, providerNames, refreshAccessToken, syncProvider } from "./providers.js";
 
 const app = express();
 const port = Number(process.env.PORT || 10000);
@@ -40,8 +40,8 @@ function layout(title, body) {
 
 async function createSession(res) {
   const token = randomToken();
-  await q("INSERT INTO admin_sessions(session_hash,expires_at) VALUES($1,NOW()+INTERVAL '8 hours')", [hash(token)]);
-  res.cookie("cno_sync_session", token, { httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "lax", maxAge: 8 * 3600 * 1000, path: "/" });
+  await q("INSERT INTO admin_sessions(session_hash,expires_at) VALUES($1,NOW()+INTERVAL '30 days')", [hash(token)]);
+  res.cookie("cno_sync_session", token, { httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "lax", maxAge: 30 * 24 * 3600 * 1000, path: "/" });
 }
 
 async function isAdmin(req) {
@@ -56,15 +56,17 @@ async function requireAdmin(req, res, next) {
   res.status(401).send(layout("Sign in", `<div class="card" style="max-width:520px;margin:50px auto"><h1>Private CNO access</h1><p>Enter the internal access token. Platform passwords and OAuth tokens are never shown here.</p><form method="post" action="/admin/login"><label>Internal access token</label><input type="password" name="token" autocomplete="current-password" required><p><button class="solid" type="submit">Sign in</button></p></form></div>`));
 }
 
-app.get("/health", (_req, res) => res.json({ ok: true, service: "cno-native-sync", version: "0.1.0" }));
+app.get("/health", (_req, res) => res.json({ ok: true, service: "cno-native-sync", version: "0.4.0" }));
 app.get("/", (_req, res) => res.redirect("/admin"));
 app.get("/admin", requireAdmin, async (req, res) => {
+  const requestedClient = String(req.query.client_ref || "").trim().slice(0, 120);
   const connections = (await q("SELECT id,client_ref,provider,metadata,last_synced_at,last_error,token_expires_at FROM connections ORDER BY client_ref,provider")).rows;
   const rows = connections.map(c => `<tr><td>${esc(c.client_ref)}</td><td>${esc(c.provider)}</td><td>${esc((c.metadata?.accounts || []).map(x => x.name).join(", ") || "Connected")}</td><td>${c.last_synced_at ? esc(day(c.last_synced_at)) : "Not yet"}</td><td class="${c.last_error ? "error" : ""}">${esc(c.last_error || "Ready")}</td></tr>`).join("");
   const clients = [...new Set(connections.map(c => c.client_ref))];
   const clientOptions = clients.map(c => `<option>${esc(c)}</option>`).join("");
-  res.send(layout("Connections", `<h1>Connect once. Refresh automatically.</h1><p>Authorization happens on the platform's own website. This service receives the OAuth token, encrypts it before database storage, and exposes only connection status and normalized analytics.</p>
-  <div class="grid">${providerNames.map(p => `<div class="card provider"><div class="k">${esc(p)}</div><h2>Connect ${esc(p[0].toUpperCase() + p.slice(1))}</h2><form method="get" action="/admin/connect/${p}"><label>Client reference</label><input name="client_ref" placeholder="Client display name" required><p><button type="submit">Authorize on ${esc(p)}</button></p></form></div>`).join("")}</div>
+  res.send(layout("Connections", `<h1>Connect once. Refresh automatically.</h1><p>Choose a platform, sign in on its own website, and approve read-only analytics access. Refreshable authorization is encrypted on this server so routine reports do not require another sign-in.</p>
+  ${requestedClient ? `<div class="card"><div class="k">Connecting for</div><h2>${esc(requestedClient)}</h2><p class="quiet">Select each platform this client uses. You will return here after every approval.</p></div>` : ""}
+  <div class="grid">${providerNames.map(p => `<div class="card provider"><div class="k">${esc(p)}</div><h2>Connect ${esc(p[0].toUpperCase() + p.slice(1))}</h2><form method="get" action="/admin/connect/${p}">${requestedClient ? `<input type="hidden" name="client_ref" value="${esc(requestedClient)}">` : `<label>Client reference</label><input name="client_ref" placeholder="Client display name" required>`}<p><button type="submit">Continue to ${esc(p)}</button></p></form></div>`).join("")}</div>
   <div class="card"><h2>Connected accounts</h2>${connections.length ? `<table><thead><tr><th>Client</th><th>Provider</th><th>Account</th><th>Last sync</th><th>Status</th></tr></thead><tbody>${rows}</tbody></table>` : `<p>No platforms connected yet.</p>`}</div>
   <div class="card"><h2>Refresh and open the report</h2><p>Scheduled refreshes collect data automatically. Use these controls for an immediate refresh or to open the latest stored data in the reporting dashboard.</p><div class="row"><form method="post" action="/admin/sync"><label>Client</label><select name="client_ref" required>${clientOptions}</select><label>From</label><input type="date" name="from" value="${daysAgo(90)}"><label>To</label><input type="date" name="to" value="${day(Date.now())}"><p><button class="solid" type="submit">Sync now</button></p></form><form method="post" action="/admin/import-link"><label>Client</label><select name="client_ref" required>${clientOptions}</select><p><button type="submit">Open latest in CNO Reports</button></p></form></div></div>
   <p><a class="btn" href="/admin/logout">Sign out</a></p>`));
@@ -131,8 +133,17 @@ async function syncClient(clientRef, from, to) {
   const results = [];
   for (const connection of connections) {
     try {
-      if (connection.token_expires_at && new Date(connection.token_expires_at) <= new Date()) throw new Error("Authorization expired; reconnect this platform");
-      const rows = await syncProvider(connection.provider, decrypt(connection.access_token_cipher), clientRef, from, to, connection.metadata || {});
+      let accessToken = decrypt(connection.access_token_cipher);
+      const refreshToken = decrypt(connection.refresh_token_cipher);
+      const expiresAt = connection.token_expires_at ? new Date(connection.token_expires_at).getTime() : null;
+      const refreshWindow = Date.now() + 24 * 3600 * 1000;
+      if (expiresAt && expiresAt <= refreshWindow) {
+        const refreshed = normalizeToken(connection.provider, await refreshAccessToken(connection.provider, refreshToken, accessToken));
+        accessToken = refreshed.accessToken;
+        await q(`UPDATE connections SET access_token_cipher=$2,refresh_token_cipher=$3,token_expires_at=$4,scopes=$5,last_error=NULL,updated_at=NOW() WHERE id=$1`,
+          [connection.id, encrypt(refreshed.accessToken), encrypt(refreshed.refreshToken || refreshToken), refreshed.expiresAt, refreshed.scopes || connection.scopes]);
+      }
+      const rows = await syncProvider(connection.provider, accessToken, clientRef, from, to, connection.metadata || {});
       await q("INSERT INTO sync_runs(id,connection_id,client_ref,provider,date_from,date_to,rows) VALUES($1,$2,$3,$4,$5,$6,$7)", [crypto.randomUUID(), connection.id, clientRef, connection.provider, from, to, JSON.stringify(rows)]);
       await q("UPDATE connections SET last_synced_at=NOW(),last_error=NULL,updated_at=NOW() WHERE id=$1", [connection.id]);
       results.push({ provider: connection.provider, rows: rows.length, ok: true });
