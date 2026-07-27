@@ -44,6 +44,11 @@
   .btn.file{position:relative;overflow:hidden}
   .btn.file input{position:absolute;inset:0;opacity:0;cursor:pointer;font-size:0}
   .toolbar .btn{height:38px;display:inline-flex;align-items:center;justify-content:center;white-space:nowrap}.toolbar .spacer{flex:0 0 100%;height:0}.toolbar #platChips{min-width:210px}
+  .panel-toggle{gap:9px}
+  .panel-toggle::after{content:"+";display:grid;place-items:center;width:17px;height:17px;border:1px solid currentColor;border-radius:50%;font-size:14px;font-weight:400;line-height:1;opacity:.72}
+  .panel-toggle.is-active{background:var(--burnt)!important;border-color:var(--burnt)!important;color:#fff!important;box-shadow:0 0 0 3px rgba(153,97,55,.14)}
+  .panel-toggle.is-active::after{content:"−";opacity:1}
+  .sitebar .panel-toggle.is-active{background:var(--ink)!important;border-color:var(--ink)!important;box-shadow:0 0 0 3px rgba(42,31,18,.12)}
   .control-title,.action-fld{display:flex;flex-direction:column;gap:3px;flex:none}.control-title>span,.action-fld>span{font-size:9.5px;line-height:1.55;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft)}.control-title>strong{height:38px;display:flex;align-items:center;font-family:var(--serif);font-size:20px;line-height:1;font-weight:400;white-space:nowrap;padding-right:6px}
   /* view-lock: a shared report is read-only and shows only its one client */
   body.view-lock .action-fld,
@@ -63,9 +68,10 @@
   body.view-lock label.fld:has(#clientSel){display:none!important}
   body.view-lock .toolbar::before{content:"Client report · view only";font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--burnt);font-weight:600;align-self:center}
   /* customize panel */
-  .panel{background:var(--cream);border-bottom:1px solid var(--sand);padding:16px 22px;display:none}
-  .panel.open{display:block}
+  .panel{background:var(--cream);border-bottom:1px solid var(--sand);padding:20px max(24px,calc((100vw - 1120px)/2));display:none;scroll-margin-top:190px}
+  .panel.open{display:block;animation:panelReveal .18s ease-out}
   .panel h3{margin:0 0 10px;font-family:var(--serif);font-size:16px;font-weight:500}
+  .panel .utility-head h3{font-size:27px;font-weight:400;margin:0}.panel .utility-head p{font-size:12px;color:var(--ink-soft);max-width:72ch;margin:4px 0 0}
   .panel .grp{display:flex;flex-wrap:wrap;gap:22px}
   .panel .col{min-width:180px}
   .panel .col > .lab{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--sage-deep);font-weight:500;margin-bottom:7px}
@@ -78,8 +84,9 @@
   .app-dialog-card::before,.app-dialog-card::after{content:"";position:absolute;width:18px;height:18px;border-color:rgba(153,97,55,.45);border-style:solid}.app-dialog-card::before{top:12px;left:12px;border-width:1px 0 0 1px}.app-dialog-card::after{right:12px;bottom:12px;border-width:0 1px 1px 0}
   .app-dialog-card h3{font-family:var(--serif);font-size:27px;font-weight:400;margin:0 0 8px}.app-dialog-card p{font-size:12.5px;line-height:1.65;color:var(--ink-soft);white-space:pre-line;margin:0 0 18px}.app-dialog-card input{width:100%;font:14px var(--sans);padding:11px 12px;border:1px solid var(--sand);background:#fff;color:var(--ink);margin-bottom:16px}.app-dialog-actions{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap}
   /* import center: merge and audit native exports without an API */
-  .utility-panel{padding:24px max(24px,calc((100vw - 1120px)/2));background:#fff;border-bottom:1px solid var(--sand);display:none}
-  .utility-panel.open{display:block}
+  .utility-panel{padding:24px max(24px,calc((100vw - 1120px)/2));background:#fff;border-bottom:1px solid var(--sand);display:none;scroll-margin-top:190px}
+  .utility-panel.open{display:block;animation:panelReveal .18s ease-out}
+  @keyframes panelReveal{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
   .utility-head{display:flex;align-items:flex-start;justify-content:space-between;gap:24px;margin-bottom:18px}.utility-head h3{font-family:var(--serif);font-size:27px;font-weight:400;margin:0}.utility-head p{font-size:12px;color:var(--ink-soft);max-width:72ch;margin:4px 0 0}.utility-close{border:0;background:none;color:var(--ink-soft);font-size:22px;cursor:pointer;padding:0 4px}
   .import-grid{display:grid;grid-template-columns:minmax(260px,.85fr) minmax(420px,1.65fr);gap:18px}.dropzone{min-height:190px;border:1px dashed var(--terra);background:linear-gradient(180deg,rgba(219,155,127,.07),rgba(255,248,231,.55));display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:25px;transition:background .18s,border-color .18s,transform .18s}.dropzone.over{background:rgba(219,155,127,.14);border-style:solid;transform:translateY(-2px)}.dropseal{width:55px;height:55px;object-fit:contain;margin-bottom:10px}.dropzone h4{font-family:var(--serif);font-size:22px;font-weight:400;margin:0 0 5px}.dropzone p{font-size:11px;color:var(--ink-soft);margin:0 0 14px;max-width:34ch}.dropactions{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
   .import-summary{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid var(--sand);margin-bottom:12px}.isum{padding:13px 14px;border-right:1px solid var(--sand)}.isum:last-child{border-right:0}.isum span{display:block;font-size:8.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-soft)}.isum b{font-family:var(--serif);font-size:24px;font-weight:400}
@@ -361,10 +368,10 @@
       <div class="m" id="mhPeriod">Upload a CSV or load the demo to begin</div>
     </div>
   </div>
-  <div class="site-actions"><span class="workspace-badge" id="workspaceBadge">CNO workspace · staff tools</span><div class="mhtag">Hand it over. We'll handle it.</div><button class="btn" id="installBtn">Get the app</button></div>
+  <div class="site-actions"><span class="workspace-badge" id="workspaceBadge">CNO workspace · staff tools</span><div class="mhtag">Hand it over. We'll handle it.</div><button class="btn panel-toggle" id="installBtn" aria-controls="installPanel" aria-expanded="false">Get the app</button></div>
 </header>
 <div class="toolbar">
-  <div class="action-fld"><span>Data</span><button class="btn solid" id="dataBtn">Import data</button></div>
+  <div class="action-fld"><span>Data</span><button class="btn solid panel-toggle" id="dataBtn" aria-controls="dataPanel" aria-expanded="false">Import data</button></div>
   <div class="action-fld"><span>Sample</span><button class="btn" id="demoBtn">Load demo</button></div>
   <label class="fld">Client<select id="clientSel"></select></label>
   <label class="fld">Period<select id="periodSel"></select></label>
@@ -373,10 +380,10 @@
   <label class="fld">Chart detail<select id="grainSel"><option value="day">Daily</option><option value="week">Weekly</option><option value="month">Monthly</option></select></label>
   <span class="fld">Platforms<span class="chips" id="platChips"></span></span>
   <div class="spacer"></div>
-  <button class="btn" id="qualityBtn">Data audit</button>
-  <button class="btn" id="syncBtn">Native sync</button>
-  <button class="btn" id="aiBtn">✦ AI narrative</button>
-  <button class="btn" id="custBtn">Customize</button>
+  <button class="btn panel-toggle" id="qualityBtn" aria-controls="qualityPanel" aria-expanded="false">Data audit</button>
+  <button class="btn panel-toggle" id="syncBtn" aria-controls="syncPanel" aria-expanded="false">Native sync</button>
+  <button class="btn panel-toggle" id="aiBtn" aria-controls="aiPanel" aria-expanded="false">✦ AI narrative</button>
+  <button class="btn panel-toggle" id="custBtn" aria-controls="custPanel" aria-expanded="false">Customize</button>
   <button class="btn" id="shareBtn">Share link</button>
   <button class="btn" id="exportBtn">Export data</button>
   <button class="btn solid" id="printBtn">Print / PDF</button>
@@ -446,7 +453,7 @@
 </div>
 
 <div class="panel" id="custPanel">
-  <h3>Customize this report</h3>
+  <div class="utility-head"><div><h3>Customize this report</h3><p>Choose the report goal, featured KPIs, visible sections, and client-facing presentation.</p></div><button class="utility-close" id="custClose" aria-label="Close customization">×</button></div>
   <div class="grp">
     <div class="col">
       <div class="lab">Report goal</div>
@@ -841,7 +848,7 @@ function renderQualityPanel(){
 }
 function importFiles(files){
   if(VIEW_LOCK)return;const csv=[...files].filter(f=>/\.csv$/i.test(f.name));if(!csv.length){appAlert("No CSV files were found in that selection.");return;}
-  $("dataPanel").classList.add("open");let done=0;csv.forEach(f=>{const r=new FileReader();r.onload=e=>{ingest(e.target.result,f.webkitRelativePath||f.name);if(++done===csv.length){refreshAll();renderImportCenter();}};r.onerror=()=>{IMPORT_LOG.push({name:f.name,rows:0,used:0,duplicates:0,posts:0,periods:0,grain:"Unknown",platforms:[],dateFrom:"",dateTo:"",mapped:0,headers:0,skipped:1});if(++done===csv.length){refreshAll();renderImportCenter();}};r.readAsText(f);});
+  openWorkspacePanel("data");let done=0;csv.forEach(f=>{const r=new FileReader();r.onload=e=>{ingest(e.target.result,f.webkitRelativePath||f.name);if(++done===csv.length){refreshAll();renderImportCenter();}};r.onerror=()=>{IMPORT_LOG.push({name:f.name,rows:0,used:0,duplicates:0,posts:0,periods:0,grain:"Unknown",platforms:[],dateFrom:"",dateTo:"",mapped:0,headers:0,skipped:1});if(++done===csv.length){refreshAll();renderImportCenter();}};r.readAsText(f);});
 }
 
 /* ==================== data model ==================== */
@@ -1874,6 +1881,32 @@ function wireEdits(){
 }
 
 /* ==================== wiring ==================== */
+const WORKSPACE_PANELS={
+  data:{button:"dataBtn",panel:"dataPanel",closed:"Import data",opened:"Close import"},
+  quality:{button:"qualityBtn",panel:"qualityPanel",closed:"Data audit",opened:"Close audit"},
+  sync:{button:"syncBtn",panel:"syncPanel",closed:"Native sync",opened:"Close sync"},
+  ai:{button:"aiBtn",panel:"aiPanel",closed:"✦ AI narrative",opened:"Close AI"},
+  customize:{button:"custBtn",panel:"custPanel",closed:"Customize",opened:"Close customize"},
+  install:{button:"installBtn",panel:"installPanel",closed:"Get the app",opened:"Close app options"}
+};
+function setWorkspacePanelState(name,isOpen){
+  const item=WORKSPACE_PANELS[name];if(!item)return;
+  const panel=$(item.panel),button=$(item.button);panel.classList.toggle("open",isOpen);button.classList.toggle("is-active",isOpen);button.setAttribute("aria-expanded",String(isOpen));button.textContent=isOpen?item.opened:item.closed;
+}
+function closeWorkspacePanels(except=null){
+  Object.keys(WORKSPACE_PANELS).forEach(name=>{if(name!==except)setWorkspacePanelState(name,false);});
+}
+function openWorkspacePanel(name,{scroll=true}={}){
+  closeWorkspacePanels(name);setWorkspacePanelState(name,true);
+  if(name==="quality")renderQualityPanel();if(name==="ai")renderAIEvidence();
+  if(scroll)setTimeout(()=>$(WORKSPACE_PANELS[name].panel).scrollIntoView({behavior:"smooth",block:"start"}),0);
+}
+function toggleWorkspacePanel(name){
+  const item=WORKSPACE_PANELS[name],opening=!$(item.panel).classList.contains("open");
+  closeWorkspacePanels();if(opening)openWorkspacePanel(name);
+}
+function closeWorkspacePanel(name){setWorkspacePanelState(name,false);}
+
 function refreshAll(){const cs=clients();$("clientSel").innerHTML=cs.map(c=>`<option>${c}</option>`).join("");refreshPeriods();renderImportCenter();}
 $("clientSel").addEventListener("change",refreshPeriods);
 $("periodSel").addEventListener("change",onPeriodChange);
@@ -1881,20 +1914,21 @@ $("grainSel").addEventListener("change",e=>{CUSTOM.grain=e.target.value;saveCust
 $("fromDate").addEventListener("change",render);
 $("toDate").addEventListener("change",render);
 $("printBtn").addEventListener("click",()=>window.print());
-$("custBtn").addEventListener("click",()=>$("custPanel").classList.toggle("open"));
-$("qualityBtn").addEventListener("click",()=>{$("qualityPanel").classList.toggle("open");renderQualityPanel();});
-$("qualityClose").addEventListener("click",()=>$("qualityPanel").classList.remove("open"));
-$("aiBtn").addEventListener("click",()=>{$("aiPanel").classList.toggle("open");renderAIEvidence();});
-$("aiClose").addEventListener("click",()=>$("aiPanel").classList.remove("open"));
+$("custBtn").addEventListener("click",()=>toggleWorkspacePanel("customize"));
+$("custClose").addEventListener("click",()=>closeWorkspacePanel("customize"));
+$("qualityBtn").addEventListener("click",()=>toggleWorkspacePanel("quality"));
+$("qualityClose").addEventListener("click",()=>closeWorkspacePanel("quality"));
+$("aiBtn").addEventListener("click",()=>toggleWorkspacePanel("ai"));
+$("aiClose").addEventListener("click",()=>closeWorkspacePanel("ai"));
 $("aiForget").addEventListener("click",()=>{localStorage.removeItem("cno_ai_cfg");sessionStorage.removeItem("cno_ai_key");$("aiKey").value="";aiSay("API key removed from this browser session.");});
-$("syncBtn").addEventListener("click",()=>$("syncPanel").classList.toggle("open"));
-$("syncClose").addEventListener("click",()=>$("syncPanel").classList.remove("open"));
+$("syncBtn").addEventListener("click",()=>toggleWorkspacePanel("sync"));
+$("syncClose").addEventListener("click",()=>closeWorkspacePanel("sync"));
 const savedSyncUrl=localStorage.getItem("cno_sync_service_url");if(savedSyncUrl)$("syncServiceUrl").value=savedSyncUrl;
 $("syncOpen").addEventListener("click",()=>{const url=$("syncServiceUrl").value.trim().replace(/\/$/,"");if(!/^https:\/\//i.test(url)&&!/^http:\/\/localhost(?::\d+)?$/i.test(url)){$("syncStatus").textContent="Use an HTTPS service URL (or localhost while developing).";$("syncStatus").className="aistatus show";return;}localStorage.setItem("cno_sync_service_url",url);window.open(url+"/admin","_blank","noopener");});
 $("exportBtn").addEventListener("click",doExport);
 $("shareBtn").addEventListener("click",makeShareLink);
-$("dataBtn").addEventListener("click",()=>$("dataPanel").classList.toggle("open"));
-$("dataClose").addEventListener("click",()=>$("dataPanel").classList.remove("open"));
+$("dataBtn").addEventListener("click",()=>toggleWorkspacePanel("data"));
+$("dataClose").addEventListener("click",()=>closeWorkspacePanel("data"));
 $("masterBtn").addEventListener("click",downloadMaster);
 $("clearDataBtn").addEventListener("click",async()=>{if(!await appConfirm("Clear all imported data from this CNO workspace? This does not delete the original CSV files.","Clear imported data"))return;resetData();refreshAll();});
 $("prepFileIn").addEventListener("change",function(){importFiles(this.files);this.value="";});
@@ -1903,6 +1937,7 @@ $("importDrop").addEventListener("dragover",e=>{e.preventDefault();e.stopPropaga
 $("importDrop").addEventListener("dragleave",e=>{e.stopPropagation();$("importDrop").classList.remove("over");});
 $("importDrop").addEventListener("drop",e=>{e.preventDefault();e.stopPropagation();$("importDrop").classList.remove("over");importFiles(e.dataTransfer.files);});
 $("demoBtn").addEventListener("click",()=>{if(VIEW_LOCK)return;resetData();ingest(DEMO_ACC,"Demo account data.csv");ingest(DEMO_CON,"Demo content data.csv");refreshAll();});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!document.querySelector(".app-dialog"))closeWorkspacePanels();});
 
 /* ==================== demo (fictional) ==================== */
 const DEMO_ACC=`client,platform,month,followers_total,followers_growth,reach,impressions,engagement,views,profile_views,link_clicks,dms,meaningful_comments,comment_replies,leads,bookings,membership_signups,retail_sales,revenue,event_reach,event_engagement,event_registrations,event_attendees,conversions,paid_reach,paid_impressions,organic_reach,organic_impressions,spend,posts,top_age_group,top_gender,top_countries,top_cities,reach_target,profile_views_target,link_clicks_target,followers_growth_target,event_registrations_target,event_attendees_target,bookings_target,revenue_target,paid_clicks,paid_follows,paid_conversions,paid_revenue,data_source,aggregation
@@ -2004,8 +2039,8 @@ window.addEventListener("beforeinstallprompt",e=>{
   const b=$("pwaInstallNow");if(b)b.textContent="Install now";
 });
 window.addEventListener("appinstalled",()=>{DEFERRED_INSTALL=null;const b=$("pwaInstallNow");if(b)b.textContent="Installed";});
-$("installBtn").addEventListener("click",()=>$("installPanel").classList.toggle("open"));
-$("installClose").addEventListener("click",()=>$("installPanel").classList.remove("open"));
+$("installBtn").addEventListener("click",()=>toggleWorkspacePanel("install"));
+$("installClose").addEventListener("click",()=>closeWorkspacePanel("install"));
 $("pwaInstallNow").addEventListener("click",async()=>{
   if(!DEFERRED_INSTALL){appAlert("Chrome / Edge: open the browser menu and choose “Install CNO Reports.”\n\niPhone / iPad Safari: tap Share, then “Add to Home Screen.”\n\nMac Safari: choose File, then “Add to Dock.”","Install CNO Reports");return;}
   DEFERRED_INSTALL.prompt();await DEFERRED_INSTALL.userChoice;DEFERRED_INSTALL=null;
