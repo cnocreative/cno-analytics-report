@@ -12,12 +12,14 @@ export function safeEqual(a, b) {
   return aa.length === bb.length && crypto.timingSafeEqual(aa, bb);
 }
 
-function key() {
-  const raw = process.env.TOKEN_ENCRYPTION_KEY || "";
+export function deriveEncryptionKey(raw = "") {
+  if (!raw) throw new Error("TOKEN_ENCRYPTION_KEY is required");
   const parsed = Buffer.from(raw, "base64");
-  if (parsed.length !== 32) throw new Error("TOKEN_ENCRYPTION_KEY must be a base64-encoded 32-byte key");
-  return parsed;
+  if (parsed.length === 32 && parsed.toString("base64").replace(/=+$/, "") === raw.replace(/=+$/, "")) return parsed;
+  if (raw.length >= 32) return crypto.createHash("sha256").update(raw, "utf8").digest();
+  throw new Error("TOKEN_ENCRYPTION_KEY must be a base64-encoded 32-byte key or a high-entropy secret of at least 32 characters");
 }
+function key() { return deriveEncryptionKey(process.env.TOKEN_ENCRYPTION_KEY || ""); }
 
 export function encrypt(value) {
   if (value == null || value === "") return null;

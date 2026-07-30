@@ -23,7 +23,7 @@ jobs:
             flag: "--win"
             pattern: "dist-desktop/*.exe"
           - os: macos-latest
-            flag: "--mac"
+            flag: "--mac --arm64"
             pattern: "dist-desktop/*.dmg"
     runs-on: ${{ matrix.os }}
     steps:

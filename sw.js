@@ -1,13 +1,15 @@
 /* CNO Reports service worker — offline app shell.
    Bump CACHE when shipping a new build so clients pick it up. */
-const CACHE = "cno-reports-v8";
+const CACHE = "cno-reports-v10";
 const SHELL = [
   "./index.html",
   "./fonts.css",
   "./cno-seal.png",
   "./cno-logo.png",
+  "./apple-touch-icon.png",
   "./icon-192.png",
   "./icon-512.png",
+  "./icon-maskable-512.png",
   "./manifest.webmanifest"
 ];
 

@@ -12,7 +12,7 @@ This label is an interface distinction during the pilot, not authentication. Any
 
 ### Client report
 
-A generated share link is scoped to one client and opens in **Client report · view only** mode. It retains date, chart-detail, and platform exploration while removing import, client switching, native sync, data audit, AI, customization, re-sharing, export, installation, and editing controls.
+A generated share link is scoped to one client and one selected platform, then opens in **Client report · view only** mode at the exact AI-approved reporting period. It retains chart-detail exploration, report pages, and approved historical comparisons while removing period/client switching, import, native sync, data audit, AI, customization, re-sharing, staff export, installation, and editing controls. The bundle carries only the approved client-facing prose; CNO-only evidence keys, confidence labels, validation counts, analyst cautions, and API credentials are removed.
 
 The optional password encrypts the report snapshot in the URL. It is not a user account and cannot be centrally revoked after distribution.
 
@@ -52,8 +52,8 @@ Do not add home-grown employee passwords to the static page. Introduce managed a
 1. Account/platform totals are authoritative for headline metrics. Post rows provide creative detail and are fallback totals only when the account export is absent.
 2. Spend from an account or Ads Manager summary is never added again from ad-level rows.
 3. Reach is non-additive. A sum of daily unique reach is labeled directional because the same person can appear on multiple days. Exact monthly reach requires a period-total row from the platform.
-4. Followers are snapshots. The latest snapshot per platform is used; snapshots are not summed across dates.
-5. Cross-platform reach, views, and engagement definitions are not treated as interchangeable. One platform remains selected by default.
+4. Followers are snapshots. The latest snapshot per platform is used; snapshots are not summed across dates. Net growth is ending followers minus starting followers when both exist, and a conflicting imported growth field is flagged.
+5. Cross-platform reach, views, and engagement definitions are not treated as interchangeable. One platform remains selected by default, and the Full Data spreadsheet follows the same platform and date filters.
 6. Missing values remain missing. They are never silently converted into zero for KPI availability.
 7. Paid-efficiency metrics require paid-specific denominators:
    - CPM = spend / paid impressions × 1,000
@@ -65,7 +65,7 @@ Do not add home-grown employee passwords to the static page. Introduce managed a
    - cost per paid conversion = spend / paid conversions
    - ROAS = paid-attributed revenue / spend
 8. Total website clicks, total follower growth, and total revenue are not assumed to have been caused by paid media.
-9. Platform-reported paid rates are fallback/validation fields. Raw paid totals win whenever the required numerator and denominator are available.
+9. Platform-reported paid rates are displayed when supplied. Paid-only raw totals independently recalculate the same rates for CNO validation; differences over 5% are flagged, and the calculated result fills only a missing platform rate. Clearly labeled paid/Ads Manager rows also route generic native headings into paid-only fields; unlabeled combined account rows do not.
 10. Story exit rate is exits / Story views. Story completion is completed Story views / Story views, or 1 − exit rate only when direct completions are unavailable.
 11. Cost per conversion and ROAS remain unavailable when conversion/revenue attribution is not configured.
 
@@ -78,7 +78,8 @@ The CNO-only **Data audit** panel checks:
 - missing core KPIs;
 - potential same-platform/date overlap across exports;
 - daily unique-reach aggregation risk;
-- account totals versus post-detail reconciliation; and
+- account totals versus post-detail reconciliation;
+- platform-reported paid rates versus paid-only raw-total recalculation; and
 - whether the report is using account totals or post-derived fallbacks.
 
 Reconciliation differences are not automatically errors. Account totals can include stories, ads, deleted posts, or platform surfaces absent from a post export. The audit flags the difference for review instead of forcing the two grains to match.
@@ -87,7 +88,7 @@ Reconciliation differences are not automatically errors. Account totals can incl
 
 AI is required for a client-ready letter, share link, and PDF, but it remains CNO-side only. Deterministic metrics and visualizations continue to calculate without an API key so imports can still be audited and explored.
 
-The AI receives a compact, structured context containing selected metrics, comparisons, sample sizes, goal progress, paid-specific measures, top-post evidence, campaign/pillar summaries, data-quality warnings, the prior recommendation, and optional human context supplied by CNO.
+The AI receives a compact, structured context containing selected metrics, comparisons, sample sizes, goal progress, paid-specific measures, top-post evidence, campaign/pillar summaries, data-quality warnings, the prior report's headline/findings/next move/analyst caution for the same client and platform, and optional human context supplied by CNO.
 
 For OpenAI, the application uses the Responses API with strict JSON-schema output, explicit reasoning depth, `store: false`, and an evidence list plus confidence level for every finding. Model output is sanitized before it reaches the report. The generated narrative is still a draft: CNO reviews and edits it before publication.
 

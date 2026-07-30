@@ -1,0 +1,2 @@
+record_type,client,platform,date,data_source,aggregation,Amount Spent,Reach,Impressions,Link Clicks,CTR,CPM,CPC,Frequency,Leads,Conversions,Revenue
+account_daily,Example Brand,instagram,2026-06-15,meta_ads_manager,daily,50,2000,5000,125,2.5,10,0.4,2.5,5,2,400

@@ -45,7 +45,7 @@ Core records:
 | `organizations` | CNO and client tenants |
 | `users` / `memberships` | identity, organization, and role |
 | `clients` | report settings, goals, timezone, schedule |
-| `connections` | provider/account metadata and encrypted OAuth tokens |
+| `connections` | provider/account metadata, exact client-account assignment, and encrypted OAuth tokens |
 | `sync_runs` | source, dates, row count, validation result, errors |
 | `metric_snapshots` | normalized deterministic metrics for one reporting period |
 | `report_versions` | approved copy, page/section layout, status, publish date |
@@ -53,7 +53,7 @@ Core records:
 | `deliveries` | email recipient, send status, and link expiration |
 | `audit_events` | actor, action, record, and timestamp |
 
-Every tenant-owned row carries an `organization_id`. Database row-level security must deny access unless the authenticated membership is allowed to read that tenant. Client access must never rely only on hiding controls in the browser.
+Every tenant-owned row carries an `organization_id`. Database row-level security must deny access unless the authenticated membership is allowed to read that tenant. Client access must never rely only on hiding controls in the browser. An OAuth grant that reveals several profiles must also require an explicit provider-account assignment inside the matching client tenant before any sync job can run.
 
 ## Monthly automated flow
 
@@ -77,11 +77,11 @@ Every tenant-owned row carries an `organization_id`. Database row-level security
 - Use HTTP-only secure sessions, staff MFA, invite-only client access, rate limits, and audit logs.
 - Retain only the data required by the contract; define deletion and offboarding procedures before launch.
 
-The downloadable v1.5 pilot can remember a staff user's AI key on that device for convenience, but browser storage is not the final production secret boundary.
+The downloadable v1.6 pilot can remember a staff user's AI key on that device for convenience, but browser storage is not the final production secret boundary.
 
 ## Delivery phases
 
-### Phase 1 — v1.5 pilot
+### Phase 1 — v1.6 pilot
 
 - AI is required before sharing or PDF publication.
 - A short client letter and layered report pages are generated.

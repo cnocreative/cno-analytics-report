@@ -45,7 +45,11 @@ function buildMenu() {
         {
           label: "Print / Save as PDF",
           accelerator: "CmdOrCtrl+P",
-          click: (_i, win) => win && win.webContents.print()
+          // Route through the report's own button so the required-AI gate,
+          // page preparation, and client-ready checks cannot be bypassed.
+          click: (_i, win) => win && win.webContents.executeJavaScript(
+            'document.getElementById("printBtn")?.click()'
+          )
         },
         { type: "separator" },
         isMac ? { role: "close" } : { role: "quit" }

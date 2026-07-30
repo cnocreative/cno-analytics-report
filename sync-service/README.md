@@ -11,13 +11,28 @@ This is the private server-side companion to the static CNO reporting dashboard.
 - HTTP-only, secure, 30-day internal sessions so staff do not sign in every reporting cycle
 - Long-lived Meta token exchange plus automatic TikTok/LinkedIn refresh-token rotation where the approved provider app returns refresh access
 - Platform/account discovery after authorization
-- Organic Instagram account/content pulls, optional Meta Ads pulls, TikTok profile/video pulls, and LinkedIn Page statistics foundation
+- A required account-assignment step when an authorization exposes more than one profile: CNO selects the exact native profile and, for Meta, the exact matching ad account before any sync can run
+- Organic Instagram account/content pulls, optional Meta Ads pulls, TikTok profile/video pulls, and LinkedIn Page/share/follower-total pulls
 - Normalization into the same account/post row structure used by CNO Reports
 - Stored sync snapshots and a protected daily sync endpoint
 - Ten-minute, single-use import links that transfer normalized rows into CNO Reports without transferring credentials
 - No provider tokens in logs, URLs returned to the report, client share links, or browser storage
 
 Provider APIs change frequently and require app review. Each adapter deliberately returns partial useful data when an optional metric or permission is unavailable instead of failing the entire client sync.
+
+## The Rella-style connection flow
+
+The safe reporting equivalent of a Rella Social Space is one CNO client workspace:
+
+1. CNO chooses the client.
+2. CNO clicks the provider and the client signs in on Meta, TikTok, or LinkedIn itself.
+3. The provider shows its own consent screen.
+4. Back in the private CNO console, CNO assigns the exact native account that belongs to that client. A Meta connection can assign one Instagram profile and one matching ad account.
+5. The encrypted authorization stays on the server and scheduled refreshes continue until the provider revokes it, it expires without refresh access, or an app permission changes.
+
+An authorization that returns several profiles is never treated as permission to merge them. Syncing remains blocked until the exact account assignment is saved. This is the critical tenant boundary that prevents one client's metrics from entering another client's report.
+
+This service is intentionally scoped to analytics collection and report refresh. Rella's scheduling, auto-posting, and community-management features are separate products and are not represented as part of CNO Reports.
 
 ## Security boundary
 
@@ -26,7 +41,7 @@ Clients authorize on Meta, TikTok, or LinkedIn itself. CNO never asks for or sto
 CNO staff can see:
 
 - the client label;
-- provider and connected account names;
+- provider, discovered account names, and the exact account assignment for each client;
 - last-sync status; and
 - normalized analytics.
 
@@ -38,7 +53,7 @@ The current admin token is a pilot control, not a complete employee account syst
 
 ### Meta / Instagram
 
-Create a Meta developer app and request only the read permissions required for reporting. Instagram insights require a professional account and appropriate insights permissions. Paid/dark-ad reporting also needs `ads_read`. Meta's current requirements are summarized in its [official Instagram API collection](https://www.postman.com/meta/instagram/documentation/6yqw8pt/instagram-api?entity=request-23987686-26e7999c-fc7e-44c8-8f71-ab2de8d35c32).
+Create a Meta developer app and request only the read permissions required for reporting. Instagram insights require a professional account and appropriate insights permissions. Paid/dark-ad reporting also needs `ads_read`. Facebook Page organic collection is not represented as complete in this pilot; native Facebook CSVs remain supported by the report importer. Meta's current requirements are summarized in its [official Instagram API collection](https://www.postman.com/meta/instagram/documentation/6yqw8pt/instagram-api?entity=request-23987686-26e7999c-fc7e-44c8-8f71-ab2de8d35c32).
 
 Callback URL:
 
@@ -50,6 +65,8 @@ https://YOUR-SYNC-SERVICE/oauth/meta/callback
 
 Create and submit a TikTok developer app, configure Login Kit, and request the analytics/video scopes CNO needs. TikTok requires direct user consent and recommends keeping tokens server-side. See [TikTok OAuth token management](https://developers.tiktok.com/doc/login-kit-manage-user-access-tokens).
 
+The default request uses the documented `user.info.basic`, `user.info.stats`, and `video.list` scopes. Watch time and completion fields remain supported by native CSV imports, but they should not be promised through Login Kit unless TikTok approves an API product that actually returns them.
+
 Callback URL:
 
 ```text
@@ -58,7 +75,7 @@ https://YOUR-SYNC-SERVICE/oauth/tiktok/callback
 
 ### LinkedIn
 
-Create a LinkedIn developer app and request Community Management/Marketing access. Organization analytics requires an authenticated member with the necessary administrator role. See [LinkedIn OAuth](https://learn.microsoft.com/en-us/linkedin/shared/authentication/authentication) and [Organization Page Statistics](https://learn.microsoft.com/en-us/linkedin/marketing/community-management/organizations/page-statistics?view=li-lms-2026-01).
+Create a LinkedIn developer app and request Community Management access. Organization analytics requires `rw_organization_admin` and an authenticated member with the necessary administrator role. The adapter pulls Page views/clicks, organic share reach/impressions/interactions/clicks, and the current follower total. Per-post and sponsored detail still come from native exports until those separately reviewed products are enabled. See [LinkedIn OAuth](https://learn.microsoft.com/en-us/linkedin/shared/authentication/authentication), [Organization Page Statistics](https://learn.microsoft.com/en-us/linkedin/marketing/community-management/organizations/page-statistics?view=li-lms-2026-07), [Share Statistics](https://learn.microsoft.com/en-us/linkedin/marketing/community-management/organizations/share-statistics?view=li-lms-2026-07), and [Follower Count](https://learn.microsoft.com/en-us/linkedin/marketing/community-management/organizations/organization-lookup-api?view=li-lms-2026-07).
 
 Callback URL:
 
@@ -75,7 +92,7 @@ The root `render.yaml` now describes a second service named `cno-native-sync`. R
 - Start command: `npm start`
 - Health check: `/health`
 
-Set the variables shown in `.env.example`. Never commit their values.
+Set the variables shown in `.env.example`. Never commit their values. `TOKEN_ENCRYPTION_KEY` may be a base64-encoded 32-byte key (preferred) or another high-entropy generated secret of at least 32 characters; this makes Render-generated secrets safe to use without silently breaking token encryption.
 
 Use persistent PostgreSQL for production. Render's free Postgres expires after 30 days, so it is suitable only for a proof of concept. `DATABASE_URL` can point to any TLS-enabled Postgres provider.
 
@@ -86,7 +103,7 @@ Use persistent PostgreSQL for production. Render's free Postgres expires after 3
 - `CNO_SYNC_SERVICE_URL` — e.g. `https://cno-native-sync.onrender.com`
 - `CNO_SYNC_CRON_SECRET` — exactly the same random value as the service's `SYNC_CRON_SECRET`
 
-The job stores the latest 90 days for every connected client. In the internal console, click **Open latest in CNO Reports** to create a one-use import link. The report consumes the link, loads the normalized rows, and invalidates it.
+The job stores the latest 90 days for every connected client. A provider failure returns a non-success status so the scheduler cannot silently report a successful run. In the internal console, click **Open latest in CNO Reports** to create a one-use import link. The report consumes the link, loads the normalized rows, and invalidates it.
 
 ## Local development
 
@@ -102,8 +119,9 @@ Use a local Postgres database and provider test apps. OAuth providers generally 
 ## Remaining production work
 
 - Complete each provider's app-review process and test with CNO-owned accounts
+- Validate every discovered-profile and ad-account assignment against a deliberately multi-account test authorization before using real client data
 - Confirm metric availability by account type and API version
 - Complete the provider approvals that determine whether refresh tokens and analytics scopes are issued
-- Add Meta/Facebook Page organic metrics and richer LinkedIn post/follower analytics
+- Add Meta/Facebook Page organic metrics and richer LinkedIn per-post/sponsored analytics
 - Add monitoring for revoked permissions, expired tokens, and API-version deprecations
 - Move the encryption key to a managed KMS before handling a large client portfolio

@@ -36,14 +36,14 @@ Windows and macOS machines.
 **Option A — tag a release (recommended).** From the repo:
 
 ```bash
-git tag v1.5.0
-git push origin v1.5.0
+git tag v1.6.0
+git push origin v1.6.0
 ```
 
 In a few minutes a **Release** appears on GitHub with two files attached:
 
-- `CNO Reports Setup 1.5.0.exe` — Windows installer
-- `CNO Reports-1.5.0.dmg` — macOS disk image
+- `CNO Reports Setup 1.6.0.exe` — Windows installer
+- `CNO Reports-1.6.0-arm64.dmg` — macOS Apple Silicon disk image
 
 **Option B — run it on demand.** On GitHub: **Actions → "Build desktop installers" → Run workflow.**
 When it finishes, download the installers from the run's **Artifacts** section.

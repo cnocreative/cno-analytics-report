@@ -1,0 +1,2 @@
+record_type,client,platform,date,paid_cpm_reported,paid_cpc_reported,paid_ctr_reported,paid_frequency_reported,cost_per_paid_lead_reported,cost_per_paid_conversion_reported,roas_reported,data_source,aggregation
+account_monthly,Example Brand,instagram,2026-06-30,30,0.8333,3,2,16.67,33.33,6,meta_ads_native,monthly

@@ -104,6 +104,20 @@ Engagement rate is the headline metric, but it has multiple valid formulas. **We
 | **Cost per paid conversion** | Paid spend ÷ paid-attributed conversions | Paid outcome efficiency |
 | **ROAS** | Paid-attributed revenue ÷ paid spend | Paid-media return when attribution data is available |
 
+## Bundled benchmark references
+
+The report compares only formula-matched rates. Its primary client-facing engagement rate remains engagement ÷ reach; a public reference using followers or impressions appears separately and is labeled with that denominator.
+
+| Platform | Bundled reference | Denominator | Source |
+|---|---:|---|---|
+| Instagram | 0.36% all-industry median | Followers | Rival IQ 2025, summarized by [Sprout Social in 2026](https://sproutsocial.com/insights/instagram-engagement-rate/) |
+| TikTok | 2.60% | Followers | [Socialinsider 2026](https://www.socialinsider.io/social-media-benchmarks) |
+| LinkedIn | 5.20% | Impressions | [Socialinsider 2026 LinkedIn report](https://cdn.socialinsider.io/documents/linkedin_benchmarks_2026.pdf) |
+| Facebook | 0.15% | Followers | [Socialinsider 2026](https://www.socialinsider.io/social-media-benchmarks) |
+| X | 0.12% | Followers | [Socialinsider 2026](https://www.socialinsider.io/social-media-benchmarks) |
+
+When an account row includes a supported Instagram `industry` value, the all-industry median is replaced by the matching Rival IQ reference: higher education 2.10%, sports 1.30%, nonprofits 0.56%, health and beauty 0.44%, media 0.44%, food and beverage 0.40%, financial services 0.26%, or retail 0.16%. These are orientation points, not universal standards; account size, geography, format mix, and direct competitors can produce a more useful peer set.
+
 ## Client-goal and business metrics
 
 These are not always available from a social platform. They can be added to the same upload from a CRM, scheduling system, event platform, ecommerce report, or carefully maintained attribution sheet.
@@ -130,7 +144,9 @@ Per research on client value, we **demote pure vanity metrics** (raw follower co
 - **Reels/video "views" definitions differ by platform** — never sum views across platforms as if equal.
 - **Reporting window:** define the month consistently (calendar month, 1st–last day) for every client, every platform.
 - **Followers timing:** capture follower count on the same day each month (e.g., 1st) for clean growth math.
+- **Follower-growth reconciliation:** when both starting and ending followers are present, `end − start` is authoritative. A conflicting imported net-growth field is flagged for CNO review.
 - **Reach is non-additive:** summing daily or monthly unique reach can count the same person more than once. Use a platform total for the full reporting window when exact uniqueness matters.
 - **Paid attribution is strict:** never calculate CPC, cost per follow/conversion, or ROAS using total website clicks, total follower growth, total conversions, or total revenue. Use paid-specific denominators only.
-- **Reported paid rates are validation/fallback values:** when spend plus paid impressions/clicks/reach/leads/conversions/revenue are present, the report recalculates CPM, CPC, CTR, frequency, CPL, CPA, and ROAS. A platform-reported rate is used only when its raw denominator is absent.
+- **Reported paid rates are the displayed source when supplied:** the report also recalculates CPM, CPC, CTR, frequency, CPL, CPA, and ROAS from paid-only totals as an independent CNO audit. A discrepancy over 5% is flagged for reconciliation. The calculated result fills the report only when the platform-reported rate is absent.
+- **Native paid-export headings:** on a row explicitly identified as paid/Ads Manager data, generic Reach, Impressions, Link Clicks, CTR, Leads, Conversions, and Revenue are routed into the paid metric family. They are not reclassified on an unlabeled combined account row.
 - **Conversion tracking boundary:** cost per conversion and ROAS remain unavailable when the client has no conversion/purchase event or other paid attribution source. A blank is more accurate than an invented zero.

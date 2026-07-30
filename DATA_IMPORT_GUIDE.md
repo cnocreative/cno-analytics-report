@@ -57,7 +57,7 @@ Native platform data is protected account data. A direct connector is possible, 
 
 - Instagram insights require a professional account, a Meta login flow, access tokens, and insights permissions. Meta's official requirements are documented in its [Instagram Insights guide](https://www.postman.com/meta/instagram/documentation/6yqw8pt/instagram-api?entity=request-23987686-26e7999c-fc7e-44c8-8f71-ab2de8d35c32).
 - TikTok uses OAuth, app registration/approval, scopes, access tokens, and refresh tokens; TikTok recommends keeping tokens server-side. See [TikTok OAuth token management](https://developers.tiktok.com/doc/login-kit-manage-user-access-tokens).
-- LinkedIn organization analytics requires an authenticated administrator and authorized API requests. See [LinkedIn Organizations](https://learn.microsoft.com/en-us/linkedin/marketing/community-management/organizations?view=li-lms-2025-10) and [Page Statistics](https://learn.microsoft.com/en-us/linkedin/marketing/community-management/organizations/page-statistics?view=li-lms-2026-01).
+- LinkedIn organization analytics requires an authenticated administrator, the approved `rw_organization_admin` permission, and authorized API requests. See [LinkedIn Organizations](https://learn.microsoft.com/en-us/linkedin/marketing/community-management/organizations?view=li-lms-2026-07) and [Page Statistics](https://learn.microsoft.com/en-us/linkedin/marketing/community-management/organizations/page-statistics?view=li-lms-2026-07).
 
 That means a true one-click live sync needs a small secure backend, OAuth consent screens, token storage, platform app approval, and ongoing maintenance as APIs change. Putting those credentials into this HTML file would expose them to every visitor and is not acceptable.
 
@@ -73,7 +73,7 @@ Where a platform or reporting tool can email or schedule exports, save them into
 
 ### 3. CNO-only secure sync service — foundation now included
 
-The repository now includes this separate internal connection service under `sync-service/`. Each client authorizes CNO once through OAuth; the service encrypts tokens, refreshes connected analytics on a schedule, and writes normalized snapshots to a private database. A ten-minute, single-use import link moves the latest rows into CNO Reports without exposing platform credentials. Provider developer-app approval, a persistent Postgres database, and production testing are still required before live client use.
+The repository now includes this separate internal connection service under `sync-service/`. Each client authorizes CNO once through OAuth; CNO then assigns the exact native profile (and optional matching Meta ad account) to that client before syncing can begin. The service encrypts tokens, refreshes authorization during manual or configured scheduled syncs, and writes normalized snapshots to a private database. A ten-minute, single-use import link moves the latest rows into CNO Reports without exposing platform credentials. Provider developer-app approval, a persistent Postgres database, scheduler secrets, and production testing are still required before live client use.
 
 ### 4. Automation vendors
 
