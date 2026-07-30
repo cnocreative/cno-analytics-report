@@ -2186,7 +2186,25 @@ $("aiForget").addEventListener("click",()=>{localStorage.removeItem("cno_ai_cfg"
 $("syncBtn").addEventListener("click",()=>toggleWorkspacePanel("sync"));
 $("syncClose").addEventListener("click",()=>closeWorkspacePanel("sync"));
 const savedSyncUrl=localStorage.getItem("cno_sync_service_url");if(savedSyncUrl)$("syncServiceUrl").value=savedSyncUrl;
-$("syncOpen").addEventListener("click",()=>{const url=$("syncServiceUrl").value.trim().replace(/\/$/,"");if(!/^https:\/\//i.test(url)&&!/^http:\/\/localhost(?::\d+)?$/i.test(url)){$("syncStatus").textContent="Use an HTTPS service URL (or localhost while developing).";$("syncStatus").className="aistatus show";return;}localStorage.setItem("cno_sync_service_url",url);const client=(CURRENT&&CURRENT.client)||$("clientSel").value||"";window.open(url+"/admin"+(client?"?client_ref="+encodeURIComponent(client):""),"_blank","noopener");});
+$("syncOpen").addEventListener("click",async()=>{
+  const url=$("syncServiceUrl").value.trim().replace(/\/$/,""),status=$("syncStatus");
+  if(!/^https:\/\//i.test(url)&&!/^http:\/\/localhost(?::\d+)?$/i.test(url)){status.textContent="Use an HTTPS service URL (or localhost while developing).";status.className="aistatus show";return;}
+  localStorage.setItem("cno_sync_service_url",url);
+  status.textContent="Checking the private CNO connection service…";status.className="aistatus show";
+  $("syncOpen").disabled=true;
+  let timer;
+  try{
+    const controller=new AbortController();timer=setTimeout(()=>controller.abort(),8000);
+    const response=await fetch(url+"/health",{signal:controller.signal,cache:"no-store"});
+    const health=response.ok?await response.json():null;
+    if(!response.ok||!health?.ok)throw new Error("service unavailable");
+    status.textContent="Connection service is ready. Opening the secure sign-in center…";
+    const client=(CURRENT&&CURRENT.client)||$("clientSel").value||"";
+    window.open(url+"/admin"+(client?"?client_ref="+encodeURIComponent(client):""),"_blank","noopener");
+  }catch{
+    status.innerHTML='Native sync is not live yet. The secure connection service must first be deployed and configured by CNO. <a href="https://github.com/joongsukkie/cno-analytics-report/blob/main/sync-service/README.md" target="_blank" rel="noopener">Open the setup guide</a>.';
+  }finally{clearTimeout(timer);$("syncOpen").disabled=false;}
+});
 $("exportBtn").addEventListener("click",doExport);
 $("shareBtn").addEventListener("click",makeShareLink);
 $("dataBtn").addEventListener("click",()=>toggleWorkspacePanel("data"));

@@ -67,7 +67,7 @@ Open `index.html` in any browser (or visit the deployed site with `#demo` to aut
 
 Templates: `resources/template_accounts.csv`, `resources/template_content.csv`. A larger synthetic test file covering Instagram, TikTok, and LinkedIn is at `resources/native_platform_comprehensive_test.csv`; the compact `resources/native_platform_priority_metrics_test.csv` validates every prioritized organic/paid formula plus YouTube retention. Upload `resources/paid_rate_reconciliation_test.csv` beside it to exercise multi-file loading and the deliberate paid-rate discrepancy warning. `resources/native_ads_manager_generic_test.csv` verifies that ordinary Ads Manager headings such as Reach, Impressions, Link Clicks, and CTR are routed to paid metrics when the row is clearly identified as paid.
 
-The complete v1.6 verification record, including exact fixture results, privacy checks, native-sync boundaries, and the remaining cloud phase, is in [`RELEASE_AUDIT_v1.6.0.md`](RELEASE_AUDIT_v1.6.0.md).
+The complete v1.6.1 verification record, including exact fixture results, privacy checks, native-sync boundaries, and the remaining cloud phase, is in [`RELEASE_AUDIT_v1.6.1.md`](RELEASE_AUDIT_v1.6.1.md).
 
 ## Keeping reports refreshed
 

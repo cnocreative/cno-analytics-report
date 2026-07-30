@@ -1,4 +1,4 @@
-# CNO Reports v1.6.0 release audit
+# CNO Reports v1.6.1 release audit
 
 Audit date: July 30, 2026
 Status: **release candidate passed**. The current report, AI workflow, page system, section organizer, OAuth-refresh foundation, web/PWA package, Windows installer configuration, and Mac Apple Silicon installer configuration are complete. The managed accounts, private client archive, server-side AI, unattended monthly generation, approval, and email-delivery phase remains deliberately documented as future secured backend work.
@@ -28,7 +28,8 @@ Status: **release candidate passed**. The current report, AI workflow, page syst
 | CNO/client separation | Passed for pilot | Staff masthead and tools versus one-client, one-platform, locked client report; staff-only evidence metadata removed from bundles |
 | Unique/password-protected links | Passed for snapshot links | PBKDF2-SHA-256 (150,000 rounds) plus AES-GCM; wrong-password rejection verified |
 | Expandable staff panels | Passed | Clear `+`/`−`, active color, `Close …` labels, one open panel, auto-scroll, close controls, Escape |
-| Downloadable app | Passed in configuration | Installable PWA/offline shell, Windows NSIS target, and Mac ARM64 DMG target |
+| Downloadable app | Passed | Installable PWA/offline shell plus successfully built Windows NSIS and Mac ARM64 DMG release assets |
+| Native-service launch guard | Passed | The app checks `/health` before opening the private connection center and gives CNO an explicit setup message when the backend is not deployed |
 
 ## Formula verification
 
@@ -115,6 +116,8 @@ Verified behavior:
 - token encryption accepts an exact base64 32-byte key or derives a 32-byte key from a high-entropy 32+ character secret, and rejects short secrets.
 
 Provider permissions, app review, revocation, API changes, account eligibility, and refresh-token issuance can still require reconnection. Native Facebook organic detail, some TikTok watch/completion analytics, LinkedIn sponsored/per-post detail, and other provider-restricted fields continue to rely on native CSV exports until the relevant approved API product is available.
+
+The configured public native-sync hostname returned `404 Not Found` during the release audit, which means the second Render service has not yet been provisioned from `render.yaml`. The report now detects that condition before opening a new tab and links CNO to the deployment guide. The OAuth service foundation is verified locally, but live native connections remain unavailable until CNO supplies the provider credentials, database, encryption secret, and internal admin secret described in [`sync-service/README.md`](sync-service/README.md).
 
 ## Honest boundary before broad rollout
 
