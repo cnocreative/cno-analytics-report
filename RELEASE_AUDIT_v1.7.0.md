@@ -1,15 +1,36 @@
-# CNO Reports v1.6.1 release audit
+# CNO Reports v1.7.0 release audit
 
 Audit date: July 30, 2026
 Status: **release candidate passed**. The current report, AI workflow, page system, section organizer, OAuth-refresh foundation, web/PWA package, Windows installer configuration, and Mac Apple Silicon installer configuration are complete. The managed accounts, private client archive, server-side AI, unattended monthly generation, approval, and email-delivery phase remains deliberately documented as future secured backend work.
+
+## v1.7 narrative, sharing, and ownership verification
+
+| Change | Verification |
+|---|---|
+| The opening is a real letter | The opening overlay and Summary page both begin with `Dear [client],`, use connected paragraphs, and end with `With care, CNO Creative Co` |
+| Legacy copy is repaired | A saved narrative beginning with `Hello` was rejected at display time and replaced with the complete evidence-based letter fallback |
+| Wider editorial composition | The overlay letter is 920px at desktop sizes, the Summary letter uses the report's full readable width, and both remain responsive |
+| More narrative AI | The prompt now asks for a 180–280 word four-paragraph letter covering the overall story, encouraging signal, concern/hypothesis, and next move, with no more than four numbers |
+| Compact portable payloads | Client bundles now retain only normalized fields required by the report instead of copying every original export column |
+| Reliable short links | Authenticated CNO staff can store an encrypted report payload in the private service and copy a short `?report=` URL |
+| Cross-device loading | A saved short-link payload was opened in a clean browser tab as a one-client, one-platform, view-only report with no upload |
+| Password protection | A server-backed report whose payload was encrypted in the browser opened with the correct password and contained no undefined output |
+| Damaged-link handling | A deliberately truncated portable URL displayed `Report link incomplete` instead of silently falling through to the normal empty website |
+| Revocation and expiry | Saved links expire after one year and can be revoked from the private CNO console |
+| Native-sync dead page | The report checks `/health`; an undeployed service displays a clear CNO setup message instead of opening the black `Not Found` page |
+| CNO account migration | GitHub ownership, Render Blueprint, custom domains, callbacks, secrets, and handoff checks are documented in `MIGRATE_TO_CNO_ACCOUNTS.md` |
+| Client-and-platform targets | CNO can set organic, business, campaign, and paid targets separately for each client/platform; CNO values override optional CSV targets and can disable imported targets |
+| No invented AI goals | Only non-null `approved_targets` are sent to AI, with an explicit prohibition on creating, inferring, rounding, or recommending another number |
+| Goal direction | Growth/volume/return targets are evaluated as at-or-above; CPM, CPC, CPL, and CPA limits are evaluated as at-or-below |
+| Browser-only connections | The staff flow opens a branded browser window and never asks staff to run commands, copy tokens, or paste platform API keys |
 
 ## Requested experience
 
 | Requirement | Status | Verification |
 |---|---:|---|
-| Concise `Dear [client]` letter | Passed | Required structured AI output, 180-word ceiling, simple good/bad/next-move prompt, editable letter, deterministic fallback |
+| Narrative `Dear [client]` letter | Passed | Required structured AI output, 180–280 words, four connected paragraphs, editable letter, deterministic fallback |
 | AI explanations throughout the report | Passed | Thirteen short section-note fields plus headline, findings, recommendation, and paid takeaway |
-| Lower-cost default | Passed | `gpt-5-mini`, low reasoning, low verbosity, strict JSON schema, `store: false`, 2,000-token output ceiling |
+| Lower-cost default | Passed | `gpt-5-mini`, low reasoning, low verbosity, strict JSON schema, `store: false`, 2,600-token output ceiling |
 | AI required before sharing or printing | Passed | Share, report Print/PDF, keyboard print, Electron menu print, and browser `beforeprint` gate |
 | Remember API key on a trusted CNO device | Passed with pilot boundary | Local or session storage choice; key is excluded from client bundles. Production design moves it server-side |
 | Four report pages | Passed | Summary, Performance, Content, Full data |
@@ -30,6 +51,7 @@ Status: **release candidate passed**. The current report, AI workflow, page syst
 | Expandable staff panels | Passed | Clear `+`/`−`, active color, `Close …` labels, one open panel, auto-scroll, close controls, Escape |
 | Downloadable app | Passed | Installable PWA/offline shell plus successfully built Windows NSIS and Mac ARM64 DMG release assets |
 | Native-service launch guard | Passed | The app checks `/health` before opening the private connection center and gives CNO an explicit setup message when the backend is not deployed |
+| Client-controlled numeric targets | Passed | Per-client target editor, imported-target switch, override priority, target source labels, and AI invalidation after target changes |
 
 ## Formula verification
 
@@ -117,7 +139,7 @@ Verified behavior:
 
 Provider permissions, app review, revocation, API changes, account eligibility, and refresh-token issuance can still require reconnection. Native Facebook organic detail, some TikTok watch/completion analytics, LinkedIn sponsored/per-post detail, and other provider-restricted fields continue to rely on native CSV exports until the relevant approved API product is available.
 
-The configured public native-sync hostname returned `404 Not Found` during the release audit, which means the second Render service has not yet been provisioned from `render.yaml`. The report now detects that condition before opening a new tab and links CNO to the deployment guide. The OAuth service foundation is verified locally, but live native connections remain unavailable until CNO supplies the provider credentials, database, encryption secret, and internal admin secret described in [`sync-service/README.md`](sync-service/README.md).
+The configured public native-sync hostname returned `404 Not Found` during the release audit, which means the second Render service has not yet been provisioned from `render.yaml`. The report now detects that condition before opening a new tab and links CNO to the deployment guide. The OAuth and saved-report service foundation is verified locally, but live native connections and reliable short links remain unavailable until CNO deploys the service and supplies the database, encryption secret, internal admin secret, and relevant provider credentials described in [`sync-service/README.md`](sync-service/README.md).
 
 ## Honest boundary before broad rollout
 

@@ -16,7 +16,20 @@ This is the private server-side companion to the static CNO reporting dashboard.
 - Normalization into the same account/post row structure used by CNO Reports
 - Stored sync snapshots and a protected daily sync endpoint
 - Ten-minute, single-use import links that transfer normalized rows into CNO Reports without transferring credentials
+- Short, cross-device client report links stored as encrypted server payloads, with optional client-side password protection, one-year expiry, and staff revocation
 - No provider tokens in logs, URLs returned to the report, client share links, or browser storage
+
+## Reliable client report links
+
+The static report still understands older portable `#data=` links, but those URLs can become long enough for email, SMS, and chat tools to truncate them. The preferred flow now stores the compressed report payload in this private service and copies a short URL containing only a random report ID.
+
+1. CNO signs into `/admin` once on the trusted staff device.
+2. CNO creates the report and clicks **Share link**.
+3. The reporting app saves the already client-scoped payload through the authenticated staff session.
+4. The client opens a short `?report=` URL on any device.
+5. CNO can revoke that link under **Manage client report links**.
+
+The stored payload is encrypted at rest with `TOKEN_ENCRYPTION_KEY`. If CNO adds a report password, the payload is also encrypted in the browser before upload, and the password is never sent to this service. Source platform credentials and the CNO OpenAI key are never included.
 
 Provider APIs change frequently and require app review. Each adapter deliberately returns partial useful data when an optional metric or permission is unavailable instead of failing the entire client sync.
 
@@ -24,11 +37,13 @@ Provider APIs change frequently and require app review. Each adapter deliberatel
 
 The safe reporting equivalent of a Rella Social Space is one CNO client workspace:
 
-1. CNO chooses the client.
-2. CNO clicks the provider and the client signs in on Meta, TikTok, or LinkedIn itself.
+1. CNO chooses the client in CNO Reports and clicks **Connect selected client**.
+2. A secure browser window opens. CNO chooses the provider and the client signs in on Meta, TikTok, or LinkedIn itself.
 3. The provider shows its own consent screen.
 4. Back in the private CNO console, CNO assigns the exact native account that belongs to that client. A Meta connection can assign one Instagram profile and one matching ad account.
 5. The encrypted authorization stays on the server and scheduled refreshes continue until the provider revokes it, it expires without refresh access, or an app permission changes.
+
+No terminal, command, copied token, or platform API key is part of this staff workflow. The service must be deployed once by a CNO account owner through the GitHub, Render, and provider websites; after that, connection and reconnection happen through browser buttons only.
 
 An authorization that returns several profiles is never treated as permission to merge them. Syncing remains blocked until the exact account assignment is saved. This is the critical tenant boundary that prevents one client's metrics from entering another client's report.
 
@@ -85,7 +100,7 @@ https://YOUR-SYNC-SERVICE/oauth/linkedin/callback
 
 ## Deployment
 
-The root `render.yaml` now describes a second service named `cno-native-sync`. Resync the Render Blueprint or create a Node web service with:
+The root `render.yaml` describes a second service named `cno-native-sync`. The preferred no-command setup is to sign into Render, choose **New → Blueprint**, connect the CNO-owned GitHub repository, and approve the services detected from `render.yaml`. Render reads these settings automatically:
 
 - Root directory: `sync-service`
 - Build command: `npm install`
@@ -105,7 +120,7 @@ Use persistent PostgreSQL for production. Render's free Postgres expires after 3
 
 The job stores the latest 90 days for every connected client. A provider failure returns a non-success status so the scheduler cannot silently report a successful run. In the internal console, click **Open latest in CNO Reports** to create a one-use import link. The report consumes the link, loads the normalized rows, and invalidates it.
 
-## Local development
+## Local development (developer-only, not part of CNO staff setup)
 
 ```bash
 cd sync-service

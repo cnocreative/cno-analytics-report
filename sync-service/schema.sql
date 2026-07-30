@@ -48,3 +48,16 @@ CREATE TABLE IF NOT EXISTS admin_sessions (
   expires_at TIMESTAMPTZ NOT NULL,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
+
+CREATE TABLE IF NOT EXISTS report_shares (
+  id_hash TEXT PRIMARY KEY,
+  client_ref TEXT NOT NULL,
+  payload_cipher TEXT NOT NULL,
+  password_encrypted BOOLEAN NOT NULL DEFAULT FALSE,
+  expires_at TIMESTAMPTZ NOT NULL,
+  revoked_at TIMESTAMPTZ,
+  last_opened_at TIMESTAMPTZ,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS report_shares_client_created_idx ON report_shares(client_ref, created_at DESC);

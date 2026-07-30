@@ -10,7 +10,7 @@ export async function initDb() {
   if (!process.env.DATABASE_URL) throw new Error("DATABASE_URL is required");
   const sql = fs.readFileSync(new URL("../schema.sql", import.meta.url), "utf8");
   await pool.query(sql);
-  await pool.query("DELETE FROM oauth_states WHERE expires_at < NOW(); DELETE FROM import_tokens WHERE expires_at < NOW(); DELETE FROM admin_sessions WHERE expires_at < NOW();");
+  await pool.query("DELETE FROM oauth_states WHERE expires_at < NOW(); DELETE FROM import_tokens WHERE expires_at < NOW(); DELETE FROM admin_sessions WHERE expires_at < NOW(); DELETE FROM report_shares WHERE expires_at < NOW();");
 }
 
 export const q = (text, params = []) => pool.query(text, params);

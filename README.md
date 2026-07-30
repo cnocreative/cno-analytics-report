@@ -27,12 +27,13 @@ Most social tools show isolated platform numbers. This one turns them into a **v
 - **Paid efficiency** — CPM, CPC, CTR, frequency, cost per lead/conversion, and ROAS with paid-only denominators and tracking-aware availability
 - **Anomaly detection** — spikes/dips flagged against a rolling 3-month baseline (real signal vs. noise)
 - **Format intelligence** — the requested average engagement rate selects the leading format, with median engagement rate beside it so one breakout post cannot silently distort the interpretation
+- **CNO-approved client targets** — Customize includes a client-and-platform target library for organic, business, campaign, and paid metrics. Blank means no goal; CNO values override imported targets, and AI is prohibited from inventing a number.
 - **Effort vs. return per platform** — posts published against what they actually earned; flags dead channels
 - **CNO-only data audit** — checks source coverage, row grain, non-additive reach, overlapping exports, missing KPIs, and account-total versus post-detail reconciliation before a report is published
 - **No false blending** — when several platforms are checked, headline KPIs and trend charts are shown in separate platform panels instead of one cross-platform engagement rate
 
 **Story-first and yours to shape.**
-- **Page 1 is the client letter and essentials**: a concise “Dear [client]” explanation of the good, the bad, and the next move, plus goals, paid vs. organic, outcomes, and only the most important KPIs.
+- **Page 1 begins as a real client letter**: “Dear [client],” followed by a connected narrative about what changed, what it means, what CNO is watching, and what happens next, ending with “With care, CNO Creative Co.” Goals, paid vs. organic, outcomes, and the most important KPIs follow the letter.
 - Deeper pages hold performance trends, audience/profile behavior, creative detail, benchmarks, and the full data for clients who want to investigate.
 - **Customize** controls the report goal, featured KPIs, client display name, section visibility, page assignment, and section order — remembered separately for each client across visits.
 - **Every summary, finding, and recommendation is editable inline** and prints as edited
@@ -46,6 +47,7 @@ Most social tools show isolated platform numbers. This one turns them into a **v
 
 **Private, view-only sharing.**
 - A share link contains **only one client's selected platform data** — never another client or an unselected platform — and opens at the **AI-approved reporting period** as a locked, view-only report: no uploading, period/client switching, editing, or staff export. Charts, page turning, and approved historical comparisons stay interactive. This holds even without a password, so one client can never reach another's results.
+- When the private service is deployed, reports use short, cross-device links backed by encrypted server storage. CNO can revoke them from the staff console. Optional report passwords add browser-side encryption, so the password is never sent to the service. Older data-in-the-URL links remain readable, but the app warns when one is too long for reliable email or chat delivery.
 
 **Clear CNO and client experiences.**
 - The working application is labeled **CNO workspace · staff tools** and contains import, sync, audit, AI, editing, and publishing controls.
@@ -67,11 +69,15 @@ Open `index.html` in any browser (or visit the deployed site with `#demo` to aut
 
 Templates: `resources/template_accounts.csv`, `resources/template_content.csv`. A larger synthetic test file covering Instagram, TikTok, and LinkedIn is at `resources/native_platform_comprehensive_test.csv`; the compact `resources/native_platform_priority_metrics_test.csv` validates every prioritized organic/paid formula plus YouTube retention. Upload `resources/paid_rate_reconciliation_test.csv` beside it to exercise multi-file loading and the deliberate paid-rate discrepancy warning. `resources/native_ads_manager_generic_test.csv` verifies that ordinary Ads Manager headings such as Reach, Impressions, Link Clicks, and CTR are routed to paid metrics when the row is clearly identified as paid.
 
-The complete v1.6.1 verification record, including exact fixture results, privacy checks, native-sync boundaries, and the remaining cloud phase, is in [`RELEASE_AUDIT_v1.6.1.md`](RELEASE_AUDIT_v1.6.1.md).
+The account-transfer runbook is in [`MIGRATE_TO_CNO_ACCOUNTS.md`](MIGRATE_TO_CNO_ACCOUNTS.md). It covers GitHub ownership, the CNO Render Blueprint, custom domains, OAuth callbacks, secrets, and final handoff checks.
+
+The complete v1.7 verification record is in [`RELEASE_AUDIT_v1.7.0.md`](RELEASE_AUDIT_v1.7.0.md).
 
 ## Keeping reports refreshed
 
-No backend is required for manual CSV refreshes or deterministic analytics. For each reporting cycle, export the available date range from Rella and/or the native platforms, add any offline outcomes from the client’s booking/CRM/sales records, then upload the whole folder through **Import data**. The report audits and merges the files, separates platforms, removes exact duplicate rows, and recalculates the selected period. Generate and review the required AI letter, then create a new password-protected share link.
+No backend is required for manual CSV refreshes or deterministic analytics. For each reporting cycle, export the available date range from Rella and/or the native platforms, add any offline outcomes from the client’s booking/CRM/sales records, then upload the whole folder through **Import data**. The report audits and merges the files, separates platforms, removes exact duplicate rows, and recalculates the selected period. Confirm that the selected client’s approved targets are correct under **Customize**, generate and review the required AI letter, then create a new password-protected share link.
+
+The primary engagement-rate standard is always `(likes + comments + shares + saves) ÷ reach × 100`. If an export omits one of those components, the report uses the platform/Rella engagement total divided by reach when available and identifies that source in the CNO data audit.
 
 For the exact recommended folder structure, refresh checklist, and the tradeoffs of a future automatic API sync, see [`DATA_IMPORT_GUIDE.md`](DATA_IMPORT_GUIDE.md).
 
@@ -102,6 +108,7 @@ Static site, no build. On [Render](https://render.com): connect the repo, choose
 | `DATA_IMPORT_GUIDE.md` | Monthly import workflow and realistic native-platform connection options |
 | `DATA_ACCURACY_AND_ACCESS.md` | Metric-governance rules and the CNO staff/client access roadmap |
 | `CLOUD_AUTOMATION_BLUEPRINT.md` | Managed accounts, report archive, monthly delivery, and production security plan |
+| `MIGRATE_TO_CNO_ACCOUNTS.md` | Transfer checklist for CNO-owned GitHub, Render, domains, secrets, and callbacks |
 | `sync-service/` | Private OAuth, encrypted token storage, exact account assignment, scheduler-ready native sync, and one-use report imports |
 
 ## Brand

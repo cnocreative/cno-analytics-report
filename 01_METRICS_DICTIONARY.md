@@ -28,6 +28,8 @@ This is the single reference for what each number means. Consistent definitions 
 
 Engagement rate is the headline metric, but it has multiple valid formulas. **We standardize on ER by Reach as the primary**, because it reflects how the content resonated with the people who actually saw it (followers *and* non-followers), and it's the most stable for month-to-month trend comparison.
 
+The formula is standardized, but there is no single universal “good engagement rate” target. CNO sets an approved target separately for each client and platform using that account's own baseline, content mix, growth stage, and business priorities. Public benchmarks remain secondary, formula-matched context.
+
 1. **ER by Reach (PRIMARY)**
    `(Total Engagements ÷ Reach) × 100`
    → Best for organic trend tracking. Use this as the client-facing headline.

@@ -13,15 +13,16 @@ const publicBase = String(process.env.PUBLIC_BASE_URL || (process.env.RENDER_EXT
 app.set("trust proxy", 1);
 app.use(helmet({ contentSecurityPolicy: { directives: { defaultSrc: ["'self'"], styleSrc: ["'self'", "'unsafe-inline'"], imgSrc: ["'self'", "data:"], formAction: ["'self'"], frameAncestors: ["'none'"] } } }));
 app.use(express.urlencoded({ extended: false, limit: "32kb" }));
-app.use(express.json({ limit: "64kb" }));
+app.use(express.json({ limit: "2mb" }));
 
 app.use((req, res, next) => {
   const origin = req.headers.origin;
   if (origin === reportOrigin) {
     res.setHeader("Access-Control-Allow-Origin", origin);
     res.setHeader("Vary", "Origin");
-    res.setHeader("Access-Control-Allow-Methods", "GET,OPTIONS");
+    res.setHeader("Access-Control-Allow-Methods", "GET,POST,OPTIONS");
     res.setHeader("Access-Control-Allow-Headers", "content-type");
+    res.setHeader("Access-Control-Allow-Credentials", "true");
   }
   if (req.method === "OPTIONS") return res.sendStatus(origin === reportOrigin ? 204 : 403);
   next();
@@ -41,7 +42,8 @@ function layout(title, body) {
 async function createSession(res) {
   const token = randomToken();
   await q("INSERT INTO admin_sessions(session_hash,expires_at) VALUES($1,NOW()+INTERVAL '30 days')", [hash(token)]);
-  res.cookie("cno_sync_session", token, { httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "lax", maxAge: 30 * 24 * 3600 * 1000, path: "/" });
+  const production = process.env.NODE_ENV === "production";
+  res.cookie("cno_sync_session", token, { httpOnly: true, secure: production, sameSite: production ? "none" : "lax", maxAge: 30 * 24 * 3600 * 1000, path: "/" });
 }
 
 async function isAdmin(req) {
@@ -56,8 +58,45 @@ async function requireAdmin(req, res, next) {
   res.status(401).send(layout("Sign in", `<div class="card" style="max-width:520px;margin:50px auto"><h1>Private CNO access</h1><p>Enter the internal access token. Platform passwords and OAuth tokens are never shown here.</p><form method="post" action="/admin/login"><label>Internal access token</label><input type="password" name="token" autocomplete="current-password" required><p><button class="solid" type="submit">Sign in</button></p></form></div>`));
 }
 
-app.get("/health", (_req, res) => res.json({ ok: true, service: "cno-native-sync", version: "0.5.0" }));
+app.get("/health", (_req, res) => res.json({ ok: true, service: "cno-native-sync", version: "0.6.0" }));
 app.get("/", (_req, res) => res.redirect("/admin"));
+
+app.post("/v1/reports", requireAdmin, async (req, res) => {
+  const payload = String(req.body.payload || "");
+  const clientRef = String(req.body.client_ref || "Client").trim().slice(0, 120) || "Client";
+  if (payload.length < 40 || payload.length > 1_500_000 || !/^[A-Za-z0-9_.-]+$/.test(payload)) {
+    return res.status(400).json({ error: "The report payload is invalid or too large" });
+  }
+  const id = randomToken(18);
+  await q("INSERT INTO report_shares(id_hash,client_ref,payload_cipher,password_encrypted,expires_at) VALUES($1,$2,$3,$4,NOW()+INTERVAL '365 days')",
+    [hash(id), clientRef, encrypt(payload), !!req.body.encrypted]);
+  res.setHeader("Cache-Control", "no-store");
+  res.status(201).json({ id, expires_in_days: 365 });
+});
+
+app.get("/v1/reports/:id", async (req, res) => {
+  const id = String(req.params.id || "");
+  if (!/^[A-Za-z0-9_-]{20,80}$/.test(id)) return res.status(404).json({ error: "Report not found" });
+  const found = await q("SELECT payload_cipher,password_encrypted FROM report_shares WHERE id_hash=$1 AND revoked_at IS NULL AND expires_at>NOW()", [hash(id)]);
+  if (!found.rowCount) return res.status(404).json({ error: "This report link expired, was revoked, or does not exist" });
+  await q("UPDATE report_shares SET last_opened_at=NOW() WHERE id_hash=$1", [hash(id)]);
+  res.setHeader("Cache-Control", "no-store");
+  res.setHeader("Cross-Origin-Resource-Policy", "cross-origin");
+  res.json({ payload: decrypt(found.rows[0].payload_cipher), encrypted: !!found.rows[0].password_encrypted });
+});
+
+app.get("/admin/reports", requireAdmin, async (_req, res) => {
+  const shares = (await q("SELECT id_hash,client_ref,password_encrypted,created_at,expires_at,last_opened_at,revoked_at FROM report_shares ORDER BY created_at DESC LIMIT 250")).rows;
+  const rows = shares.map(s => `<tr><td>${esc(s.client_ref)}</td><td>${esc(day(s.created_at))}</td><td>${s.password_encrypted ? "Password protected" : "View only"}</td><td>${s.last_opened_at ? esc(day(s.last_opened_at)) : "Not opened"}</td><td>${s.revoked_at ? "Revoked" : esc(day(s.expires_at))}</td><td>${s.revoked_at ? "" : `<form method="post" action="/admin/reports/${esc(s.id_hash)}/revoke"><button type="submit">Revoke</button></form>`}</td></tr>`).join("");
+  res.send(layout("Client report links", `<h1>Saved client links</h1><p>Every link is random, client-specific, revocable, and automatically expires. Revoking a link does not delete the underlying source CSVs.</p><div class="card">${shares.length ? `<table><thead><tr><th>Client</th><th>Created</th><th>Protection</th><th>Last opened</th><th>Expires</th><th></th></tr></thead><tbody>${rows}</tbody></table>` : "<p>No saved report links yet.</p>"}</div><a class="btn" href="/admin">Back to connections</a>`));
+});
+
+app.post("/admin/reports/:hash/revoke", requireAdmin, async (req, res) => {
+  if (!/^[a-f0-9]{64}$/.test(req.params.hash || "")) return res.sendStatus(404);
+  await q("UPDATE report_shares SET revoked_at=NOW() WHERE id_hash=$1", [req.params.hash]);
+  res.redirect("/admin/reports");
+});
+
 app.get("/admin", requireAdmin, async (req, res) => {
   const requestedClient = String(req.query.client_ref || "").trim().slice(0, 120);
   const connections = (await q("SELECT id,client_ref,provider,metadata,last_synced_at,last_error,token_expires_at FROM connections ORDER BY client_ref,provider")).rows;
@@ -82,7 +121,7 @@ app.get("/admin", requireAdmin, async (req, res) => {
   <div class="grid">${providerNames.map(p => `<div class="card provider"><div class="k">${esc(p)}</div><h2>Connect ${esc(p[0].toUpperCase() + p.slice(1))}</h2><form method="get" action="/admin/connect/${p}">${requestedClient ? `<input type="hidden" name="client_ref" value="${esc(requestedClient)}">` : `<label>Client reference</label><input name="client_ref" placeholder="Client display name" required>`}<p><button type="submit">Continue to ${esc(p)}</button></p></form></div>`).join("")}</div>
   <div><h2>Connected accounts</h2><p class="quiet">Each client is an isolated workspace. A connection cannot refresh until its exact native profile is assigned below.</p>${connections.length ? connectionCards : `<div class="card"><p>No platforms connected yet.</p></div>`}</div>
   <div class="card"><h2>Refresh and open the report</h2><p>Use these controls for an immediate refresh or to open the latest stored data. The protected cron endpoint is ready for the secured monthly scheduler in the next cloud phase.</p><div class="row"><form method="post" action="/admin/sync"><label>Client</label><select name="client_ref" required>${clientOptions}</select><label>From</label><input type="date" name="from" value="${daysAgo(90)}"><label>To</label><input type="date" name="to" value="${day(Date.now())}"><p><button class="solid" type="submit">Sync now</button></p></form><form method="post" action="/admin/import-link"><label>Client</label><select name="client_ref" required>${clientOptions}</select><p><button type="submit">Open latest in CNO Reports</button></p></form></div></div>
-  <p><a class="btn" href="/admin/logout">Sign out</a></p>`));
+  <p><a class="btn" href="/admin/reports">Manage client report links</a> <a class="btn" href="/admin/logout">Sign out</a></p>`));
 });
 
 app.post("/admin/login", async (req, res) => {

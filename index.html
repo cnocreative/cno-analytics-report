@@ -11,6 +11,10 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="CNO Reports">
+<!-- Change these three values when CNO moves the app to its permanent GitHub/Render accounts. -->
+<meta name="cno-report-base" content="https://cno-analytics-report.onrender.com/">
+<meta name="cno-sync-base" content="https://cno-native-sync.onrender.com">
+<meta name="cno-repository" content="https://github.com/joongsukkie/cno-analytics-report">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
 <link rel="stylesheet" href="fonts.css">
@@ -81,10 +85,14 @@
   .panel .col > .lab{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--sage-deep);font-weight:500;margin-bottom:7px}
   .panel .chk{display:flex;align-items:center;gap:7px;font-size:13px;margin-bottom:5px;cursor:pointer}
   .panel .chk input{accent-color:var(--burnt)}
-  .panel select,.panel input[type=text]{font-family:var(--sans);font-size:13px;padding:6px 8px;border-radius:7px;border:1px solid var(--sand);background:#fff;color:var(--ink);width:100%}
+  .panel select,.panel input[type=text],.panel input[type=number]{font-family:var(--sans);font-size:13px;padding:6px 8px;border-radius:7px;border:1px solid var(--sand);background:#fff;color:var(--ink);width:100%}
   .section-order-list{display:grid;gap:6px;max-height:390px;overflow:auto;padding-right:5px;min-width:min(520px,84vw)}
   .section-order-row{display:grid;grid-template-columns:minmax(180px,1fr) 118px 31px 31px;gap:6px;align-items:center;padding:7px 8px;border:1px solid var(--sand);background:#fff}
   .section-order-row .chk{margin:0;min-width:0}.section-order-row select{padding:5px 6px;font-size:11px}.movebtn{width:31px;height:31px;padding:0;border:1px solid var(--sand);background:var(--cream);color:var(--burnt);cursor:pointer;border-radius:6px}.movebtn:disabled{opacity:.3;cursor:default}
+  .target-editor{margin-top:22px;padding-top:20px;border-top:1px solid var(--sand)}
+  .target-head{display:flex;align-items:flex-start;justify-content:space-between;gap:20px;margin-bottom:12px}.target-head h4{font-family:var(--serif);font-size:22px;font-weight:400;margin:0}.target-head p{font-size:11.5px;color:var(--ink-soft);max-width:76ch;margin:4px 0 0}.target-client{font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--burnt);border:1px solid var(--terra-soft);background:#fff;padding:5px 9px;white-space:nowrap}
+  .target-policy{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(260px,.65fr);gap:12px;margin-bottom:12px}.target-standard{padding:12px 14px;border:1px solid var(--sand);background:#fff;font-size:11px;line-height:1.55;color:var(--ink-soft)}.target-standard b{color:var(--ink);font-weight:600}.target-standard strong{display:block;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--burnt);margin-bottom:3px}
+  .target-groups{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.target-group{border:1px solid var(--sand);background:#fff}.target-group summary{cursor:pointer;padding:10px 12px;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--sage-deep);font-weight:600;list-style:none}.target-group summary::-webkit-details-marker{display:none}.target-group summary::after{content:"+";float:right;color:var(--burnt)}.target-group[open] summary::after{content:"−"}.target-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;padding:0 12px 12px}.target-field{display:grid;grid-template-columns:minmax(0,1fr) 125px;gap:8px;align-items:center}.target-field label{font-size:11px;line-height:1.25}.target-field label span{display:block;font-size:8.5px;color:var(--ink-soft);margin-top:2px}.target-input-wrap{position:relative}.target-input-wrap input{padding-right:33px!important}.target-unit{position:absolute;right:9px;top:50%;transform:translateY(-50%);font-size:9px;color:var(--ink-soft);pointer-events:none}.target-unit.prefix{left:9px;right:auto}.target-input-wrap:has(.target-unit.prefix) input{padding-left:25px!important;padding-right:8px!important}
   /* branded dialogs replace browser prompt/alert/confirm so sharing works in web + desktop shells */
   .app-dialog{position:fixed;inset:0;z-index:1000;background:rgba(42,31,18,.38);display:grid;place-items:center;padding:20px;backdrop-filter:blur(4px)}
   .app-dialog-card{width:min(520px,94vw);background:var(--cream);border-top:3px solid var(--burnt);box-shadow:0 24px 70px rgba(42,31,18,.25);padding:30px 32px;position:relative}
@@ -148,12 +156,17 @@
   .sec-label{font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--burnt);font-weight:500;margin-bottom:7px}
   .sec-sub{font-size:12.5px;color:var(--ink-soft);margin-bottom:20px;max-width:70ch}
   /* story */
-  .letterlead{font-family:var(--serif);font-size:20px;line-height:1.62;color:var(--ink);max-width:60ch;margin:6px 0 22px}
+  .letterleaf{position:relative;padding:8px 0 2px}
+  .letterleaf::before{content:"";position:absolute;top:-8px;right:0;width:72px;height:72px;background:url("cno-seal.png") center/contain no-repeat;opacity:.11;pointer-events:none}
+  .letter-kicker{display:flex;align-items:center;justify-content:space-between;gap:20px;margin-bottom:24px;padding-bottom:12px;border-bottom:1px solid rgba(153,97,55,.22)}
+  .letter-kicker .date{font-family:var(--serif);font-style:italic;font-size:15px;color:var(--ink-soft)}
+  .letterlead{font-family:var(--serif);font-size:clamp(20px,2vw,25px);line-height:1.72;color:var(--ink);width:100%;max-width:none;margin:0 0 28px;letter-spacing:-.006em}
   .letterlead b{font-weight:600}
-  .letterlead .ed{display:block}.ai-section-note{margin:12px 0 18px;padding:12px 15px;border-left:3px solid var(--terra);background:linear-gradient(90deg,rgba(219,155,127,.09),rgba(255,255,255,0));font-family:var(--serif);font-size:16px;line-height:1.55;color:var(--ink)}.ai-required-banner{padding:13px 18px;background:#fff4ed;border-top:1px solid var(--terra-soft);border-bottom:1px solid var(--terra-soft);display:flex;align-items:center;justify-content:space-between;gap:14px;font-size:12px;color:var(--ink)}.ai-required-banner b{font-family:var(--serif);font-size:17px;font-weight:500}.ai-required-banner .btn{flex:none}
-  .headline{font-family:var(--serif);font-size:29px;line-height:1.34;font-weight:400;margin:4px 0 24px;letter-spacing:-.012em;max-width:34ch}
+  .letterlead .ed{display:block}.ai-section-note{margin:12px 0 22px;padding:14px 17px;border-left:3px solid var(--terra);background:linear-gradient(90deg,rgba(219,155,127,.09),rgba(255,255,255,0));font-family:var(--serif);font-size:17px;line-height:1.6;color:var(--ink)}.ai-section-note::before{content:"A note from CNO";display:block;margin-bottom:4px;font-family:var(--sans);font-size:8.5px;font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:var(--burnt)}.ai-required-banner{padding:13px 18px;background:#fff4ed;border-top:1px solid var(--terra-soft);border-bottom:1px solid var(--terra-soft);display:flex;align-items:center;justify-content:space-between;gap:14px;font-size:12px;color:var(--ink)}.ai-required-banner b{font-family:var(--serif);font-size:17px;font-weight:500}.ai-required-banner .btn{flex:none}
+  .headline{font-family:var(--serif);font-size:29px;line-height:1.4;font-weight:400;margin:4px 0 28px;letter-spacing:-.012em;max-width:none}
   .aibadge{display:inline-block;margin-left:10px;font-family:var(--sans);font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--burnt);border:1px solid var(--terra-soft);border-radius:20px;padding:2px 9px;vertical-align:middle;font-weight:600}
-  .storycols{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+  .letter-observations{display:grid;grid-template-columns:minmax(220px,.8fr) minmax(0,1.5fr);gap:38px;margin-top:24px;padding-top:28px;border-top:1px solid var(--sand)}
+  .storycols{display:grid;grid-template-columns:1fr 1fr;gap:32px}
   .storycol h4{display:flex;align-items:center;gap:8px;margin:0 0 4px;font-size:12px;letter-spacing:.08em;text-transform:uppercase;font-weight:500}
   .storycol h4 .ic{width:22px;height:22px;border-radius:6px;display:inline-flex;align-items:center;justify-content:center;font-size:13px}
   .storycol .h4sub{font-size:11px;color:var(--ink-soft);margin:0 0 12px 30px}
@@ -161,7 +174,7 @@
   .ins.win{border-left-color:var(--sage)} .ins.watch{border-left-color:var(--terra)}
   .ins .t{font-weight:500;font-size:14.5px;margin-bottom:2px}
   .ins .d{font-size:13.5px;color:var(--ink-soft);line-height:1.55}
-  .bestmove{margin-top:20px;background:var(--sand-2);border:1px solid var(--sand);border-radius:12px;padding:16px 18px}
+  .bestmove{margin-top:28px;background:transparent;border:0;border-top:1px solid var(--sand);border-radius:0;padding:25px 0 0}
   .bestmove .lab{font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--burnt);font-weight:500;margin-bottom:6px}
   .bestmove .t{font-family:var(--serif);font-size:18px;font-weight:500;margin-bottom:6px}
   .bestmove .d{font-size:14px;line-height:1.6}
@@ -313,7 +326,7 @@
   .journey-step .js-value{font-family:var(--serif);font-size:30px;line-height:1.05;margin-top:7px}
   .journey-step .js-rate{font-size:10px;color:var(--burnt);margin-top:5px}
   .journey-step>span{display:block;font-size:9px;letter-spacing:.11em;text-transform:uppercase;color:var(--ink-soft)}.journey-step>b{display:block;font-family:var(--serif);font-size:30px;font-weight:400;margin-top:7px}.journey-step>small{display:block;font-size:10px;color:var(--burnt);margin-top:5px}.journey-arrow{display:none}
-  .narrative-section{background:linear-gradient(90deg,rgba(245,237,216,.55),rgba(255,255,255,0))}
+  .narrative-section{background:linear-gradient(110deg,rgba(255,248,231,.84),rgba(255,255,255,.96));padding:58px clamp(40px,6vw,88px)}
   /* website-matched envelope → parchment letter */
   #letterOverlay{position:fixed;inset:0;background:var(--cream);z-index:100;display:flex;align-items:center;justify-content:center;overflow:hidden;transition:background .65s ease}
   #letterOverlay::before{content:"";position:absolute;inset:0;opacity:0;transition:opacity .65s ease .55s;background-image:repeating-linear-gradient(92deg,rgba(255,255,255,.035) 0,rgba(255,255,255,.035) 1px,transparent 1px,transparent 8px),repeating-linear-gradient(2deg,rgba(0,0,0,.025) 0,rgba(0,0,0,.025) 1px,transparent 1px,transparent 12px),radial-gradient(ellipse at 20% 30%,rgba(180,130,70,.3),transparent 60%),radial-gradient(ellipse at 80% 70%,rgba(200,160,100,.25),transparent 55%),radial-gradient(ellipse at 50% 50%,#d4aa7d,#b8894f)}
@@ -335,18 +348,18 @@
   .envScene.open .flap{transform:rotateX(180deg);z-index:2}
   .envScene.open .lseal{animation:lSealAway .68s cubic-bezier(.5,0,.7,.4) both;pointer-events:none}
   body.letter-active{overflow:hidden}
-  .letterCard{position:fixed;left:50%;top:50%;width:min(640px,92vw);max-height:calc(100vh - 52px);background:#fdf6e3;border:0;border-top:3px solid var(--burnt);border-radius:0;z-index:1;transform:translate(-50%,calc(-50% + 45px)) scale(.985);opacity:0;pointer-events:none;transition:transform .85s .7s cubic-bezier(.2,1,.32,1),opacity .65s .7s,box-shadow .85s .7s;overflow-y:auto;padding:54px 56px 46px;text-align:center}
+  .letterCard{position:fixed;left:50%;top:50%;width:min(920px,95vw);max-height:calc(100vh - 28px);background:#fdf6e3;border:0;border-top:3px solid var(--burnt);border-radius:0;z-index:1;transform:translate(-50%,calc(-50% + 45px)) scale(.985);opacity:0;pointer-events:none;transition:transform .85s .7s cubic-bezier(.2,1,.32,1),opacity .65s .7s,box-shadow .85s .7s;overflow-y:auto;padding:34px clamp(32px,5.5vw,68px) 30px;text-align:left}
   .letterCard::before,.letterCard::after{content:"";position:absolute;width:22px;height:22px;border-color:rgba(153,97,55,.4);border-style:solid}.letterCard::before{top:14px;left:14px;border-width:1px 0 0 1px}.letterCard::after{right:14px;bottom:14px;border-width:0 1px 1px 0}
   #letterOverlay.opened .letterCard{transform:translate(-50%,-50%) scale(1);opacity:1;pointer-events:auto;z-index:12;box-shadow:0 4px 32px rgba(100,60,10,.25),0 1px 0 rgba(255,255,255,.8) inset}
-  .letterCard img.lsm{height:80px;margin:0 auto 24px;display:block}
-  .letterCard h2{font-family:var(--serif);font-weight:400;font-style:italic;font-size:clamp(25px,3vw,34px);line-height:1.25;margin:0 0 22px;letter-spacing:-.01em}
-  .letterCard .lbody{font-size:15px;font-weight:400;line-height:1.95;text-align:left;color:rgba(42,31,18,.72)}
+  .letterCard img.lsm{height:60px;margin:0 auto 12px;display:block}
+  .letterCard h2{font-family:var(--serif);font-weight:400;font-style:italic;font-size:clamp(25px,3vw,32px);line-height:1.25;margin:0 0 18px;letter-spacing:-.01em;text-align:center}
+  .letterCard .lbody{font-family:var(--serif);font-size:clamp(18px,1.45vw,20px);font-weight:400;line-height:1.62;text-align:left;color:rgba(42,31,18,.86);width:100%;max-width:none}
   .letterCard .lbody b{font-weight:500;color:var(--burnt-deep)}
   .letterCard .lsign{font-family:var(--serif);font-size:19px;margin-top:22px;text-align:left;font-style:italic;color:var(--burnt-deep)}
-  .letterCard .lopen{margin-top:28px;font-family:var(--sans);font-size:11px;letter-spacing:.18em;text-transform:uppercase;padding:14px 34px;border-radius:0;border:none;background:var(--burnt);color:#fff;cursor:pointer;opacity:0;transition:opacity .55s 1.35s,background .15s,transform .15s}
+  .letterCard .lopen{display:block;position:sticky;bottom:0;margin:24px auto 0;font-family:var(--sans);font-size:11px;letter-spacing:.18em;text-transform:uppercase;padding:13px 34px;border-radius:0;border:none;background:var(--burnt);color:#fff;cursor:pointer;opacity:0;transition:opacity .55s 1.35s,background .15s,transform .15s;box-shadow:0 8px 18px rgba(80,45,15,.18)}
   #letterOverlay.opened .lopen{opacity:1}
   .letterCard .lopen:hover{background:var(--burnt-deep);transform:translateY(-2px)}
-  @media(max-width:560px){.letterCard{padding:34px 26px 30px}.letterCard h2{font-size:24px}.letterCard .lbody{font-size:15.5px;line-height:1.85}}
+  @media(max-width:560px){.letterCard{padding:34px 24px 30px}.letterCard h2{font-size:24px}.letterCard .lbody{font-size:18px;line-height:1.7}.narrative-section{padding:38px 25px}.letter-kicker{align-items:flex-start;flex-direction:column;gap:5px}.letter-observations{grid-template-columns:1fr}}
   #letterOverlay.done{animation:lOut .55s both}
   @keyframes lDrop{from{transform:translateY(-115vh) rotate(-5deg)}60%{transform:translateY(2.5%) rotate(.8deg)}to{transform:translateY(0) rotate(0)}}
   @keyframes lSealAway{50%{transform:translate(-50%,-54%) scale(1.08) rotate(5deg);opacity:1}100%{transform:translate(-50%,-78%) scale(.84) rotate(10deg);opacity:0}}
@@ -354,8 +367,9 @@
   @keyframes lPulse{0%,100%{opacity:.4}50%{opacity:.8}}
   @keyframes lOut{to{opacity:0;visibility:hidden}}
   @media(prefers-reduced-motion:reduce){.envScene,.flap,.lseal,.letterCard,#letterOverlay,#letterOverlay::before{animation:none!important;transition-duration:.01ms!important;transition-delay:0ms!important}}
-  @media(max-width:900px){.goalgrid,.goal-snapshot{grid-template-columns:1fr 1fr}.goalcard:nth-child(2){border-right:0}.goalcard:nth-child(-n+2){border-bottom:1px solid var(--sand)}.vizgrid{grid-template-columns:1fr}.sitebar .mhtag{display:none}.quality-grid{grid-template-columns:1fr 1fr}}
-  @media(max-width:660px){.sitebar{height:84px;padding:0 12px}.sitebar .stamp img{width:58px;height:58px}.sitebar .brandwrap{gap:10px}.mhid{padding-left:10px}.mhid .k{display:none}.mhid .t{font-size:19px;max-width:42vw}.mhid .m{font-size:9px;max-width:42vw}.sitebar .site-actions{gap:6px}.workspace-badge{display:none}.sitebar .btn{font-size:9px;padding:6px 9px}.toolbar{top:84px;padding:10px 14px}.control-title{display:none}.goalgrid,.goal-snapshot{grid-template-columns:1fr}.goalcard{border-right:0;border-bottom:1px solid var(--sand)}.rhead .cli{font-size:42px}section{padding:28px 24px}.quality-grid{grid-template-columns:1fr}.qissue{grid-template-columns:72px 1fr}.page-nav{top:170px;align-items:flex-start}.page-tab{padding:6px 8px;font-size:9px}.page-turn{flex-direction:column}.section-order-list{min-width:0}.section-order-row{grid-template-columns:minmax(145px,1fr) 104px 29px 29px}}
+  @media(max-width:900px){.goalgrid,.goal-snapshot{grid-template-columns:1fr 1fr}.goalcard:nth-child(2){border-right:0}.goalcard:nth-child(-n+2){border-bottom:1px solid var(--sand)}.vizgrid{grid-template-columns:1fr}.sitebar .mhtag{display:none}.quality-grid{grid-template-columns:1fr 1fr}.letter-observations{grid-template-columns:1fr}.storycols{grid-template-columns:1fr 1fr}}
+  @media(max-width:760px){.target-groups,.target-policy{grid-template-columns:1fr}.target-grid{grid-template-columns:1fr}}
+  @media(max-width:660px){.sitebar{height:84px;padding:0 12px}.sitebar .stamp img{width:58px;height:58px}.sitebar .brandwrap{gap:10px}.mhid{padding-left:10px}.mhid .k{display:none}.mhid .t{font-size:19px;max-width:42vw}.mhid .m{font-size:9px;max-width:42vw}.sitebar .site-actions{gap:6px}.workspace-badge{display:none}.sitebar .btn{font-size:9px;padding:6px 9px}.toolbar{top:84px;padding:10px 14px}.control-title{display:none}.goalgrid,.goal-snapshot{grid-template-columns:1fr}.goalcard{border-right:0;border-bottom:1px solid var(--sand)}.rhead .cli{font-size:42px}section{padding:28px 24px}.quality-grid{grid-template-columns:1fr}.qissue{grid-template-columns:72px 1fr}.page-nav{top:170px;align-items:flex-start}.page-tab{padding:6px 8px;font-size:9px}.page-turn{flex-direction:column}.section-order-list{min-width:0}.section-order-row{grid-template-columns:minmax(145px,1fr) 104px 29px 29px}.target-head{display:block}.target-client{display:inline-block;margin-top:8px}.target-field{grid-template-columns:minmax(0,1fr) 104px}}
   @media print{.sitebar,.toolbar,.panel,.utility-panel,#letterOverlay,.page-nav,.ai-required-banner{display:none!important} body{background:#fff} .wrap{margin:0;max-width:none;padding:0} .report{box-shadow:none;border-radius:0;border:none} section,section[hidden]{display:block!important;break-inside:avoid} .ed[contenteditable]{background:none!important;box-shadow:none!important} body.print-blocked .wrap{display:none!important}body.print-blocked::after{content:"AI analysis is required before this report can be printed.";display:block;padding:60px;font:22px Georgia,serif;color:#2a1f18}}
 </style>
 </head>
@@ -429,14 +443,14 @@
 </div>
 
 <div class="utility-panel" id="syncPanel">
-  <div class="utility-head"><div><h3>Connect social accounts once</h3><p>Choose Connect, sign in on the platform's own website, and approve analytics access. The private sync service stores refreshable authorization so manual or scheduled syncs can run without another sign-in whenever the provider permits it.</p></div><button class="utility-close" id="syncClose" aria-label="Close native sync">×</button></div>
+  <div class="utility-head"><div><h3>Connect social accounts once</h3><p>Everything happens in the browser. Choose the client, click Connect, sign in on the platform's own page, and approve analytics access. No commands, terminal, copied tokens, or repeated monthly sign-ins.</p></div><button class="utility-close" id="syncClose" aria-label="Close native sync">×</button></div>
   <div class="sourcecards">
-    <div class="sourcecard"><b>1 · Choose the client</b><span>CNO opens the private connection center for the right client workspace.</span></div>
-    <div class="sourcecard"><b>2 · Sign in securely</b><span>The client signs in directly with Instagram/Meta, TikTok, or LinkedIn and approves analytics access.</span></div>
-    <div class="sourcecard"><b>3 · Confirm the account</b><span>If the login can see several profiles, CNO assigns the exact profile and ad account that belong to this client. Nothing syncs before that choice.</span></div>
-    <div class="sourcecard"><b>4 · Stay connected</b><span>Encrypted refresh credentials rotate during syncs until the client or platform revokes access. Monthly scheduling is part of the secured cloud phase.</span></div>
+    <div class="sourcecard"><b>1 · Choose the client</b><span>The client selected above is carried into CNO's private browser connection center.</span></div>
+    <div class="sourcecard"><b>2 · Choose a platform</b><span>Click Meta/Instagram, TikTok, or LinkedIn. The platform opens its normal sign-in and consent page.</span></div>
+    <div class="sourcecard"><b>3 · Confirm the account</b><span>If the login can access several profiles, CNO chooses the exact profile and ad account for this client.</span></div>
+    <div class="sourcecard"><b>4 · Stay connected</b><span>Authorization is encrypted and refreshed when the provider permits it. CNO reconnects only after revocation, expiry, or a permission change.</span></div>
   </div>
-  <div class="aibox"><div class="ailab">One-time connection center <span>staff only</span></div><div class="aidesc">Open the private connection center for the selected client. CNO and the client never see or copy OAuth tokens.</div><div class="airow"><button class="btn solid" id="syncOpen">Connect or manage accounts</button><a class="btn" href="https://github.com/joongsukkie/cno-analytics-report/blob/main/sync-service/README.md" target="_blank" rel="noopener">Connection guide</a></div><details style="margin-top:12px"><summary class="quiet" style="cursor:pointer">Advanced service address</summary><div class="airow" style="margin-top:8px"><input type="text" id="syncServiceUrl" value="https://cno-native-sync.onrender.com" aria-label="Native sync service URL"></div></details><div class="aistatus" id="syncStatus"></div></div>
+  <div class="aibox"><div class="ailab">Browser connection center <span>staff only</span></div><div class="aidesc">The client signs in directly with the social platform. CNO never sees the platform password, two-factor code, or OAuth token.</div><input type="hidden" id="syncServiceUrl" value=""><div class="airow"><button class="btn solid" id="syncOpen">Connect selected client</button><a class="btn" id="syncGuideLink" href="MIGRATE_TO_CNO_ACCOUNTS.md" target="_blank" rel="noopener">CNO setup status</a></div><div class="aistatus" id="syncStatus"></div></div>
 </div>
 
 <div class="utility-panel" id="aiPanel">
@@ -464,13 +478,13 @@
   <div class="utility-head"><div><h3>Take CNO Reports with you</h3><p>The same private, no-subscription reporting workspace can be installed from the browser or downloaded as a desktop app. Your imported CSVs stay on this device unless you intentionally create a share link.</p></div><button class="utility-close" id="installClose" aria-label="Close installation guide">×</button></div>
   <div class="sourcecards installcards">
     <div class="sourcecard"><b>Install from this browser</b><span>The fastest option. In Chrome or Edge, choose <em>Install now</em>. On iPhone or iPad, use Safari's Share menu and choose <em>Add to Home Screen</em>. On Mac Safari, choose File → Add to Dock.</span><button class="btn solid" id="pwaInstallNow">Install now</button></div>
-    <div class="sourcecard"><b>Download the desktop version</b><span>Use the Windows installer (.exe) or Mac disk image (.dmg). It opens like a normal desktop app and works without keeping a browser tab open.</span><a class="btn" href="https://github.com/joongsukkie/cno-analytics-report/releases/latest" target="_blank" rel="noopener">Open downloads</a></div>
-    <div class="sourcecard"><b>How the download is made</b><span>The report is wrapped in a lightweight desktop shell. Each published version is built automatically for Windows and macOS from the same audited report code.</span><a class="btn" href="https://github.com/joongsukkie/cno-analytics-report/blob/main/DESKTOP.md" target="_blank" rel="noopener">Read the guide</a></div>
+    <div class="sourcecard"><b>Download the desktop version</b><span>Use the Windows installer (.exe) or Mac disk image (.dmg). It opens like a normal desktop app and works without keeping a browser tab open.</span><a class="btn" id="downloadLink" href="#" target="_blank" rel="noopener">Open downloads</a></div>
+    <div class="sourcecard"><b>How the download is made</b><span>The report is wrapped in a lightweight desktop shell. Each published version is built automatically for Windows and macOS from the same audited report code.</span><a class="btn" id="desktopGuideLink" href="DESKTOP.md" target="_blank" rel="noopener">Read the guide</a></div>
   </div>
 </div>
 
 <div class="panel" id="custPanel">
-  <div class="utility-head"><div><h3>Customize this report</h3><p>Choose the report goal, featured KPIs, visible sections, and client-facing presentation.</p></div><button class="utility-close" id="custClose" aria-label="Close customization">×</button></div>
+  <div class="utility-head"><div><h3>Customize this report</h3><p>Set this client's approved targets, report goal, featured KPIs, visible sections, and client-facing presentation.</p></div><button class="utility-close" id="custClose" aria-label="Close customization">×</button></div>
   <div class="grp">
     <div class="col">
       <div class="lab">Report goal</div>
@@ -497,6 +511,15 @@
       <div class="lab">Section order and report page</div>
       <div id="sectionChecks"></div>
     </div>
+  </div>
+  <div class="target-editor">
+    <div class="target-head"><div><h4>Client targets</h4><p>Enter only targets approved by CNO and the client. Blank means no target. AI receives these approved values and is explicitly prohibited from creating, estimating, or “recommending” a number on its own.</p></div><div class="target-client" id="targetClientLabel">No client selected</div></div>
+    <div class="target-policy">
+      <div class="target-standard"><strong>CNO engagement-rate standard</strong><b>(Likes + comments + shares + saves) ÷ reach × 100.</b> Reach is the denominator, not followers. The formula is standardized; a “good” target is not universal and must be set for this client/platform. If interaction components are incomplete, the report uses the platform/Rella engagement total divided by reach and flags it.</div>
+      <div class="target-standard"><strong>Target source control</strong><label class="chk" style="margin:3px 0 0"><input type="checkbox" id="useImportedTargets"><span>Use approved <b>&lt;metric&gt;_target</b> columns from imported CSVs</span></label><span>CNO-entered targets below always override an imported value for the same metric.</span></div>
+    </div>
+    <div class="target-groups" id="targetInputs"></div>
+    <div style="margin-top:10px"><button class="btn" id="clearTargetsBtn" type="button">Clear CNO-entered targets</button></div>
   </div>
   <div style="margin-top:14px;display:flex;gap:10px">
     <button class="btn" id="resetTextBtn">Reset edited text</button>
@@ -689,11 +712,29 @@ function normalizedBundle(){
   const con=toCSV(POSTS.map(p=>({record_type:p.record_type,data_source:p.data_source,aggregation:p.aggregation,client:p.client,platform:p.platform,date:ymd(p.date),published_hour:p.hour,post_type:p.type,campaign:p.campaign,campaign_phase:p.campaign_phase,pillar:p.pillar,engagement:p.engagement,reach:p.reach,impressions:p.impressions,views:p.views,likes:p.likes,comments:p.comments,meaningful_comments:p.meaningful_comments,shares:p.shares,saves:p.saves,follows:p.follows,clicks:p.clicks,click_through_rate_reported:p.click_through_rate_reported,story_views:p.story_views,story_exits:p.story_exits,story_completions:p.story_completions,total_watch_time_seconds:p.total_watch_time_seconds,average_view_duration_seconds:p.average_view_duration_seconds,paid_clicks:p.paid_clicks,paid_leads:p.paid_leads,paid_follows:p.paid_follows,paid_conversions:p.paid_conversions,paid_revenue:p.paid_revenue,conversions:p.conversions,video_completions:p.video_completions,spend:p.spend,hashtag_count:p.tags,caption_length:p.len,caption_snippet:p.snippet})));
   return {acc,con};
 }
+const SHARE_ACCOUNT_FIELDS=["followers_start","followers_end","followers_total","followers_growth","reach","impressions","views","engagement","likes","comments","shares","saves","profile_views","link_clicks","dms","meaningful_comments","comment_replies","story_views","story_exits","story_completions","total_watch_time_seconds","average_view_duration_seconds","leads","bookings","membership_signups","retail_sales","revenue","event_reach","event_engagement","event_registrations","event_attendees","conversions","paid_reach","paid_impressions","organic_reach","organic_impressions","paid_clicks","paid_leads","paid_follows","paid_conversions","paid_revenue","paid_cpm_reported","paid_cpc_reported","paid_ctr_reported","paid_frequency_reported","cost_per_paid_lead_reported","cost_per_paid_conversion_reported","roas_reported","spend","posts","top_age_group","top_gender","top_countries","top_cities","industry"];
+const SHARE_POST_FIELDS=["campaign","campaign_phase","pillar","engagement","reach","impressions","views","likes","comments","meaningful_comments","shares","saves","reposts","replies","follows","clicks","click_through_rate_reported","story_views","story_exits","story_completions","total_watch_time_seconds","average_view_duration_seconds","paid_clicks","paid_leads","paid_follows","paid_conversions","paid_revenue","conversions","video_completions","spend"];
+const putPresent=(row,key,value)=>{if(value!==null&&value!==undefined&&value!=="")row[key]=value;};
+function compactPeriodRow(p){
+  const row={record_type:p.record_type||"account_monthly",client:p.client,platform:p.platform};
+  putPresent(row,"data_source",p.data_source);putPresent(row,"aggregation",p.aggregation);putPresent(row,"month",p.month);
+  putPresent(row,"date",p.date?ymd(p.date):null);putPresent(row,"period_start",p.period_start?ymd(p.period_start):null);putPresent(row,"period_end",p.period_end?ymd(p.period_end):null);
+  SHARE_ACCOUNT_FIELDS.forEach(k=>putPresent(row,k,p[k]));
+  Object.entries(p.targets||{}).forEach(([k,v])=>putPresent(row,k+"_target",v));
+  return row;
+}
+function compactPostRow(p){
+  const row={record_type:p.record_type||"post",client:p.client,platform:p.platform,date:ymd(p.date)};
+  putPresent(row,"data_source",p.data_source);putPresent(row,"aggregation",p.aggregation||"post");putPresent(row,"published_hour",p.hour);putPresent(row,"post_type",p.type);
+  SHARE_POST_FIELDS.forEach(k=>putPresent(row,k,p[k]));
+  putPresent(row,"hashtag_count",p.tags);putPresent(row,"caption_length",p.len);putPresent(row,"caption_snippet",p.snippet);
+  return row;
+}
 function buildBundle(clientOnly,platformSet=null){
   const wanted=row=>(!clientOnly||row.client===clientOnly)&&(!platformSet||platformSet.has(row.platform));
   const pers=PERIODS.filter(wanted);
   const pos=POSTS.filter(wanted);
-  return {acc:pers.length?toCSV(pers.map(p=>p.raw||p)):"", con:pos.length?toCSV(pos.map(p=>p.raw||p)):""};
+  return {acc:pers.length?toCSV(pers.map(compactPeriodRow)):"", con:pos.length?toCSV(pos.map(compactPostRow)):""};
 }
 /* Keep client-facing prose, but remove CNO-only evidence keys, confidence labels, and analyst notes. */
 function clientAINarrative(obj){
@@ -730,10 +771,20 @@ function unb64uBytes(s){s=s.replace(/-/g,"+").replace(/_/g,"/");while(s.length%4
 async function pwKey(pw,salt){const km=await crypto.subtle.importKey("raw",new TextEncoder().encode(pw),"PBKDF2",false,["deriveKey"]);return crypto.subtle.deriveKey({name:"PBKDF2",salt,iterations:150000,hash:"SHA-256"},km,{name:"AES-GCM",length:256},false,["encrypt","decrypt"]);}
 async function encryptStr(str,pw){const salt=crypto.getRandomValues(new Uint8Array(16));const iv=crypto.getRandomValues(new Uint8Array(12));const key=await pwKey(pw,salt);const ct=await crypto.subtle.encrypt({name:"AES-GCM",iv},key,new TextEncoder().encode(str));return b64uBytes(salt)+"."+b64uBytes(iv)+"."+b64uBytes(ct);}
 async function decryptStr(payload,pw){const parts=payload.split(".");const key=await pwKey(pw,unb64uBytes(parts[0]));const pt=await crypto.subtle.decrypt({name:"AES-GCM",iv:unb64uBytes(parts[1])},key,unb64uBytes(parts[2]));return new TextDecoder().decode(pt);}
-// Where share links should point. In the hosted web app this is the current site; in the
-// packaged desktop app (file:// origin) it falls back to the hosted site so clients can open the link.
-const HOSTED_BASE="https://cno-analytics-report.onrender.com/";
+// These deployment values live in three meta tags at the top of this file so CNO can
+// move GitHub/Render accounts without hunting through the reporting engine.
+const metaConfig=name=>(document.querySelector(`meta[name="${name}"]`)?.content||"").trim();
+const HOSTED_BASE=metaConfig("cno-report-base")||"https://cno-analytics-report.onrender.com/";
+const SYNC_BASE=metaConfig("cno-sync-base")||"https://cno-native-sync.onrender.com";
+const REPO_BASE=(metaConfig("cno-repository")||"https://github.com/joongsukkie/cno-analytics-report").replace(/\/$/,"");
 function shareBase(){return location.protocol.startsWith("http")?(location.origin+location.pathname):HOSTED_BASE;}
+async function saveShortReport(payload,encrypted,client){
+  const base=($("syncServiceUrl")?.value||SYNC_BASE).trim().replace(/\/$/,"");
+  const response=await fetch(base+"/v1/reports",{method:"POST",credentials:"include",headers:{"content-type":"application/json"},body:JSON.stringify({payload,encrypted:!!encrypted,client_ref:client})});
+  let result={};try{result=await response.json();}catch{}
+  if(!response.ok||!result.id){const error=new Error(result.error||("Share service returned "+response.status));error.status=response.status;throw error;}
+  return {id:result.id,base};
+}
 async function makeShareLink(){
   if(!POSTS.length&&!PERIODS.length){appAlert("Load data first, then create a share link.");return;}
   const client=(CURRENT&&CURRENT.client)||$("clientSel").value;
@@ -749,11 +800,17 @@ async function makeShareLink(){
   let b64;try{b64=await gzB64(JSON.stringify({acc,con,cust:scopedCustom(client),edits,ai,client,view,lock:true}));}catch(e){appAlert("This browser can't build a share link (compression unsupported). Use Export data instead.");return;}
   const pw=await appPrompt("The link contains ONLY "+client+"'s data and opens as a view-only report. Leave the field blank for an open view-only link, or enter a password for a second lock. Share the password separately.",{title:"Protect "+client+"'s report",type:"password",confirmText:"Create link"});
   if(pw===null)return;
-  let url;
+  let portableUrl,storedPayload,encrypted=false;
   if(pw.trim()){
-    try{url=shareBase()+"#edata="+await encryptStr(b64,pw.trim());}
+    try{storedPayload=await encryptStr(b64,pw.trim());portableUrl=shareBase()+"#edata="+storedPayload;encrypted=true;}
     catch(e){appAlert("Password protection isn't available in this browser — link not created.");return;}
-  }else{url=shareBase()+"#data="+b64;}
+  }else{storedPayload=b64;portableUrl=shareBase()+"#data="+b64;}
+  let url=portableUrl,shortLink=false,shareError=null;
+  try{
+    const saved=await saveShortReport(storedPayload,encrypted,client);
+    url=shareBase()+"?report="+encodeURIComponent(saved.id)+"&service="+encodeURIComponent(saved.base);
+    shortLink=true;
+  }catch(e){shareError=e;}
   let copied=false;
   try{await navigator.clipboard.writeText(url);copied=true;}catch(e){}
   const lockNote=pw.trim()?"🔒 Password-protected — it only opens with the password you set. Share the password separately.\n\n":"";
@@ -765,8 +822,9 @@ async function makeShareLink(){
     });
     return;
   }
-  if(url.length>16000){appAlert("Share link copied to clipboard.\n\n"+lockNote+"Heads up: it's long ("+url.length.toLocaleString()+" characters). If a chat app trims it, narrow to one client first, then share.","Link ready");}
-  else{appAlert("Interactive share link copied to clipboard ✓\n\n"+lockNote+"Anyone who opens it sees this exact report — live, interactive charts and all — no upload needed.","Link ready");}
+  if(shortLink){appAlert("Reliable client link copied ✓\n\n"+lockNote+"This short link loads the saved report on another phone or computer without asking the client to upload anything.","Link ready");}
+  else if(url.length>8000){appAlert("A portable link was copied, but it is too long to trust in email or chat.\n\nThe private short-link service is not connected yet"+(shareError?.status===401?" or this CNO device is not signed in to it":"")+". Deploy or sign in to the CNO sync service, then create the link again. The report data itself has not been uploaded.","Short-link service needed");}
+  else{appAlert("Portable client link copied ✓\n\n"+lockNote+"The private short-link service is not connected, so this version carries the report inside the URL. Test it in a private browser before sending.","Link ready");}
 }
 function reportWindowRows(c,from,to){
   const chosen=selectedPlats(c),fs=ymd(from),ts=ymd(to);
@@ -1106,12 +1164,15 @@ function windowMetrics(c,from,to,platformSet){
     const difference=Math.abs(calculated-reported)/Math.abs(reported);
     if(difference>.05)m._paidValidation.push({key,label:paidLabels[key],calculated,reported,difference});
   });
-  // ---- Optional monthly targets (from <metric>_target columns). Flow metrics sum across the window; rate metrics average. ----
+  // ---- Approved client targets. CNO-entered values override optional <metric>_target CSV columns. ----
   const RATEKEYS=new Set(["followergrowthrate","reachrate","er","roas","profiletoclick","eventconversion","clickthroughrate","storycompletionrate","videocompletionrate","paidctr"]);
   const tacc={};
-  perIn.forEach(p=>{if(!p.targets)return;for(const bk in p.targets){const v=p.targets[bk];if(v===null||v===undefined)continue;(tacc[bk]=tacc[bk]||[]).push(v);}});
+  if(importedTargetsEnabledFor(c,chosen))perIn.forEach(p=>{if(!p.targets)return;for(const bk in p.targets){const v=p.targets[bk];if(v===null||v===undefined)continue;(tacc[bk]=tacc[bk]||[]).push(v);}});
   m._targets={};
-  for(const bk in tacc){const vals=tacc[bk];m._targets[bk]=RATEKEYS.has(bk)?vals.reduce((a,b)=>a+b,0)/vals.length:vals.reduce((a,b)=>a+b,0);}
+  m._targetSources={};
+  for(const bk in tacc){const vals=tacc[bk],tk=targetStoreKey(bk);m._targets[tk]=RATEKEYS.has(tk)?vals.reduce((a,b)=>a+b,0)/vals.length:vals.reduce((a,b)=>a+b,0);m._targetSources[tk]="Imported target";}
+  const approved=clientTargetsFor(c,chosen);
+  Object.entries(approved&&typeof approved==="object"?approved:{}).forEach(([key,value])=>{const n=num(value),tk=targetStoreKey(key);if(n===null||n<0||!targetDef(key))return;m._targets[tk]=n;m._targetSources[tk]="CNO-approved target";});
   return m;
 }
 function prevRange(from,to){const len=daysBetween(from,to)+1;return{from:addDays(from,-len),to:addDays(from,-1)};}
@@ -1248,6 +1309,43 @@ const SECTION_DEFS=[
   {key:"benchmarks",label:"Benchmark context",page:4},{key:"effort",label:"Effort vs. return",page:4},{key:"matrix",label:"Metrics matrix",page:4},{key:"data",label:"Full data table",page:4}
 ];
 const PAGE_LABELS={1:"Summary",2:"Performance",3:"Content",4:"Full data"};
+const TARGET_DEFS=[
+  {key:"reach",group:"Organic visibility",unit:"count",direction:"min"},
+  {key:"impressions",group:"Organic visibility",unit:"count",direction:"min"},
+  {key:"followers_growth",group:"Organic visibility",unit:"count",direction:"min"},
+  {key:"follower_growth_rate",group:"Organic visibility",unit:"percent",direction:"min"},
+  {key:"engagement",group:"Organic response",unit:"count",direction:"min"},
+  {key:"er",group:"Organic response",unit:"percent",direction:"min"},
+  {key:"profile_views",group:"Organic response",unit:"count",direction:"min"},
+  {key:"link_clicks",group:"Organic response",unit:"count",direction:"min"},
+  {key:"dms",group:"Organic response",unit:"count",direction:"min"},
+  {key:"meaningful_comments",group:"Organic response",unit:"count",direction:"min"},
+  {key:"leads",group:"Business outcomes",unit:"count",direction:"min"},
+  {key:"bookings",group:"Business outcomes",unit:"count",direction:"min"},
+  {key:"membership_signups",group:"Business outcomes",unit:"count",direction:"min"},
+  {key:"retail_sales",group:"Business outcomes",unit:"count",direction:"min"},
+  {key:"revenue",group:"Business outcomes",unit:"money",direction:"min"},
+  {key:"event_reach",group:"Campaign & events",unit:"count",direction:"min"},
+  {key:"event_registrations",group:"Campaign & events",unit:"count",direction:"min"},
+  {key:"event_attendees",group:"Campaign & events",unit:"count",direction:"min"},
+  {key:"paid_reach",group:"Paid media",unit:"count",direction:"min"},
+  {key:"paid_impressions",group:"Paid media",unit:"count",direction:"min"},
+  {key:"paid_clicks",group:"Paid media",unit:"count",direction:"min"},
+  {key:"paid_leads",group:"Paid media",unit:"count",direction:"min"},
+  {key:"paid_conversions",group:"Paid media",unit:"count",direction:"min"},
+  {key:"paid_revenue",group:"Paid media",unit:"money",direction:"min"},
+  {key:"paid_ctr",group:"Paid media",unit:"percent",direction:"min"},
+  {key:"roas",group:"Paid media",unit:"multiple",direction:"min"},
+  {key:"paid_cpm",group:"Paid efficiency limits",unit:"money",direction:"max"},
+  {key:"cost_per_paid_click",group:"Paid efficiency limits",unit:"money",direction:"max"},
+  {key:"cost_per_paid_lead",group:"Paid efficiency limits",unit:"money",direction:"max"},
+  {key:"cost_per_paid_conversion",group:"Paid efficiency limits",unit:"money",direction:"max"}
+];
+function targetStoreKey(key){return String(key||"").replace(/[^a-z0-9]/gi,"").toLowerCase();}
+function targetDef(key){const normalized=targetStoreKey(key);return TARGET_DEFS.find(item=>targetStoreKey(item.key)===normalized)||null;}
+function targetInputValue(def,value){if(value===undefined||value===null||value==="")return"";return def.unit==="percent"?+(Number(value)*100).toFixed(4):Number(value);}
+function targetStoredValue(def,value){const n=num(value);if(n===null||n<0)return null;return def.unit==="percent"?n/100:n;}
+function targetUnitLabel(def){return def.unit==="percent"?"%":def.unit==="money"?"$":def.unit==="multiple"?"×":"";}
 
 /* ==================== customization + edits ==================== */
 const LSK="cno_report_v2";
@@ -1255,8 +1353,14 @@ let CUSTOM=loadCustom();
 function loadCustom(){try{return JSON.parse(localStorage.getItem(LSK))||{};}catch(e){return{};}}
 function saveCustom(){try{localStorage.setItem(LSK,JSON.stringify(CUSTOM));}catch(e){}}
 function customClient(){const sel=document.getElementById("clientSel");return (sel&&sel.value)||(CURRENT&&CURRENT.client)||"";}
-function cget(k,d){const client=customClient(),scoped=client&&CUSTOM.clientSettings&&CUSTOM.clientSettings[client];return scoped&&scoped[k]!==undefined?scoped[k]:(CUSTOM[k]!==undefined?CUSTOM[k]:d);}
+function cgetFor(client,k,d){const scoped=client&&CUSTOM.clientSettings&&CUSTOM.clientSettings[client];return scoped&&scoped[k]!==undefined?scoped[k]:(CUSTOM[k]!==undefined?CUSTOM[k]:d);}
+function cget(k,d){return cgetFor(customClient(),k,d);}
 function cset(k,value){const client=customClient();if(!client){CUSTOM[k]=value;return;}CUSTOM.clientSettings=CUSTOM.clientSettings||{};CUSTOM.clientSettings[client]=CUSTOM.clientSettings[client]||{};CUSTOM.clientSettings[client][k]=value;}
+function targetPlatformKey(client,platformSet=null){const chosen=platformSet||selectedPlats(client);return chosen&&chosen.size===1?[...chosen][0]:"";}
+function clientTargetsFor(client,platformSet=null){const key=targetPlatformKey(client,platformSet),byPlatform=cgetFor(client,"targetsByPlatform",{})||{};if(!key)return{};return byPlatform[key]||{};}
+function importedTargetsEnabledFor(client,platformSet=null){const key=targetPlatformKey(client,platformSet),byPlatform=cgetFor(client,"useImportedTargetsByPlatform",{})||{};return key&&byPlatform[key]!==undefined?byPlatform[key]:cgetFor(client,"useImportedTargets",true)!==false;}
+function saveTargetsForCurrentPlatform(targets){const client=customClient(),key=targetPlatformKey(client);if(!client||!key)return false;const byPlatform={...(cgetFor(client,"targetsByPlatform",{})||{})};byPlatform[key]=targets;cset("targetsByPlatform",byPlatform);return true;}
+function saveImportedTargetChoiceForCurrentPlatform(enabled){const client=customClient(),key=targetPlatformKey(client);if(!client||!key)return false;const byPlatform={...(cgetFor(client,"useImportedTargetsByPlatform",{})||{})};byPlatform[key]=!!enabled;cset("useImportedTargetsByPlatform",byPlatform);return true;}
 function scopedCustom(client){const legacy=Object.fromEntries(Object.entries(CUSTOM).filter(([key])=>key!=="clientSettings"));const own=CUSTOM.clientSettings&&CUSTOM.clientSettings[client];return own?{...legacy,clientSettings:{[client]:own}}:legacy;}
 let EDITS=loadEdits();
 function loadEdits(){try{return JSON.parse(localStorage.getItem(LSK+"_edits"))||{};}catch(e){return{};}}
@@ -1410,11 +1514,21 @@ function headline(c,cur,prev,A){
 /* A warm, human opening for the report. Deterministic fallback when no AI narrative is generated. */
 function defaultLetterLead(c,cur,prev,A,label,nameShow,platsUsed,dateSpan){
   const rC=A.rC,eC=A.eC;
-  const move=(rC!==null&&rC>0.15)?"more people saw the work this period":(rC!==null&&rC<-0.15)?"fewer people saw the work this period, and that is worth a closer look":"reach held roughly steady this period";
-  const eng=(eC!==null&&eC>0.15)?" and the people who found it leaned in more than before":(eC!==null&&eC<-0.15)?", though the response cooled a little from last period":"";
+  const move=(rC!==null&&rC>0.15)?"more people found the work":(rC!==null&&rC<-0.15)?"fewer people found the work, which deserves a closer look":"visibility held roughly steady";
+  const eng=(eC!==null&&eC>0.15)?" and the people who found it responded more actively than before":(eC!==null&&eC<-0.15)?", although the response was softer than last month":"";
   const fg=cur.followers_growth;
-  const aud=(fg!==null&&fg>0)?` The audience grew by ${fmtInt(fg)} this period.`:(fg!==null&&fg<0)?` The audience dipped by ${fmtInt(Math.abs(fg))}, so winning attention back is the near-term focus.`:"";
-  return `Dear <b>${escHtml(nameShow)}</b>,<br><br>The simple version is that ${move}${eng}.${aud} The strongest result and the most important concern are summarized on this first page. Turn the page only when you want the supporting detail.<br><br>With care,<br>CNO Creative Co`;
+  const aud=(fg!==null&&fg>0)?` The audience also grew by ${fmtInt(fg)} people.`:(fg!==null&&fg<0)?` The audience decreased by ${fmtInt(Math.abs(fg))}, so retaining attention needs to be part of the next plan.`:"";
+  const win=A.wins&&A.wins[0]?plainAIText(A.wins[0].t).toLowerCase():"the account is giving us a useful baseline to build from";
+  const concern=A.watch&&A.watch[0]?plainAIText(A.watch[0].t).toLowerCase():"we still need more history before treating any pattern as settled";
+  const best=A.best||{t:"Keep the strongest idea moving",d:"Repeat the most promising content pattern once more and compare the result before making a larger change."};
+  return `Dear <b>${escHtml(nameShow)}</b>,<br><br>This month, ${move}${eng}.${aud}<br><br>What encouraged us most was that ${win}. It gives us a clearer idea of what the audience is responding to and what deserves another thoughtful test.<br><br>The part we are watching is that ${concern}. That does not erase the progress, but it does tell us where the next month needs more care.<br><br>Our recommendation is to <b>${plainAIText(best.t).toLowerCase()}</b>. We will test that direction again, compare it with this month, and use the result to decide what should scale. The deeper pages hold the evidence whenever you would like to explore it.<br><br>With care,<br>CNO Creative Co`;
+}
+function letterForDisplay(value,fallback,nameShow){
+  let safe=safeAIHtml(value||"",true);
+  const plain=plainAIText(safe).toLowerCase(),expected=("dear "+String(nameShow||"").trim().toLowerCase()+",");
+  if(!plain.startsWith("dear ")||!plain.startsWith(expected))safe=fallback;
+  if(!plainAIText(safe).toLowerCase().endsWith("cno creative co"))safe+=`<br><br>With care,<br>CNO Creative Co`;
+  return safe;
 }
 
 /* ==================== AI narrative (required for client-ready output) ==================== */
@@ -1424,14 +1538,20 @@ How you work:
 - Ground every sentence in the numbers you are given. Never invent a metric, a cause, or an outcome that the data does not support.
 - Separate observation, association, and hypothesis. Never state a cause as fact unless the supplied human context establishes it. When the data only suggests an explanation, say "may," "likely," or "one hypothesis is."
 - Explain what the result means in ordinary language. Use as few numbers as possible and include only numbers needed to understand the good news, the problem, or the next move.
+- Write a real client letter, not a dashboard introduction. Let the month unfold as a short story: where the client started, what changed, why it matters, what may explain it, and what CNO recommends next.
 - Find the one or two things that actually matter this period. State the good news plainly, state the bad news kindly but directly, and end with one practical next move.
 - When previous_report_findings are supplied, explicitly decide whether the current evidence confirms, weakens, or leaves each important prior finding unresolved. Build the story forward without recycling an old claim as a current fact.
 - Respect data-quality cautions and sample sizes. Do not make creative-pattern claims from fewer than three relevant posts, and do not call a daily-reach sum an exact monthly unique total.
 - Analyze one platform at a time. Do not blend platform-specific reach, views, engagement rates, funnels, or benchmarks.
-- Use short sentences, familiar words, and a warm, direct tone. Never sound like a dashboard, consultant, template, or chatbot.
+- Use the CNO engagement-rate standard exactly as supplied in formula_notes. Never substitute followers, impressions, or views as its denominator.
+- Never create, infer, estimate, round, recommend, or imply a numeric target. A numeric target is real only when it appears in approved_targets with a non-null value and source. Copy an approved target exactly. If approved_targets is empty, discuss direction and priorities without inventing a goal number.
+- Use short sentences, familiar words, and a warm, thoughtful tone. Write as CNO speaking directly to a client it knows well. Never sound like a dashboard, consultant, template, recap, or chatbot.
+- Do not begin with "Here is your report," "The simple version," "This report covers," or another administrative introduction.
+- Use four short paragraphs after the greeting: the overall story, the encouraging signal and why it matters, the concern and the most supportable explanation, and the recommended next move.
+- Numbers support the story rather than lead it. Use no more than four numbers in the entire letter unless the client supplied explicit goal targets that require another.
 - Never use em dashes. Use commas, periods, or the word and. Avoid buzzwords, hype, and hedging.
 - The letter must begin exactly with "Dear [client name]," and end with "With care,<br>CNO Creative Co".
-- Keep the letter to three short paragraphs between the greeting and sign-off, no more than 180 words total.
+- Keep the letter between 180 and 280 words including the greeting and sign-off.
 - Each section note must be one short sentence, no more than 28 words. It should explain the meaning, not repeat a heading or list metrics.
 - In the letter string, separate paragraphs with <br><br>. The only permitted emphasis tags are <b> and <em>.
 
@@ -1488,9 +1608,13 @@ function buildAIContext(){
   ["reach","reach_rate","impressions","views","engagement","er","profile_views","link_clicks","dms","followers_start","followers_end","followers_growth","follower_growth_rate","followers_total","posts","shares","saves","comments","likes","meaningful_comments","story_views","story_exit_rate","story_completion_rate","total_watch_time_seconds","average_view_duration_seconds","video_completion_rate","click_through_rate","leads","bookings","membership_signups","retail_sales","revenue","event_registrations","event_attendees","paid_clicks","paid_leads","paid_conversions","paid_revenue","paid_cpm","paid_ctr","paid_frequency","cost_per_paid_click","cost_per_paid_lead","cost_per_paid_follow","cost_per_paid_conversion","roas"].forEach(k=>{
     if(cur[k]!=null){metrics[k]={value:cur[k],prev:(prev&&prev[k]!=null)?prev[k]:null,pct_change:pctChange(cur[k],prev?prev[k]:null)};}
   });
-  const goals={};
-  ["reach","impressions","follower_growth_rate","profile_views","saves","link_clicks","meaningful_comments","dms","followers_growth","event_reach","event_registrations","event_attendees","leads","bookings","membership_signups","retail_sales","revenue"].forEach(k=>{
-    if(cur[k]!=null){const tk=k.replace(/[^a-z0-9]/gi,"").toLowerCase();const t=cur._targets?cur._targets[tk]:undefined;goals[k]={value:cur[k],target:(t!==undefined?t:null),pct_of_goal:(t?Math.round(cur[k]/t*100):null)};}
+  const approvedTargets={};
+  TARGET_DEFS.forEach(def=>{
+    const k=def.key,tk=targetStoreKey(k),t=cur._targets?cur._targets[tk]:undefined;
+    if(cur[k]!=null&&t!==undefined&&t!==null){
+      const progress=def.direction==="max"?(cur[k]===0?100:Math.round(t/cur[k]*100)):t===0?null:Math.round(cur[k]/t*100);
+      approvedTargets[k]={actual:cur[k],target:t,direction:def.direction==="max"?"at_or_below":"at_or_above",pct_of_target:progress,source:(cur._targetSources&&cur._targetSources[tk])||"approved target"};
+    }
   });
   let paid=null;
   if(cur.spend!=null&&cur.spend>0){paid={spend:cur.spend,paid_reach:cur.paid_reach,organic_reach:cur.organic_reach,paid_impressions:cur.paid_impressions,organic_impressions:cur.organic_impressions,paid_clicks:cur.paid_clicks,paid_leads:cur.paid_leads,paid_follows:cur.paid_follows,paid_conversions:cur.paid_conversions,paid_revenue:cur.paid_revenue,paid_cpm:cur.paid_cpm,paid_ctr:cur.paid_ctr,paid_frequency:cur.paid_frequency,roas:cur.roas,cost_per_paid_click:cur.cost_per_paid_click,cost_per_paid_lead:cur.cost_per_paid_lead,cost_per_paid_follow:cur.cost_per_paid_follow,cost_per_paid_conversion:cur.cost_per_paid_conversion,metric_source:cur._metricSource};}
@@ -1504,16 +1628,16 @@ function buildAIContext(){
   let priorRecommendation=null;try{const moves=JSON.parse(localStorage.getItem(LSK+"_lastmove")||"{}");priorRecommendation=moves[c+"|"+platformKey]||moves[c]||null;}catch(e){}
   const previousReportFindings=previousAINarrative(c);
   return {
-    client:cget("name","")||c, period:label,
+    client:cgetFor(c,"name","")||c, period:label,
     date_range:`${MON[from.getUTCMonth()]} ${from.getUTCDate()} to ${MON[to.getUTCMonth()]} ${to.getUTCDate()}, ${to.getUTCFullYear()}`,
     platforms:plats.map(plat), report_goal:cget("goal","balanced"),
     has_prior_period:!!(prev&&(prev.reach!=null||prev.engagement!=null)),
     engagement_rate_pct:cur.er!=null?+(cur.er*100).toFixed(1):null,
     sample_sizes:{account_rows:cur._periods.length,post_rows:cur._posts.length,selected_platforms:plats.length},
-    metrics, goals, paid_vs_organic:paid, top_posts:top, audience,
+    metrics, approved_targets:approvedTargets, target_policy:"Only approved_targets are valid numeric goals. Never invent or infer another target.", paid_vs_organic:paid, top_posts:top, audience,
     campaigns:groupSummary("campaign"),content_pillars:groupSummary("pillar"),
     trend_series:trendSeries,
-    formula_notes:{engagement_rate:cur._metricSource.er,follower_growth_rate:"net follower growth divided by starting followers",reach_rate:"reach divided by ending followers",story_completion_rate:"direct completed Story views divided by Story views; if completions are absent, 1 minus exits divided by Story views",paid:"platform-reported CPM, CPC, CTR, frequency, CPL, CPA, and ROAS are displayed when supplied; paid-specific raw totals independently recalculate them for CNO validation and fill only missing rates",tracking:"cost per conversion and ROAS are unavailable without paid conversion/revenue attribution",reach:qa&&qa.issues.some(x=>x.title.startsWith("Reach "))?"directional because unique reach is being added across smaller windows":"platform period total",cross_platform:"one platform selected; platform definitions are not blended"},
+    formula_notes:{engagement_rate:"CNO primary standard: (likes + comments + shares + saves) divided by reach. Current source: "+cur._metricSource.er+". Never use followers as the primary denominator.",follower_growth_rate:"net follower growth divided by starting followers",reach_rate:"reach divided by ending followers",story_completion_rate:"direct completed Story views divided by Story views; if completions are absent, 1 minus exits divided by Story views",paid:"platform-reported CPM, CPC, CTR, frequency, CPL, CPA, and ROAS are displayed when supplied; paid-specific raw totals independently recalculate them for CNO validation and fill only missing rates",tracking:"cost per conversion and ROAS are unavailable without paid conversion/revenue attribution",reach:qa&&qa.issues.some(x=>x.title.startsWith("Reach "))?"directional because unique reach is being added across smaller windows":"platform period total",cross_platform:"one platform selected; platform definitions are not blended"},
     data_quality:qa?qa.issues.map(x=>({level:x.level,title:x.title,detail:x.detail})):[],
     previous_recommendation:priorRecommendation,
     previous_report_findings:previousReportFindings,
@@ -1536,7 +1660,7 @@ function safeAIHtml(value,allowBreaks){
 }
 function validateAINarrative(obj,ctx){
   if(!obj||typeof obj!=="object"||!obj.letter||!obj.headline||!obj.best_move)return null;
-  const validEvidence=new Set(Object.keys(ctx.metrics||{}).concat(Object.keys(ctx.goals||{}),["data_quality","human_context","previous_recommendation","previous_report_findings","paid_vs_organic","campaigns","content_pillars","audience","trend_series","formula_notes"],(ctx.top_posts||[]).map(x=>x.evidence_key)));
+  const validEvidence=new Set(Object.keys(ctx.metrics||{}).concat(Object.keys(ctx.approved_targets||{}),["approved_targets","target_policy","data_quality","human_context","previous_recommendation","previous_report_findings","paid_vs_organic","campaigns","content_pillars","audience","trend_series","formula_notes"],(ctx.top_posts||[]).map(x=>x.evidence_key)));
   let refs=0,invalid=0;
   const finding=x=>{if(!x||typeof x!=="object")return null;const evidence=Array.isArray(x.evidence)?x.evidence.map(String).slice(0,5):[];evidence.forEach(k=>{if(validEvidence.has(k)||k.startsWith("campaign:")||k.startsWith("pillar:"))refs++;else invalid++;});return{t:safeAIHtml(x.t,false),d:safeAIHtml(x.d,true),evidence,confidence:["high","medium","low"].includes(x.confidence)?x.confidence:"low"};};
   const best=finding(obj.best_move);if(!best)return null;
@@ -1563,7 +1687,7 @@ async function callAnthropic(key,model,sys,user){
   const d=await res.json();return(d.content&&d.content[0]&&d.content[0].text)||"";
 }
 async function callOpenAI(key,model,sys,user,depth){
-  const res=await fetch("https://api.openai.com/v1/responses",{method:"POST",headers:{"content-type":"application/json","authorization":"Bearer "+key},body:JSON.stringify({model,instructions:sys,input:user,reasoning:{effort:depth||"low"},text:{verbosity:"low",format:{type:"json_schema",name:"cno_monthly_narrative",description:"Evidence-grounded monthly social analytics narrative",strict:true,schema:AI_NARRATIVE_SCHEMA}},max_output_tokens:2000,store:false})});
+  const res=await fetch("https://api.openai.com/v1/responses",{method:"POST",headers:{"content-type":"application/json","authorization":"Bearer "+key},body:JSON.stringify({model,instructions:sys,input:user,reasoning:{effort:depth||"low"},text:{verbosity:"low",format:{type:"json_schema",name:"cno_monthly_narrative",description:"Evidence-grounded monthly social analytics narrative",strict:true,schema:AI_NARRATIVE_SCHEMA}},max_output_tokens:2600,store:false})});
   if(!res.ok)throw new Error("OpenAI "+res.status+": "+(await res.text()).slice(0,180));
   const d=await res.json();if(d.output_text)return d.output_text;for(const item of d.output||[])for(const part of item.content||[])if(part.type==="output_text"&&part.text)return part.text;return"";
 }
@@ -1579,7 +1703,7 @@ async function generateAINarrative(){
   aiSay("Reading the data and writing the letter. This usually takes five to fifteen seconds...",true);
   $("aiRun").disabled=true;
   try{
-    const user="Write the concise client letter, two plain-language good signals, two concerns at most, one next move, and one-sentence explanations for the report sections. Start the letter with Dear "+ctx.client+",. Use only evidence present in this JSON. Evidence arrays must use metric keys, top_post_N keys, or the named context groups. The data is below.\n\n"+JSON.stringify(ctx,null,1)+"\n\nRequired JSON schema:\n"+JSON.stringify(AI_NARRATIVE_SCHEMA);
+    const user="Write a warm, complete monthly letter directly to "+ctx.client+", followed by two plain-language good signals, no more than two concerns, one next move, and one-sentence explanations for the deeper report sections. The letter must begin exactly with Dear "+ctx.client+", and read as a connected narrative rather than a list of metrics. It must end exactly with With care,<br>CNO Creative Co. Use only evidence present in this JSON. Evidence arrays must use metric keys, top_post_N keys, or the named context groups. The data is below.\n\n"+JSON.stringify(ctx,null,1)+"\n\nRequired JSON schema:\n"+JSON.stringify(AI_NARRATIVE_SCHEMA);
     const text=await(provider==="openai"?callOpenAI(key,model,AI_SYSTEM,user,depth):callAnthropic(key,model,AI_SYSTEM,user));
     const obj=validateAINarrative(parseAIJSON(text),ctx);
     if(!obj||!obj.letter)throw new Error("the model did not return usable JSON. Try again, or try a different model.");
@@ -1635,12 +1759,15 @@ function goalMetricRow(cur,prev,key){
   const M=METRICS[key],v=cur[key],pv=prev?prev[key]:null;
   const value=(v===null||v===undefined)?'<span class="missing">Add data</span>':M.fmt(v);
   let delta="";if(v!==null&&v!==undefined&&pv!==null&&pv!==undefined&&!M.snapshot){const d=chg(v,pv);if(d!==null)delta=`<small class="${d>=0?"pos":"neg"}">${d>=0?"↑":"↓"} ${pct(Math.abs(d),0)}</small>`;}
-  const tkey=key.replace(/[^a-z0-9]/gi,"").toLowerCase();
+  const tkey=targetStoreKey(key);
   const target=cur._targets?cur._targets[tkey]:undefined;
   let bar="";
   if(v!==null&&v!==undefined&&target!==undefined&&target>0){
-    const ratio=v/target,w=Math.max(3,Math.min(100,ratio*100)),hit=ratio>=1;
-    bar=`<div class="goalbar"><div class="gtrack"><div class="gfill${hit?" hit":""}" style="width:${w}%"></div></div><div class="gcap"><span class="${hit?"hitlabel":""}">${hit?"Goal met · ":""}${Math.round(ratio*100)}% of goal</span><span>Target ${M.fmt(target)}</span></div></div>`;
+    const def=targetDef(key),maximum=def&&def.direction==="max";
+    const ratio=maximum?(v===0?1:target/v):v/target,w=Math.max(3,Math.min(100,ratio*100)),hit=maximum?v<=target:v>=target;
+    const source=cur._targetSources&&cur._targetSources[tkey]==="CNO-approved target"?"CNO target":"Imported target";
+    const progress=maximum?(hit?"Within target":`${Math.round(v/target*100)}% of maximum`):`${Math.round(ratio*100)}% of goal`;
+    bar=`<div class="goalbar"><div class="gtrack"><div class="gfill${hit?" hit":""}" style="width:${w}%"></div></div><div class="gcap"><span class="${hit?"hitlabel":""}">${hit&&!maximum?"Goal met · ":""}${progress}</span><span>${source} ${maximum?"≤":"≥"} ${M.fmt(target)}</span></div></div>`;
   }
   return `<div class="goalmetric"><span>${M.label}</span><b>${value}${delta}</b>${bar}</div>`;
 }
@@ -1651,7 +1778,7 @@ function goalsHtml(cur,prev){
     ["03","Position for What’s Next","Track whether campaign and event content creates momentum and action.",["event_reach","event_engagement","event_registrations","event_attendees","event_conversion"]],
     ["04","Drive Business Growth","Connect social presence to inquiries, bookings, memberships, sales, and revenue.",["leads","bookings","membership_signups","retail_sales","revenue"]]
   ];
-  return `<div class="goalgrid">${goals.map((g,i)=>`<article class="goalcard"><div class="goalnum">${g[0]}</div><h3>${g[1]}</h3><p>${g[2]}</p><div class="goaltrack">We’ll track</div>${g[3].map(k=>goalMetricRow(cur,prev,k)).join("")}</article>`).join("")}</div><div class="note">Goals are a flexible measurement framework. “Add data” means the selected exports do not contain that business outcome yet; it can be supplied in the same CSV from a booking, CRM, event, or sales export. Progress bars appear when a monthly goal is set for a metric — add a <b>&lt;metric&gt;_target</b> column (e.g. <b>reach_target</b>, <b>bookings_target</b>) to the account CSV.</div>`;
+  return `<div class="goalgrid">${goals.map((g,i)=>`<article class="goalcard"><div class="goalnum">${g[0]}</div><h3>${g[1]}</h3><p>${g[2]}</p><div class="goaltrack">We’ll track</div>${g[3].map(k=>goalMetricRow(cur,prev,k)).join("")}</article>`).join("")}</div><div class="note">“Add data” means the selected exports do not contain that business outcome yet. CNO sets client-approved targets under <b>Customize → Client targets</b>; approved <b>&lt;metric&gt;_target</b> CSV columns can also be used. Blank metrics have no numeric target, and AI is not allowed to invent one.</div>`;
 }
 function horizontalBars(rows,valueKey,formatter=fmtInt){const max=Math.max(1,...rows.map(r=>r[valueKey]||0));return `<div class="hbars">${rows.map(r=>`<div class="hbarrow"><span>${escHtml(r.name)}</span><div class="track"><div class="fill" style="width:${Math.max(2,(r[valueKey]||0)/max*100)}%"></div></div><span class="hv">${formatter(r[valueKey])}</span></div>`).join("")}</div>`;}
 function performanceBoard(c,cur,from,to){
@@ -1789,8 +1916,10 @@ function render(){
   const platformBreakdown=multiPlat?platformBreakdownHtml(c,from,to,platsUsed):"";
   const goalBoard=goalsHtml(cur,prev);
   const goalPriority=["bookings","leads","membership_signups","retail_sales","revenue","link_clicks","profile_views","event_registrations","event_attendees","followers_growth","reach"];
-  const hasTarget=k=>cur._targets&&cur._targets[k.replace(/[^a-z0-9]/gi,"").toLowerCase()]!==undefined;
-  const goalSnapshotKeys=goalPriority.filter(k=>hasTarget(k)&&METRICS[k]&&cur[k]!==null&&cur[k]!==undefined).concat((GOAL_HERO[goal]||GOAL_HERO.balanced).filter(k=>METRICS[k]&&cur[k]!==null&&cur[k]!==undefined)).filter((k,i,a)=>a.indexOf(k)===i).slice(0,4);
+  const hasTarget=k=>cur._targets&&cur._targets[targetStoreKey(k)]!==undefined;
+  const cnoTargetKeys=Object.keys(clientTargetsFor(c,selectedPlats(c))||{}).filter(k=>hasTarget(k));
+  const allTargetKeys=TARGET_DEFS.map(def=>def.key).filter(k=>hasTarget(k));
+  const goalSnapshotKeys=cnoTargetKeys.concat(goalPriority.filter(k=>hasTarget(k)),allTargetKeys,(GOAL_HERO[goal]||GOAL_HERO.balanced)).filter(k=>METRICS[k]&&cur[k]!==null&&cur[k]!==undefined).filter((k,i,a)=>a.indexOf(k)===i).slice(0,4);
   const goalSnapshot=`<div class="goal-snapshot">${goalSnapshotKeys.map(k=>goalMetricRow(cur,prev,k)).join("")}</div>`;
   const performanceHtml=performanceBoard(c,cur,from,to);
   const journey=journeyHtml(cur,prev);
@@ -1947,7 +2076,8 @@ function render(){
   const winsSrc=(ai&&ai.working_now&&ai.working_now.length)?ai.working_now.slice(0,2):A.wins.slice(0,2);
   const watchSrc=(ai&&ai.needs_attention&&ai.needs_attention.length)?ai.needs_attention.slice(0,2):A.watch.slice(0,2);
   const bestSrc=(ai&&ai.best_move&&ai.best_move.t)?ai.best_move:A.best;
-  const letterLeadHtml=edBlock("letter_lead",(ai&&ai.letter)?ai.letter:defaultLetterLead(c,cur,prev,A,label,nameShow,platsUsed,dateSpan));
+  const fallbackLetter=defaultLetterLead(c,cur,prev,A,label,nameShow,platsUsed,dateSpan);
+  const letterLeadHtml=edBlock("letter_lead",letterForDisplay(ai&&ai.letter,fallbackLetter,nameShow));
   const headlineHtml=edBlock("headline",(ai&&ai.headline)?ai.headline:headline(c,cur,prev,A));
   // wins/watch with editable text (em dashes stripped to match the house voice)
   const winHtml=winsSrc.map((w,i)=>`<div class="ins win"><div class="t">${ed("win_t"+i,stripEmDash(w.t))}</div><div class="d">${ed("win_d"+i,stripEmDash(w.d))}</div></div>`).join("")||'<div class="note">Not enough signal yet.</div>';
@@ -1965,26 +2095,30 @@ function render(){
   </div>
 
   ${!multiPlat?`<section class="narrative-section" id="story" data-page="1">
-    <div class="sec-label">The story this period ${aiBadge}</div>
-    <div class="letterlead">${letterLeadHtml}</div>
-    <div class="headline">${headlineHtml}</div>
-    ${followup}
-    <div class="storycols">
-      <div class="storycol">
-        <h4><span class="ic" style="background:#eaeee2;color:var(--sage-deep)">${ico("trending")}</span>Working now</h4>
-        <div class="h4sub">Signals helping performance.</div>
-        ${winHtml}
+    <div class="letterleaf">
+      <div class="letter-kicker"><div class="sec-label">A letter from CNO ${aiBadge}</div><div class="date">${dateSpan}</div></div>
+      <div class="letterlead">${letterLeadHtml}</div>
+      ${followup}
+      <div class="letter-observations">
+        <div><div class="sec-label">Our read</div><div class="headline">${headlineHtml}</div></div>
+        <div class="storycols">
+          <div class="storycol">
+            <h4><span class="ic" style="background:#eaeee2;color:var(--sage-deep)">${ico("trending")}</span>What felt strong</h4>
+            <div class="h4sub">The signal we want to build on.</div>
+            ${winHtml}
+          </div>
+          <div class="storycol">
+            <h4><span class="ic" style="background:#f6e7e0;color:var(--burnt)">!</span>What we are watching</h4>
+            <div class="h4sub">The part that needs care next month.</div>
+            ${watchHtml}
+          </div>
+        </div>
       </div>
-      <div class="storycol">
-        <h4><span class="ic" style="background:#f6e7e0;color:var(--burnt)">!</span>Needs attention</h4>
-        <div class="h4sub">Patterns to adjust before next cycle.</div>
-        ${watchHtml}
+      <div class="bestmove">
+        <div class="lab">Where we go next</div>
+        <div class="t">${ed("best_t",stripEmDash(bestSrc.t))}</div>
+        <div class="d">${ed("best_d",stripEmDash(bestSrc.d))}</div>
       </div>
-    </div>
-    <div class="bestmove">
-      <div class="lab">Best next move</div>
-      <div class="t">${ed("best_t",stripEmDash(bestSrc.t))}</div>
-      <div class="d">${ed("best_d",stripEmDash(bestSrc.d))}</div>
     </div>
   </section>`:`<section class="narrative-section" id="story" data-page="1"><div class="sec-label">Cross-platform comparison</div><div class="headline">Each platform is shown on its own terms.</div><div class="letterlead">This view compares ${platsUsed.map(p=>escHtml(plat(p))).join(", ")} without adding unlike reach, view, or engagement definitions together. Use the separate cards and charts below for the portfolio read, then select one platform above for its complete goals, funnel, content diagnostics, paid efficiency, and recommendations.</div></section>`}
 
@@ -2080,7 +2214,7 @@ $("platChips").addEventListener("change",e=>{
   const c=$("clientSel").value;
   const chosen=new Set([...document.querySelectorAll("#platChips input:checked")].map(i=>i.dataset.plat));
   if(!chosen.size){buildPlatChips();return;} /* keep at least one */
-  PLATSEL[c]=chosen;buildPlatChips();render();
+  PLATSEL[c]=chosen;buildPlatChips();render();if($("custPanel").classList.contains("open"))buildCustomUI();
 });
 function refreshPeriods(){
   const c=$("clientSel").value;const ms=monthsFor(c);const sel=$("periodSel");
@@ -2095,6 +2229,14 @@ function onPeriodChange(){const cust=$("periodSel").value==="custom";$("fromWrap
   render();}
 
 /* ==================== customize UI ==================== */
+function invalidateCurrentAI(message="Targets changed. Regenerate AI analysis before sharing."){
+  if(CTX&&AINARR[CTX]){delete AINARR[CTX];saveAINarr();aiSay(message);}
+}
+function refreshTargetClientLabel(){
+  const client=customClient(),platformKey=targetPlatformKey(client),snapshot=client&&platformKey&&CURRENT&&CURRENT.from&&CURRENT.to?windowMetrics(client,CURRENT.from,CURRENT.to,new Set([platformKey])):null;
+  const count=snapshot?Object.keys(snapshot._targets||{}).length:Object.keys(clientTargetsFor(client,platformKey?new Set([platformKey]):null)||{}).length;
+  if($("targetClientLabel"))$("targetClientLabel").textContent=client?(platformKey?`${client} · ${plat(platformKey)} · ${count} active`:`${client} · Select one platform`):"No client selected";
+}
 function buildCustomUI(){
   if($("grainSel"))$("grainSel").value=cget("grain","week");
   $("goalSel").value=cget("goal","balanced");
@@ -2105,15 +2247,39 @@ function buildCustomUI(){
   const order=sectionOrder(),defs=Object.fromEntries(SECTION_DEFS.map(x=>[x.key,x]));
   $("sectionChecks").className="section-order-list";
   $("sectionChecks").innerHTML=order.map((k,i)=>{const def=defs[k];return `<div class="section-order-row" data-order-key="${k}"><label class="chk"><input type="checkbox" data-sec="${k}" ${cget("sec_"+k,true)!==false?"checked":""}><span>${def.label}</span></label><select data-sec-page="${k}" aria-label="${def.label} report page">${[1,2,3,4].map(p=>`<option value="${p}" ${sectionPage(k)===p?"selected":""}>Page ${p}</option>`).join("")}</select><button class="movebtn" type="button" data-move="${k}" data-dir="-1" aria-label="Move ${def.label} up" ${i===0?"disabled":""}>↑</button><button class="movebtn" type="button" data-move="${k}" data-dir="1" aria-label="Move ${def.label} down" ${i===order.length-1?"disabled":""}>↓</button></div>`;}).join("");
+  const client=customClient(),platformKey=targetPlatformKey(client),targetSet=platformKey?new Set([platformKey]):null,targets=clientTargetsFor(client,targetSet);
+  const targetSnapshot=client&&platformKey&&CURRENT&&CURRENT.from&&CURRENT.to?windowMetrics(client,CURRENT.from,CURRENT.to,targetSet):null;
+  refreshTargetClientLabel();
+  $("useImportedTargets").checked=platformKey?importedTargetsEnabledFor(client,targetSet):false;
+  $("useImportedTargets").disabled=!platformKey;
+  const grouped={};TARGET_DEFS.forEach(def=>(grouped[def.group]=grouped[def.group]||[]).push(def));
+  $("targetInputs").innerHTML=!platformKey?`<div class="target-standard" style="grid-column:1/-1"><strong>Choose one platform</strong>Targets are platform-specific so an Instagram goal is never reused for TikTok or LinkedIn. Select exactly one platform above to edit its targets.</div>`:Object.entries(grouped).map(([group,items],index)=>{
+    const hasValue=items.some(def=>targets[def.key]!==undefined&&targets[def.key]!==null);
+    const fields=items.map(def=>{
+      const label=METRICS[def.key]?.label||def.key,unit=targetUnitLabel(def),value=targetInputValue(def,targets[def.key]),tk=targetStoreKey(def.key);
+      const imported=targetSnapshot&&targetSnapshot._targetSources&&targetSnapshot._targetSources[tk]==="Imported target"?targetInputValue(def,targetSnapshot._targets[tk]):null;
+      const placeholder=imported!==null&&imported!==""?`CSV: ${imported}`:"Not set";
+      const guidance=def.direction==="max"?"At or below":"At or above";
+      const step=def.unit==="percent"?"0.1":def.unit==="money"?"0.01":def.unit==="multiple"?"0.1":"1";
+      return `<div class="target-field"><label for="target_${def.key}">${escHtml(label)}<span>${guidance}${unit?" · "+unit:""}</span></label><div class="target-input-wrap"><input id="target_${def.key}" type="number" min="0" step="${step}" inputmode="decimal" data-target="${def.key}" value="${value}" placeholder="${escHtml(placeholder)}" aria-label="${escHtml(label)} target">${unit?`<span class="target-unit${def.unit==="money"?" prefix":""}">${unit}</span>`:""}</div></div>`;
+    }).join("");
+    return `<details class="target-group" ${hasValue||index<2?"open":""}><summary>${escHtml(group)}</summary><div class="target-grid">${fields}</div></details>`;
+  }).join("");
 }
 function wireCustom(){
-  $("goalSel").addEventListener("change",e=>{cset("goal",e.target.value);cset("hero",null);saveCustom();buildCustomUI();render();});
-  $("nameOverride").addEventListener("input",e=>{cset("name",e.target.value);saveCustom();render();});
+  $("goalSel").addEventListener("change",e=>{invalidateCurrentAI("Report goal changed. Regenerate AI analysis before sharing.");cset("goal",e.target.value);cset("hero",null);saveCustom();buildCustomUI();render();});
+  $("nameOverride").addEventListener("input",e=>{invalidateCurrentAI("Client name changed. Regenerate AI analysis before sharing.");cset("name",e.target.value);saveCustom();render();});
   $("letterTog").addEventListener("change",e=>{cset("letter",e.target.checked);saveCustom();});
   $("heroChecks").addEventListener("change",e=>{if(!e.target.dataset.hero)return;const chosen=[...document.querySelectorAll("#heroChecks input:checked")].map(i=>i.dataset.hero);cset("hero",chosen);saveCustom();render();});
   $("sectionChecks").addEventListener("change",e=>{if(e.target.dataset.sec){cset("sec_"+e.target.dataset.sec,e.target.checked);}else if(e.target.dataset.secPage){cset("page_"+e.target.dataset.secPage,Number(e.target.value));}else return;saveCustom();render();});
   $("sectionChecks").addEventListener("click",e=>{const key=e.target.dataset.move;if(!key)return;const order=sectionOrder(),from=order.indexOf(key),to=from+Number(e.target.dataset.dir);if(from<0||to<0||to>=order.length)return;[order[from],order[to]]=[order[to],order[from]];cset("sectionOrder",order);saveCustom();buildCustomUI();render();});
-  $("resetCustBtn").addEventListener("click",()=>{const client=customClient();if(client&&CUSTOM.clientSettings)delete CUSTOM.clientSettings[client];["grain","goal","name","letter","hero","sectionOrder",...SECTION_DEFS.flatMap(x=>["sec_"+x.key,"page_"+x.key])].forEach(key=>delete CUSTOM[key]);saveCustom();buildCustomUI();render();});
+  let targetTimer=null;
+  const commitTarget=input=>{const key=input.dataset.target;if(!key)return;const def=targetDef(key),targets={...clientTargetsFor(customClient())},value=targetStoredValue(def,input.value);if(value===null||input.value==="")delete targets[key];else targets[key]=value;invalidateCurrentAI();if(!saveTargetsForCurrentPlatform(targets))return;saveCustom();render();refreshTargetClientLabel();};
+  $("targetInputs").addEventListener("input",e=>{if(!e.target.dataset.target)return;clearTimeout(targetTimer);const input=e.target;targetTimer=setTimeout(()=>commitTarget(input),250);});
+  $("targetInputs").addEventListener("change",e=>{if(!e.target.dataset.target)return;clearTimeout(targetTimer);commitTarget(e.target);});
+  $("useImportedTargets").addEventListener("change",e=>{invalidateCurrentAI("Target source changed. Regenerate AI analysis before sharing.");if(!saveImportedTargetChoiceForCurrentPlatform(e.target.checked))return;saveCustom();render();refreshTargetClientLabel();});
+  $("clearTargetsBtn").addEventListener("click",async()=>{if(!targetPlatformKey(customClient())){await appAlert("Select one platform before editing targets.","Choose a platform");return;}if(!await appConfirm("Clear every CNO-entered target for this client and platform? Imported targets will follow the switch above.","Clear client targets"))return;invalidateCurrentAI();saveTargetsForCurrentPlatform({});saveCustom();buildCustomUI();render();});
+  $("resetCustBtn").addEventListener("click",()=>{invalidateCurrentAI("Customization changed. Regenerate AI analysis before sharing.");const client=customClient();if(client&&CUSTOM.clientSettings)delete CUSTOM.clientSettings[client];["grain","goal","name","letter","hero","targets","targetsByPlatform","useImportedTargets","useImportedTargetsByPlatform","sectionOrder",...SECTION_DEFS.flatMap(x=>["sec_"+x.key,"page_"+x.key])].forEach(key=>delete CUSTOM[key]);saveCustom();buildCustomUI();render();});
   $("resetTextBtn").addEventListener("click",()=>{Object.keys(EDITS).forEach(k=>{if(k.indexOf(CTX+"|")===0)delete EDITS[k];});delete AINARR[CTX];saveEdits();saveAINarr();render();});
   // AI narrative controls
   const cfg=aiCfg();
@@ -2160,7 +2326,7 @@ function closeWorkspacePanels(except=null){
 }
 function openWorkspacePanel(name,{scroll=true}={}){
   closeWorkspacePanels(name);setWorkspacePanelState(name,true);
-  if(name==="quality")renderQualityPanel();if(name==="ai")renderAIEvidence();
+  if(name==="quality")renderQualityPanel();if(name==="ai")renderAIEvidence();if(name==="customize")buildCustomUI();
   if(scroll)setTimeout(()=>$(WORKSPACE_PANELS[name].panel).scrollIntoView({behavior:"smooth",block:"start"}),0);
 }
 function toggleWorkspacePanel(name){
@@ -2185,12 +2351,17 @@ $("aiClose").addEventListener("click",()=>closeWorkspacePanel("ai"));
 $("aiForget").addEventListener("click",()=>{localStorage.removeItem("cno_ai_cfg");localStorage.removeItem("cno_ai_key");sessionStorage.removeItem("cno_ai_key");$("aiKey").value="";aiSay("API key removed from this CNO device.");});
 $("syncBtn").addEventListener("click",()=>toggleWorkspacePanel("sync"));
 $("syncClose").addEventListener("click",()=>closeWorkspacePanel("sync"));
-const savedSyncUrl=localStorage.getItem("cno_sync_service_url");if(savedSyncUrl)$("syncServiceUrl").value=savedSyncUrl;
+const savedSyncUrl=localStorage.getItem("cno_sync_service_url");$("syncServiceUrl").value=savedSyncUrl||SYNC_BASE;
+$("syncGuideLink").href=REPO_BASE+"/blob/main/MIGRATE_TO_CNO_ACCOUNTS.md";
+$("downloadLink").href=REPO_BASE+"/releases/latest";
+$("desktopGuideLink").href=REPO_BASE+"/blob/main/DESKTOP.md";
 $("syncOpen").addEventListener("click",async()=>{
   const url=$("syncServiceUrl").value.trim().replace(/\/$/,""),status=$("syncStatus");
   if(!/^https:\/\//i.test(url)&&!/^http:\/\/localhost(?::\d+)?$/i.test(url)){status.textContent="Use an HTTPS service URL (or localhost while developing).";status.className="aistatus show";return;}
   localStorage.setItem("cno_sync_service_url",url);
-  status.textContent="Checking the private CNO connection service…";status.className="aistatus show";
+  const popup=window.open("","cnoNativeConnection","popup=yes,width=1080,height=780");
+  if(popup){popup.document.title="CNO secure connection";popup.document.body.innerHTML='<div style="min-height:90vh;display:grid;place-items:center;background:#fff8e7;color:#2b2622;font:18px Georgia,serif"><div style="text-align:center"><img src="'+location.origin+location.pathname.replace(/[^/]*$/,"")+'cno-seal.png" alt="" style="width:90px;height:90px;object-fit:contain"><p>Opening CNO’s secure connection center…</p></div></div>';}
+  status.textContent="Checking CNO’s secure browser connection…";status.className="aistatus show";
   $("syncOpen").disabled=true;
   let timer;
   try{
@@ -2198,11 +2369,13 @@ $("syncOpen").addEventListener("click",async()=>{
     const response=await fetch(url+"/health",{signal:controller.signal,cache:"no-store"});
     const health=response.ok?await response.json():null;
     if(!response.ok||!health?.ok)throw new Error("service unavailable");
-    status.textContent="Connection service is ready. Opening the secure sign-in center…";
+    status.textContent="Connection service is ready. Complete the platform sign-in in the secure browser window.";
     const client=(CURRENT&&CURRENT.client)||$("clientSel").value||"";
-    window.open(url+"/admin"+(client?"?client_ref="+encodeURIComponent(client):""),"_blank","noopener");
+    const destination=url+"/admin"+(client?"?client_ref="+encodeURIComponent(client):"");
+    if(popup){popup.location.replace(destination);popup.focus();}else{status.innerHTML=`Your browser blocked the connection window. <a href="${escHtml(destination)}" target="_blank" rel="noopener">Open the secure connection center</a>.`;}
   }catch{
-    status.innerHTML='Native sync is not live yet. The secure connection service must first be deployed and configured by CNO. <a href="https://github.com/joongsukkie/cno-analytics-report/blob/main/sync-service/README.md" target="_blank" rel="noopener">Open the setup guide</a>.';
+    if(popup)popup.close();
+    status.innerHTML=`Native sync is not live yet, so no sign-in page was opened. A CNO account owner can finish the one-time setup entirely in GitHub, Render, and the platform developer websites. After that, staff only use this button. <a href="${escHtml(REPO_BASE)}/blob/main/MIGRATE_TO_CNO_ACCOUNTS.md" target="_blank" rel="noopener">Open the browser setup checklist</a>.`;
   }finally{clearTimeout(timer);$("syncOpen").disabled=false;}
 });
 $("exportBtn").addEventListener("click",doExport);
@@ -2253,11 +2426,10 @@ function maybeShowLetter(force){
   const c=$("clientSel").value, nameShow=cget("name","")||c;
   const headEl=document.querySelector("#report .headline");
   const head=headEl?headEl.textContent.trim():"";
-  const bmEl=document.querySelector("#report .bestmove .t");
   const ai=AINARR[CTX]||null;
-  const fallback=`Dear <b>${escHtml(nameShow)}</b>,<br><br>${head?escHtml(head)+" ":""}This first page gives you the good news, the concern, and the next move. Turn the page whenever you want the supporting charts and full data.<br><br>With care,<br>CNO Creative Co`;
-  const body=ed("letter_body",ai&&ai.letter?ai.letter:fallback);
-  $("letterCard").innerHTML=`<img class="lsm" src="cno-seal.png" alt=""><h2>Your monthly letter</h2><div class="lbody">${body}</div><button class="lopen" id="lopenBtn">Open the report</button>`;
+  const fallbackFromReport=document.querySelector("#report .letterlead .ed")?.innerHTML||`Dear <b>${escHtml(nameShow)}</b>,<br><br>${head?escHtml(head)+" ":""}We have gathered the clearest story from this month and the next step we recommend. The supporting detail is waiting inside whenever you would like it.<br><br>With care,<br>CNO Creative Co`;
+  const body=ed("letter_body",letterForDisplay(ai&&ai.letter,fallbackFromReport,nameShow));
+  $("letterCard").innerHTML=`<img class="lsm" src="cno-seal.png" alt=""><h2>A letter for ${escHtml(nameShow)}</h2><div class="lbody">${body}</div><button class="lopen" id="lopenBtn">Open the report</button>`;
   const ov=$("letterOverlay");ov.hidden=false;
   $("lopenBtn").addEventListener("click",closeLetter);
   wireEdits();
@@ -2293,6 +2465,26 @@ renderImportCenter();
     }
     maybeShowLetter(false);
   }
+  const params=new URLSearchParams(location.search),reportId=params.get("report");
+  if(reportId){
+    try{
+      const service=(params.get("service")||SYNC_BASE).replace(/\/$/,"");
+      if(!/^https:\/\//i.test(service)&&!/^http:\/\/localhost(?::\d+)?$/i.test(service))throw new Error("The report service address is invalid");
+      const response=await fetch(service+"/v1/reports/"+encodeURIComponent(reportId),{cache:"no-store"});
+      const saved=await response.json();
+      if(!response.ok||!saved.payload)throw new Error(saved.error||"This saved report is unavailable");
+      if(saved.encrypted){
+        for(let i=0;i<3;i++){
+          const pw=await appPrompt("Enter the password CNO sent separately to open this client report.",{title:"Protected client report",type:"password",confirmText:"Open report"});
+          if(pw===null)return;
+          try{const b64=await decryptStr(saved.payload,pw.trim());await loadBundle(await gunzB64(b64));return;}
+          catch(e){await appAlert("That password didn't work."+(i<2?" Try again.":""),"Password not accepted");}
+        }
+        return;
+      }
+      await loadBundle(await gunzB64(saved.payload));return;
+    }catch(e){await appAlert("This client report could not be opened. "+(e.message||e)+" Ask CNO for a new link.","Report link unavailable");return;}
+  }
   if(h.indexOf("#edata=")===0){
     const payload=h.slice(7);
     for(let i=0;i<3;i++){
@@ -2305,7 +2497,7 @@ renderImportCenter();
   }
   if(h.indexOf("#data=")===0){
     try{await loadBundle(await gunzB64(h.slice(6)));return;}
-    catch(e){console.warn("share link decode failed",e);}
+    catch(e){console.warn("share link decode failed",e);await appAlert("This client link is incomplete or was shortened by the app that sent it. Ask CNO for a new short report link.","Report link incomplete");return;}
   }
   if(h.indexOf("#sync=")===0){
     try{

@@ -54,6 +54,10 @@ Reach is a unique-account count within the platform's measurement window. Daily 
 ## Optional: monthly goals (targets)
 The **Client goals & success metrics** scorecard can show a progress bar for any metric once you give it a monthly target. Add a column named `<metric>_target` to the **account-level** file — e.g. `reach_target`, `profile_views_target`, `link_clicks_target`, `followers_growth_target`, `event_registrations_target`, `bookings_target`, `revenue_target`. Each row's target applies to that account/period; across a multi-month window, flow targets (reach, leads, revenue…) sum and rate targets average. Leave a cell blank for no target — the row simply shows the value and its change instead of a bar.
 
+CNO can also enter targets in **Customize → Client targets**. Those settings are stored separately for each client and platform, so an Instagram target is never silently applied to TikTok or LinkedIn. They override an imported target for the same metric, and CNO can disable imported target columns for that client/platform. Only imported or CNO-entered values are sent to AI as `approved_targets`; AI is instructed never to create or infer a numeric goal.
+
+Percentage targets in the Customize screen are entered as ordinary percentages (`4` means 4%). CSV rate targets use decimal form (`0.04` means 4%). Cost limits such as CPM, CPC, cost per lead, and cost per conversion are treated as **at or below** targets; growth, volume, revenue, CTR, and ROAS goals are treated as **at or above** targets.
+
 ## A note on Rella's follower count
 Rella returns the **current** follower total regardless of the date range, so follower *trends* are computed from monthly **growth**, not by differencing the total. The tool handles this for you.
 
