@@ -159,7 +159,6 @@
   .sec-sub{font-size:12.5px;color:var(--ink-soft);margin-bottom:20px;max-width:70ch}
   /* story */
   .letterleaf{position:relative;padding:8px 0 2px}
-  .letterleaf::before{content:"";position:absolute;top:-8px;right:0;width:72px;height:72px;background:url("cno-seal.png") center/contain no-repeat;opacity:.11;pointer-events:none}
   .letter-kicker{display:flex;align-items:center;justify-content:space-between;gap:20px;margin-bottom:24px;padding-bottom:12px;border-bottom:1px solid rgba(153,97,55,.22)}
   .letter-kicker .date{font-family:var(--serif);font-style:italic;font-size:15px;color:var(--ink-soft)}
   .letterlead{font-family:var(--serif);font-size:clamp(20px,2vw,25px);line-height:1.72;color:var(--ink);width:100%;max-width:none;margin:0 0 28px;letter-spacing:-.006em}
@@ -1815,7 +1814,7 @@ function saveAINarr(){try{localStorage.setItem(LSK+"_ai",JSON.stringify(AINARR))
 let CTX="";
 function ekey(eid){return CTX+"|"+eid;}
 function ed(eid,html){const cur=EDITS[ekey(eid)];const edited=cur!==undefined;return `<span class="ed${edited?" edited":""}" contenteditable="${VIEW_LOCK?"false":"true"}" data-eid="${eid}">${edited?safeAIHtml(cur,true):html}</span>`;}
-function edBlock(eid,html){const cur=EDITS[ekey(eid)];const edited=cur!==undefined;return `<div class="ed${edited?" edited":""}" contenteditable="${VIEW_LOCK?"false":"true"}" data-eid="${eid}">${edited?safeAIHtml(cur,true):html}</div>`;}
+function edBlock(eid,html,frame){const cur=EDITS[ekey(eid)];const edited=cur!==undefined;const body=edited?safeAIHtml(cur,true):html;return `<div class="ed${edited?" edited":""}" contenteditable="${VIEW_LOCK?"false":"true"}" data-eid="${eid}">${frame?frame(body):body}</div>`;}
 
 /* ==================== icons (inline svg, tabler-ish) ==================== */
 const ICON={
@@ -1967,10 +1966,26 @@ function defaultLetterLead(c,cur,prev,A,label,nameShow,platsUsed,dateSpan){
   return `Dear <b>${escHtml(nameShow)}</b>,<br><br>This month, ${move}${eng}.${aud}<br><br>What encouraged us most was that ${win}. It gives us a clearer idea of what the audience is responding to and what deserves another thoughtful test.<br><br>The part we are watching is that ${concern}. That does not erase the progress, but it does tell us where the next month needs more care.<br><br>Our recommendation is to <b>${plainAIText(best.t).toLowerCase()}</b>. We will test that direction again, compare it with this month, and use the result to decide what should scale. The deeper pages hold the evidence whenever you would like to explore it.<br><br>With care,<br>CNO Creative Co`;
 }
 function letterForDisplay(value,fallback,nameShow){
-  let safe=safeAIHtml(value||"",true);
-  const plain=plainAIText(safe).toLowerCase(),expected=("dear "+String(nameShow||"").trim().toLowerCase()+",");
-  if(!plain.startsWith("dear ")||!plain.startsWith(expected))safe=fallback;
-  if(!plainAIText(safe).toLowerCase().endsWith("cno creative co"))safe+=`<br><br>With care,<br>CNO Creative Co`;
+  const safe=safeAIHtml(value||"",true);
+  const expected="dear "+String(nameShow||"").trim().toLowerCase()+",";
+  /* AI output is untrusted: a letter that does not open correctly is replaced outright by the
+     deterministic letter rather than patched, so a wandering model cannot reshape the opening. */
+  return letterFrame(plainAIText(safe).toLowerCase().startsWith(expected)?safe:fallback,nameShow);
+}
+const escRe=s=>String(s).replace(/[.*+?^${}()|[\]\\]/g,"\\$&");
+/* The client letter always opens "Dear <client>," and closes with the CNO sign-off, whichever
+   route the words arrived by. A staff edit that dropped the salutation has it restored instead of
+   being discarded, because the edited wording is the part worth keeping. */
+function letterFrame(html,nameShow){
+  let safe=safeAIHtml(html||"",true);
+  const name=String(nameShow||"").trim();
+  if(!new RegExp("^dear\\s+"+escRe(name.toLowerCase())+"\\s*,","i").test(plainAIText(safe).trim().toLowerCase())){
+    /* The old salutation may wrap the name in tags ("Dear <b>Old Client</b>,"), so allow markup
+       between "Dear" and its comma before dropping the whole line. */
+    safe=safe.replace(/^(?:\s|<br\s*\/?>)*(?:<[^>]+>\s*)*dear\b[^,]{0,120},(?:\s*<\/[^>]+>)*(?:\s|<br\s*\/?>)*/i,"");
+    safe=`Dear <b>${escHtml(name)}</b>,<br><br>`+safe.replace(/^(?:\s|<br\s*\/?>)+/i,"");
+  }
+  if(!plainAIText(safe).toLowerCase().trim().endsWith("cno creative co"))safe+=`<br><br>With care,<br>CNO Creative Co`;
   return safe;
 }
 
@@ -2520,7 +2535,7 @@ function render(){
   const watchSrc=(ai&&ai.needs_attention&&ai.needs_attention.length)?ai.needs_attention.slice(0,2):A.watch.slice(0,2);
   const bestSrc=(ai&&ai.best_move&&ai.best_move.t)?ai.best_move:A.best;
   const fallbackLetter=defaultLetterLead(c,cur,prev,A,label,nameShow,platsUsed,dateSpan);
-  const letterLeadHtml=edBlock("letter_lead",letterForDisplay(ai&&ai.letter,fallbackLetter,nameShow));
+  const letterLeadHtml=edBlock("letter_lead",letterForDisplay(ai&&ai.letter,fallbackLetter,nameShow),body=>letterFrame(body,nameShow));
   const headlineHtml=edBlock("headline",(ai&&ai.headline)?ai.headline:headline(c,cur,prev,A));
   // wins/watch with editable text (em dashes stripped to match the house voice)
   const winHtml=winsSrc.map((w,i)=>`<div class="ins win"><div class="t">${ed("win_t"+i,stripEmDash(w.t))}</div><div class="d">${ed("win_d"+i,stripEmDash(w.d))}</div></div>`).join("")||'<div class="note">Not enough signal yet.</div>';
