@@ -73,6 +73,8 @@ The account-transfer runbook is in [`MIGRATE_TO_CNO_ACCOUNTS.md`](MIGRATE_TO_CNO
 
 The complete v1.7 verification record is in [`RELEASE_AUDIT_v1.7.0.md`](RELEASE_AUDIT_v1.7.0.md).
 
+The full product, architecture, request history, limitations, and prioritized roadmap for another developer are in [`DEVELOPER_HANDOFF.md`](DEVELOPER_HANDOFF.md).
+
 ## Keeping reports refreshed
 
 No backend is required for manual CSV refreshes or deterministic analytics. For each reporting cycle, export the available date range from Rella and/or the native platforms, add any offline outcomes from the client’s booking/CRM/sales records, then upload the whole folder through **Import data**. The report audits and merges the files, separates platforms, removes exact duplicate rows, and recalculates the selected period. Confirm that the selected client’s approved targets are correct under **Customize**, generate and review the required AI letter, then create a new password-protected share link.
@@ -109,6 +111,7 @@ Static site, no build. On [Render](https://render.com): connect the repo, choose
 | `DATA_ACCURACY_AND_ACCESS.md` | Metric-governance rules and the CNO staff/client access roadmap |
 | `CLOUD_AUTOMATION_BLUEPRINT.md` | Managed accounts, report archive, monthly delivery, and production security plan |
 | `MIGRATE_TO_CNO_ACCOUNTS.md` | Transfer checklist for CNO-owned GitHub, Render, domains, secrets, and callbacks |
+| `DEVELOPER_HANDOFF.md` | Complete developer handoff: requirements, architecture, current status, risks, and roadmap |
 | `sync-service/` | Private OAuth, encrypted token storage, exact account assignment, scheduler-ready native sync, and one-use report imports |
 
 ## Brand
