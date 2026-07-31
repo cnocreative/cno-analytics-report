@@ -129,7 +129,39 @@ cp .env.example .env
 npm start
 ```
 
-Use a local Postgres database and provider test apps. OAuth providers generally require HTTPS callback URLs outside localhost, so a temporary secure development tunnel may be necessary.
+`DATABASE_URL` is optional. Without it the service keeps everything in a local JSON file under
+`.data/` (override with `SYNC_DATA_DIR`), which is enough to run the whole browser connection flow
+end to end without provisioning a database first. The console shows a standing warning while it is
+in that mode, and `/health` reports `"durable": false`. Set `DATABASE_URL` before connecting any
+real client account.
+
+Missing configuration explains itself rather than crash-looping: `/health` returns
+`setup_complete`, the console lists exactly which secrets are missing, and a provider with no
+credentials shows as "waiting" instead of offering a button that fails mid sign-in.
+
+OAuth providers generally require HTTPS callback URLs outside localhost, so a temporary secure
+development tunnel is usually needed to complete a real provider sign-in locally.
+
+## Endpoints
+
+| Route | Who calls it | Purpose |
+|---|---|---|
+| `GET /health` | Render, monitoring | Liveness, storage kind, whether setup is complete |
+| `GET /v1/session` | Report app | Signed-in state and which providers are configured |
+| `GET /v1/connections` | Report app (staff session) | Every connection with its state and assigned account |
+| `POST /v1/sync` | Report app (staff session) | Refresh one client from its connected platforms |
+| `GET /v1/rows` | Report app (staff session) | Latest normalized rows for one client |
+| `POST /v1/reports`, `GET /v1/reports/:id` | Report app / client | Short client report links |
+| `GET /v1/import/:token` | Report app | Single-use cross-device data handoff |
+| `POST /v1/cron/sync` | GitHub Actions | Scheduled refresh, guarded by `SYNC_CRON_SECRET` |
+| `/admin/*` | CNO staff browser | Sign-in, provider connection, account assignment, link management |
+
+`REPORT_ORIGIN` accepts a comma-separated list, so the Render site, a custom CNO domain, and a
+developer's localhost can all reach the service. Only listed origins receive CORS approval.
+
+Every state-changing `/admin` form carries a token derived from the session secret, and cross-site
+form posts are rejected. This matters because the session cookie is `SameSite=None` so the report
+app can use it; without the token check that cookie would make the admin forms forgeable.
 
 ## Remaining production work
 

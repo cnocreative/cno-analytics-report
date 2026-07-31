@@ -2,7 +2,7 @@
 
 Last updated: July 31, 2026
 
-Current release: `v1.7.0`
+Current release: `v1.8.0`
 
 Current repository: `https://github.com/joongsukkie/cno-analytics-report`
 
@@ -25,10 +25,11 @@ The product is intentionally more than a copy of a native analytics dashboard. I
 
 The current release is a controlled pilot:
 
-- The report generator, CSV importer, deterministic calculations, interactive visualizations, AI-assisted client letter, customization, PWA, Windows installer, and Mac ARM installer are implemented.
-- The static website works without a database for manual CSV reporting.
-- A Node/Postgres OAuth and short-link service is implemented in the repository and locally verified.
-- The public native-sync service is **not deployed and configured yet**.
+- The report generator, multi-format importer, deterministic calculations, interactive visualizations, AI-assisted client letter, customization, PWA, Windows installer, and Mac ARM installer are implemented.
+- The importer reads CSV, TSV, Excel `.xlsx` workbooks, `.zip` platform downloads, and JSON exports, in whatever text encoding the platform used.
+- The static website works without a database for manual reporting.
+- A Node OAuth, sync, and short-link service is implemented in the repository. It runs with or without Postgres, and the report app drives it directly: connection state, refresh, and data load all happen inside the report window.
+- The public native-sync service is **not deployed and configured yet**, and no provider app has completed review.
 - Individual staff accounts, client accounts, a cloud report archive, server-side AI, automatic monthly generation, approval workflow, and email delivery are **future secured backend work**, not completed features.
 
 Private client data is intentionally excluded from this public repository. The bundled demo and test fixtures use only the fictional `Example Brand`.
@@ -62,9 +63,13 @@ Status meanings:
 
 | Request | Status | Current behavior / remaining work |
 |---|---|---|
-| Import Rella data | Complete for CSV | Rella account and content exports can be uploaded. There is no live Rella API connection inside the product. |
-| Import native platform data | Complete for CSV | Alias normalization supports common Instagram/Meta, TikTok, LinkedIn, YouTube, Facebook, Pinterest, Threads, and X-style headings. |
-| Accept one or many CSVs | Complete | The Import data panel accepts one file, multiple files, a folder, or drag-and-drop. |
+| Import Rella data | Complete for file export | Rella account and content exports can be uploaded as CSV or XLSX. There is no live Rella API connection inside the product. |
+| Import native platform data | Complete | Alias normalization supports common Instagram/Meta, TikTok, LinkedIn, YouTube, Facebook, Pinterest, Threads, and X-style headings, including the exact wording each native export uses. |
+| Accept one or many files | Complete | The Import data panel accepts one file, multiple files, a folder, or drag-and-drop. |
+| Accept formats other than CSV | Complete | CSV/TSV with automatic delimiter detection, `.xlsx`/`.xlsm` workbooks (every visible sheet imported separately, Excel date cells converted), `.zip` platform downloads read recursively, `.json` exports, Excel XML and HTML "spreadsheet" files. Legacy `.xls` is refused with instructions rather than misread. |
+| Handle native text encodings | Complete | UTF-8, UTF-16 either byte order with or without a mark, and Windows-1252 are detected per file. Meta and Instagram ship UTF-16, which previously imported as unreadable characters. |
+| Handle title rows above the headings | Complete | The importer scores the first ten rows and starts at the real heading row, so LinkedIn and Facebook exports import without hand editing. |
+| Fill in a missing client or platform | Complete | Resolved from the file's own columns, then the file and folder names, then staff-set import defaults. Rows are never silently assigned to a platform the export did not name; unresolved rows are flagged in the audit. |
 | Eliminate confusing separate account/content upload buttons | Complete | There is one import center; it classifies account-period rows and post rows automatically. |
 | Preserve full source data | Complete | Original fields remain available in the normalized export and filter-aware Full Data table. |
 | Download combined master CSV | Complete | CNO can download one standardized combined CSV. |
@@ -72,7 +77,7 @@ Status meanings:
 | Detect data grain | Complete | Account monthly, account daily/period, post-level, and paid rows are classified. |
 | Handle arbitrary CSVs | Partial by design | The alias map is broad, but no importer can correctly understand every unknown heading without a mapping. Unrecognized fields remain in Full Data and are reported in the import audit. |
 | Retain hourly/day-level detail | Conditional | Daily/weekly charts work only when the export contains dates. Posting-hour analysis works only when timestamps or `published_hour` exist. The app cannot recreate granularity absent from the source export. |
-| Synthetic multi-platform test CSVs | Complete | Fixtures cover Instagram, TikTok, LinkedIn, YouTube retention, paid reconciliation, and generic Ads Manager headings. |
+| Synthetic multi-platform test fixtures | Complete | Fixtures cover Instagram, TikTok, LinkedIn, YouTube retention, paid reconciliation, generic Ads Manager headings, UTF-16 CSV, semicolon CSV, a multi-sheet XLSX workbook, a ZIP archive, and a nested JSON export. |
 
 ### 3.2 Platform separation and filtering
 
@@ -610,7 +615,30 @@ CNO staff should never:
 - paste provider secrets into the report; or
 - reauthorize every month unless access was revoked, expired, or changed.
 
-One-time infrastructure and provider-app setup still has to be completed by an authorized CNO owner in GitHub, Render, Meta, TikTok, and LinkedIn.
+### What is implemented today
+
+The report's **Native sync** panel is a working client of the service, not a placeholder:
+
+- the service address is a visible, saved setting;
+- **Check** reports whether the service is reachable, whether this browser is signed in, whether a database is configured, and which provider apps still lack credentials;
+- once signed in, the panel lists every platform for the selected client with its live state — ready, choose account, reconnect, not connected, not set up — and shows only that client's connections;
+- **Connect selected client** opens the secure window and the panel then polls until the sign-in completes, because the cross-origin popup cannot message the report; and
+- **Refresh and load into this report** runs the sync and loads the normalized rows straight into the open report, replacing the previous pull rather than duplicating it, and reports per-platform failures without discarding the platforms that succeeded.
+
+The service itself runs with or without Postgres. Without `DATABASE_URL` it keeps state in a local
+JSON file so a CNO owner can deploy and complete a real browser connection before committing to a
+database; the console and `/health` both say plainly that this mode is not durable.
+
+### What is still required, and by whom
+
+None of it is application code. An authorized CNO owner has to:
+
+1. register CNO-owned Meta, TikTok, and LinkedIn developer apps and complete each provider's review;
+2. register `https://YOUR-SERVICE/oauth/<provider>/callback` for each;
+3. deploy the service with `CNO_ADMIN_TOKEN`, `TOKEN_ENCRYPTION_KEY`, `SYNC_CRON_SECRET`, and a persistent `DATABASE_URL`; and
+4. reconcile two full reporting periods per provider against native analytics before live use.
+
+Until step 1 completes, the panel says so instead of offering a button that fails part way through a client's sign-in.
 
 ## 9. Production cloud roadmap
 
@@ -695,12 +723,16 @@ One-time infrastructure and provider-app setup still has to be completed by an a
 
 ### P1 — data accuracy and maintainability
 
-7. Extract the normalization and metric engine from `index.html` into pure tested modules.
+7. Extract the normalization and metric engine from `index.html` into pure tested modules. The
+   file readers (`readSourceBuffer` and everything it calls) are already self-contained and pure
+   apart from `DOMParser`, so they are the cleanest first extraction and the easiest to unit test.
 8. Build automated formula tests for every metric and edge case.
 9. Add timezone-aware reporting windows and provider attribution-window metadata.
 10. Add field-level provenance: source file, source row, raw heading, formula, and fallback reason.
 11. Create source-specific adapters/versioning for Rella and every native export format.
-12. Add a mapping UI for unknown CSV headings.
+12. Add a mapping UI for unknown headings. The import audit already reports how many headings were
+    recognized per file, so the remaining work is letting staff bind the rest to canonical fields
+    and saving that mapping per source.
 13. Add stronger overlap and semantic deduplication rules.
 14. Add target history/effective dates.
 15. Add campaign/pillar tagging and named-period comparison inside the product.
@@ -737,18 +769,20 @@ One-time infrastructure and provider-app setup still has to be completed by an a
 
 1. `index.html` is large and tightly coupled.
 2. There is no full automated test runner in the root app.
-3. The public sync hostname is not live.
+3. The public sync hostname is not live, and no provider app has completed review.
 4. Cross-device short links depend on that undeployed service.
 5. Browser API-key storage is not a production security boundary.
 6. CNO/client labels are not authentication.
 7. Manual browser state is device-specific and can be lost when storage is cleared.
 8. There is no cloud history for targets, edits, or reports.
 9. Provider API permissions and metric availability can change.
-10. Rella remains CSV-only.
-11. YouTube and several other platforms remain CSV-only for native sync.
+10. Rella remains file-export only; there is no Rella API connection.
+11. YouTube and several other platforms remain file-export only for native sync.
 12. Benchmarks are bundled static references and require periodic review.
 13. Native reach can be non-additive depending on export grain.
 14. Imported data can only be as complete and accurate as the source export.
+14a. The importer refuses legacy Excel 97-2003 `.xls` rather than guessing at the binary format; those files have to be re-saved as `.xlsx` or `.csv`.
+14b. Without Postgres the service stores connections in a local file that does not survive a redeploy, so it is a setup and testing mode only.
 15. Desktop automatic updating is not implemented.
 16. Mac builds currently target Apple Silicon.
 17. No unattended report should be sent until data and AI validation gates are enforced server-side.
@@ -764,16 +798,17 @@ One-time infrastructure and provider-app setup still has to be completed by an a
 | `DATA_ACCURACY_AND_ACCESS.md` | Data authority, AI boundary, and staff/client access model |
 | `CLOUD_AUTOMATION_BLUEPRINT.md` | Production accounts, archive, workflow, and security plan |
 | `FIRST_WAVE_FEEDBACK_CHECKLIST.md` | Original stakeholder feedback implementation status |
-| `RELEASE_AUDIT_v1.7.0.md` | Current release verification and honest limitations |
+| `RELEASE_AUDIT_v1.8.0.md` | Current release verification and honest limitations |
+| `RELEASE_AUDIT_v1.7.0.md` | Previous release verification |
 | `MIGRATE_TO_CNO_ACCOUNTS.md` | GitHub/Render/domain/provider migration runbook |
 | `resources/brand-style.md` | Brand colors, fonts, voice, and assets |
 | `resources/template_accounts.csv` | Account/period CSV template |
 | `resources/template_content.csv` | Post/content CSV template |
 | `resources/*test.csv` | Fictional formula and importer fixtures |
-| `sync-service/src/server.js` | Staff console, OAuth routes, sync, imports, report links |
+| `sync-service/src/server.js` | Staff console, OAuth routes, sync, report-app API, imports, report links |
 | `sync-service/src/providers.js` | Provider authorization, token refresh, account discovery, analytics adapters |
 | `sync-service/src/crypto.js` | Token/payload encryption |
-| `sync-service/src/db.js` | Database setup and cleanup |
+| `sync-service/src/store.js` | Storage layer: Postgres in production, a local JSON file when no database is configured |
 | `sync-service/schema.sql` | Pilot Postgres schema |
 | `render.yaml` | Static site and private service deployment blueprint |
 | `electron/main.js` | Desktop wrapper |
@@ -784,7 +819,10 @@ One-time infrastructure and provider-app setup still has to be completed by an a
 
 | Area | Important code |
 |---|---|
-| CSV aliases and normalization | `ALIAS`, `normalizeRow`, `parseCSV`, `classify`, `ingest` |
+| File readers | `readSourceFile`, `readSourceBuffer`, `decodeText`, `readZip`, `readWorkbook`, `jsonTables`, `domTables`, `spreadsheetMLTables` |
+| Delimited text | `parseDelimitedText`, `splitDelimited`, `sniffDelimiter`, `matrixToObjects`, `headerScore` |
+| Column aliases and normalization | `ALIAS`, `nativeMap`, `platformFromName`, `clientFromName`, `normalizeRow`, `classify`, `ingestRows` |
+| Native connections | `refreshSyncState`, `renderSyncConnections`, `syncFetch`, `dropImportedSource` |
 | Deduplication | `recordKey`, `addUnique` |
 | Data audit | `auditData`, `renderQualityPanel` |
 | Metric engine | `windowMetrics`, `periodRowsForWindow`, `postEng` |

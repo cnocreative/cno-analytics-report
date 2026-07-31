@@ -1,6 +1,6 @@
 /* CNO Reports service worker — offline app shell.
    Bump CACHE when shipping a new build so clients pick it up. */
-const CACHE = "cno-reports-v11";
+const CACHE = "cno-reports-v12";
 const SHELL = [
   "./index.html",
   "./fonts.css",
@@ -43,12 +43,13 @@ self.addEventListener("fetch", e => {
     );
     return;
   }
-  // Cache-first for static assets (fonts, images, icons).
+  // Cache-first for static assets (fonts, images, icons). An uncached asset that cannot be
+  // fetched has no fallback, so report that plainly instead of rejecting respondWith.
   e.respondWith(
     caches.match(req).then(hit => hit || fetch(req).then(res => {
       const copy = res.clone();
       caches.open(CACHE).then(c => c.put(req, copy));
       return res;
-    }).catch(() => hit))
+    }).catch(() => new Response("", { status: 504, statusText: "Offline and not cached" })))
   );
 });

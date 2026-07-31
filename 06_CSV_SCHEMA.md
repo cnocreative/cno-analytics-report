@@ -1,7 +1,37 @@
-# CSV input — how the report reads your data
-### v2 · one upload, any platform
+# Data input — how the report reads your exports
+### v2 · one upload, any platform, any common format
 
 The generator takes **one upload that accepts multiple files at once**. You no longer need two separate inputs — drop in whatever exports you have and the tool figures out what each file is.
+
+## File formats it reads
+
+| Format | Notes |
+|---|---|
+| `.csv` | Comma, semicolon, tab, or pipe separated; the separator is detected. Excel's `sep=,` hint line is handled. |
+| `.tsv`, `.tab`, `.txt` | Delimited text, same detection. |
+| `.xlsx`, `.xlsm`, `.xltx` | Every visible sheet becomes its own audited source file. Excel date cells become real dates. |
+| `.zip` | Platform download bundles; every CSV, Excel, and JSON member inside is read. |
+| `.json` | Data exports and API dumps; the record list is located and nested fields flattened. |
+| `.xml`, `.htm`, `.html` | Excel "XML Spreadsheet 2003" files and export pages that are really an HTML table. |
+| `.xls` | Excel 97-2003 binary. **Refused with instructions** to re-save as `.xlsx` or `.csv`, rather than misread. |
+
+Text encoding is detected per file: UTF-8, UTF-16 in either byte order with or without a byte-order
+mark, and Windows-1252. Meta and Instagram export UTF-16, which is why this matters.
+
+Exports commonly place a report title, an account name, and a blank line above the real column
+headings. The importer scores the first ten rows and starts at the true heading row.
+
+## Client and platform when the file does not say
+
+Native exports frequently name neither. They are resolved in this order:
+
+1. a `client` / `platform` column in the file;
+2. the file and folder names — `Example Brand/june/linkedin-content.xlsx` supplies both;
+3. the **Client** and **Platform** defaults set in the Import data panel; then
+4. `Unknown` client and `Unspecified` platform, both of which raise a warning in Data audit.
+
+A row is never silently filed under a platform its export did not name, because blending unlike
+platform definitions is the one thing the report must never do.
 
 ## What the tool detects automatically
 
@@ -16,7 +46,7 @@ You can upload **either, both, or many files** (e.g. one account export + one po
 
 ## Column names are normalized (multi-platform)
 
-You do **not** need to rename columns. The tool maps common header names from Rella, Instagram/Meta, TikTok, LinkedIn, and YouTube to a shared vocabulary. Examples it understands:
+You do **not** need to rename columns. The tool maps common header names from Rella, Instagram/Meta, TikTok, LinkedIn, Facebook, YouTube, Pinterest, Threads, and X to a shared vocabulary, including the exact wording each native export uses (`Post publish date`, `Accounts reached`, `Click through rate (CTR)`, `Custom button clicks`, `Total page views`, `Organic followers`, `Sponsored followers`, `Video views`, `Watch time (hours)`, and so on). Examples it understands:
 
 - **reach** ← `reach`, `accounts reached`, `unique reach`
 - **impressions** ← `impressions`, `impression count` (times displayed)
@@ -31,7 +61,7 @@ You do **not** need to rename columns. The tool maps common header names from Re
 - **date** ← `date`, `published`, `timestamp`, `post time`
 - **post type** ← `post type`, `media type`, `format`
 - plus `client`, `platform`, `caption`, `hashtags`, demographics (`gender`, `top countries`, `top cities`), etc.
-- **retention / timing** ← `published_hour`, Story views/exits/completions, video completions, total watch time, average view duration
+- **retention / timing** ← `published_hour`, Story views/exits/completions, video completions, total watch time (seconds, minutes, or hours), average view duration
 
 The goal scorecard also recognizes `meaningful comments`, `comment replies`, `DMs`, `leads`, `bookings`, `membership signups`, `retail sales`, `revenue`, `event reach`, `event engagement`, `event registrations`, `event attendees`, and `conversions`.
 

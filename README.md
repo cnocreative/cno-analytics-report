@@ -1,6 +1,6 @@
 # CNO Creative Co — Monthly Analytics Report
 
-A standalone, deterministic reporting tool for CNO Creative Co. Feed it a CSV of social media data and it produces the same branded, client-ready analytics report every time.
+A standalone, deterministic reporting tool for CNO Creative Co. Feed it the exports your platforms already produce and it returns the same branded, client-ready analytics report every time.
 
 **No required install. No build step. Metrics work offline. An AI key is required only when publishing a client-ready report.**
 
@@ -10,9 +10,9 @@ A standalone, deterministic reporting tool for CNO Creative Co. Feed it a CSV of
 
 Most social tools show isolated platform numbers. This one turns them into a **visual, client-specific measurement system** spanning awareness, audience quality, campaigns, and business outcomes.
 
-**Reads any export.** One upload accepts multiple files at once and normalizes column names across Rella, Instagram/Meta, TikTok, LinkedIn, and YouTube — no renaming required. It auto-detects account-level vs. post-level data. See [`06_CSV_SCHEMA.md`](06_CSV_SCHEMA.md).
+**Reads any export.** One upload accepts multiple files at once in whatever format the platform produced — CSV, TSV, Excel `.xlsx` workbooks (every sheet imported separately), `.zip` platform downloads, and JSON — and normalizes column names across Rella, Instagram/Meta, TikTok, LinkedIn, Facebook, YouTube, Pinterest, Threads, and X. Text encoding is detected per file, so Meta's UTF-16 exports import correctly. Title rows above the real headings are skipped, and account-level vs. post-level data is detected automatically. See [`06_CSV_SCHEMA.md`](06_CSV_SCHEMA.md).
 
-**One clear manual import.** Click **Import data** once, then add one CSV, many CSVs, or a whole client/month folder. The same panel audits each file's platform, row type, row count, and date coverage, safely removes exact duplicate rows, and can download one standardized combined master CSV without losing original source columns. See [`DATA_IMPORT_GUIDE.md`](DATA_IMPORT_GUIDE.md).
+**One clear manual import.** Click **Import data** once, then add one file, many files, or a whole client/month folder. The same panel audits each file's platform, row type, row count, and date coverage, safely removes exact duplicate rows, and can download one standardized combined master CSV without losing original source columns. See [`DATA_IMPORT_GUIDE.md`](DATA_IMPORT_GUIDE.md).
 
 **Native sync foundation.** A separate CNO-only OAuth service now handles Meta, TikTok, and LinkedIn authorization server-side, encrypts tokens before storage, requires an exact client-to-native-account assignment, and transfers normalized analytics into the report through ten-minute, single-use links. Manual refresh works once deployed; the included protected scheduler workflow activates only after its deployment secrets and provider approvals are configured. See [`sync-service/README.md`](sync-service/README.md).
 
@@ -61,23 +61,23 @@ Most social tools show isolated platform numbers. This one turns them into a **v
 
 Open `index.html` in any browser (or visit the deployed site with `#demo` to auto-load a sample).
 
-1. Click **Import data**, then drop in the whole reporting folder or select all available CSVs at once
+1. Click **Import data**, then drop in the whole reporting folder or select every available export at once
 2. Pick a **client** and **period** (month / last 30 / 90 / all / custom range)
 3. Run **Data audit** and reconcile its warnings against the native source
 4. **Customize** the goal, featured KPIs, report pages, and section order
 5. Generate the required **AI analysis**, review/edit the client letter, then share or **Print / PDF**
 
-Templates: `resources/template_accounts.csv`, `resources/template_content.csv`. A larger synthetic test file covering Instagram, TikTok, and LinkedIn is at `resources/native_platform_comprehensive_test.csv`; the compact `resources/native_platform_priority_metrics_test.csv` validates every prioritized organic/paid formula plus YouTube retention. Upload `resources/paid_rate_reconciliation_test.csv` beside it to exercise multi-file loading and the deliberate paid-rate discrepancy warning. `resources/native_ads_manager_generic_test.csv` verifies that ordinary Ads Manager headings such as Reach, Impressions, Link Clicks, and CTR are routed to paid metrics when the row is clearly identified as paid.
+Templates: `resources/template_accounts.csv`, `resources/template_content.csv`. A larger synthetic test file covering Instagram, TikTok, and LinkedIn is at `resources/native_platform_comprehensive_test.csv`; the compact `resources/native_platform_priority_metrics_test.csv` validates every prioritized organic/paid formula plus YouTube retention. Upload `resources/paid_rate_reconciliation_test.csv` beside it to exercise multi-file loading and the deliberate paid-rate discrepancy warning. `resources/native_ads_manager_generic_test.csv` verifies that ordinary Ads Manager headings such as Reach, Impressions, Link Clicks, and CTR are routed to paid metrics when the row is clearly identified as paid. Format coverage is exercised by `instagram_native_utf16_test.csv` (UTF-16 with a title block), `semicolon_delimited_test.csv`, `linkedin_workbook_test.xlsx` (three sheets, Excel date cells), `tiktok_export_test.zip` (CSV and JSON in one archive), and `instagram_media_test.json`.
 
 The account-transfer runbook is in [`MIGRATE_TO_CNO_ACCOUNTS.md`](MIGRATE_TO_CNO_ACCOUNTS.md). It covers GitHub ownership, the CNO Render Blueprint, custom domains, OAuth callbacks, secrets, and final handoff checks.
 
-The complete v1.7 verification record is in [`RELEASE_AUDIT_v1.7.0.md`](RELEASE_AUDIT_v1.7.0.md).
+The complete verification record is in [`RELEASE_AUDIT_v1.8.0.md`](RELEASE_AUDIT_v1.8.0.md), including what was *not* verified and why. The previous release's record is [`RELEASE_AUDIT_v1.7.0.md`](RELEASE_AUDIT_v1.7.0.md).
 
 The full product, architecture, request history, limitations, and prioritized roadmap for another developer are in [`DEVELOPER_HANDOFF.md`](DEVELOPER_HANDOFF.md).
 
 ## Keeping reports refreshed
 
-No backend is required for manual CSV refreshes or deterministic analytics. For each reporting cycle, export the available date range from Rella and/or the native platforms, add any offline outcomes from the client’s booking/CRM/sales records, then upload the whole folder through **Import data**. The report audits and merges the files, separates platforms, removes exact duplicate rows, and recalculates the selected period. Confirm that the selected client’s approved targets are correct under **Customize**, generate and review the required AI letter, then create a new password-protected share link.
+No backend is required for manual refreshes or deterministic analytics. For each reporting cycle, export the available date range from Rella and/or the native platforms, add any offline outcomes from the client’s booking/CRM/sales records, then upload the whole folder through **Import data**. The report audits and merges the files, separates platforms, removes exact duplicate rows, and recalculates the selected period. Confirm that the selected client’s approved targets are correct under **Customize**, generate and review the required AI letter, then create a new password-protected share link.
 
 The primary engagement-rate standard is always `(likes + comments + shares + saves) ÷ reach × 100`. If an export omits one of those components, the report uses the platform/Rella engagement total divided by reach when available and identifies that source in the CNO data audit.
 
@@ -89,8 +89,8 @@ For the exact recommended folder structure, refresh checklist, and the tradeoffs
 
 Two decoupled halves, on purpose:
 
-1. **Data export** — pull analytics from Rella into the CSV schema.
-2. **Report generator** — this repo. A single static page that turns that CSV into the report, deterministically. Same input always yields the same output, which is why it's a program and not a prompt.
+1. **Data export** — pull analytics from Rella and the native platforms into the normalized schema.
+2. **Report generator** — this repo. A single static page that turns those exports into the report, deterministically. Same input always yields the same output, which is why it's a program and not a prompt.
 
 ## Deploying
 
@@ -106,7 +106,7 @@ Static site, no build. On [Render](https://render.com): connect the repo, choose
 | `manifest.webmanifest` + `sw.js` + `icon-*.png` | Installable/offline PWA support |
 | `resources/brand-style.md` | Official brand palette, type, and voice |
 | `01_METRICS_DICTIONARY.md` | Every metric and its exact formula |
-| `06_CSV_SCHEMA.md` | The CSV contract (including optional `<metric>_target` goal columns) |
+| `06_CSV_SCHEMA.md` | The data contract and readable file formats (including optional `<metric>_target` goal columns) |
 | `DATA_IMPORT_GUIDE.md` | Monthly import workflow and realistic native-platform connection options |
 | `DATA_ACCURACY_AND_ACCESS.md` | Metric-governance rules and the CNO staff/client access roadmap |
 | `CLOUD_AUTOMATION_BLUEPRINT.md` | Managed accounts, report archive, monthly delivery, and production security plan |

@@ -1,0 +1,71 @@
+{
+ "account": "Example Brand",
+ "platform": "instagram",
+ "media": [
+  {
+   "timestamp": "2026-06-02T09:15:00Z",
+   "media_type": "REEL",
+   "caption": "Morning light in the studio",
+   "reach": 4200,
+   "impressions": 9660,
+   "likes": 310,
+   "comments": 24,
+   "shares": 41,
+   "saves": 66,
+   "campaign": "Summer refresh",
+   "pillar": "Behind the scenes"
+  },
+  {
+   "timestamp": "2026-06-07T09:15:00Z",
+   "media_type": "CAROUSEL",
+   "caption": "Three ways to style it",
+   "reach": 3100,
+   "impressions": 7129,
+   "likes": 244,
+   "comments": 31,
+   "shares": 18,
+   "saves": 92,
+   "campaign": "Summer refresh",
+   "pillar": "Education"
+  },
+  {
+   "timestamp": "2026-06-12T09:15:00Z",
+   "media_type": "IMAGE",
+   "caption": "New arrivals",
+   "reach": 2450,
+   "impressions": 5635,
+   "likes": 180,
+   "comments": 12,
+   "shares": 9,
+   "saves": 33,
+   "campaign": "Summer refresh",
+   "pillar": "Product"
+  },
+  {
+   "timestamp": "2026-06-18T09:15:00Z",
+   "media_type": "REEL",
+   "caption": "A quick how-to",
+   "reach": 5600,
+   "impressions": 12879,
+   "likes": 402,
+   "comments": 44,
+   "shares": 63,
+   "saves": 121,
+   "campaign": "Summer refresh",
+   "pillar": "Education"
+  },
+  {
+   "timestamp": "2026-06-25T09:15:00Z",
+   "media_type": "CAROUSEL",
+   "caption": "Client story",
+   "reach": 2900,
+   "impressions": 6669,
+   "likes": 221,
+   "comments": 28,
+   "shares": 15,
+   "saves": 58,
+   "campaign": "Summer refresh",
+   "pillar": "Community"
+  }
+ ]
+}

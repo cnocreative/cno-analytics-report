@@ -23,6 +23,8 @@ services:
         value: production
       - key: REPORT_ORIGIN
         value: https://cno-analytics-report.onrender.com
+      # Optional. Without it the service keeps connections in a local file that does not
+      # survive a redeploy. Add a persistent Postgres URL before connecting live clients.
       - key: DATABASE_URL
         sync: false
       - key: CNO_ADMIN_TOKEN

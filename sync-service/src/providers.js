@@ -24,16 +24,39 @@ async function apiJson(url, options = {}) {
 
 async function paged(url, options = {}, maxPages = 12) {
   const out = [];
+  const seen = new Set();
   let next = url;
   for (let i = 0; next && i < maxPages; i += 1) {
+    if (seen.has(next)) break;
+    seen.add(next);
     const data = await apiJson(next, options);
     out.push(...(data.data || data.elements || []));
-    next = data.paging?.next || data.links?.next || null;
+    next = nextPageUrl(data, next);
   }
   return out;
 }
 
+/* Meta returns an absolute paging.next. LinkedIn returns a relative Rest.li link
+   ({rel:"next", href:"/rest/..."}), which has to be resolved against the API origin. */
+function nextPageUrl(data, current) {
+  if (typeof data.paging?.next === "string") return data.paging.next;
+  const links = Array.isArray(data.paging?.links) ? data.paging.links : Array.isArray(data.links) ? data.links : [];
+  const next = links.find(link => link && link.rel === "next" && link.href);
+  if (!next) return null;
+  try { return new URL(next.href, current).toString(); } catch { return null; }
+}
+
 export const providerNames = ["meta", "tiktok", "linkedin"];
+
+/* Which providers actually have credentials, so the console can hide buttons that would fail. */
+const PROVIDER_SECRETS = {
+  meta: ["META_CLIENT_ID", "META_CLIENT_SECRET"],
+  tiktok: ["TIKTOK_CLIENT_KEY", "TIKTOK_CLIENT_SECRET"],
+  linkedin: ["LINKEDIN_CLIENT_ID", "LINKEDIN_CLIENT_SECRET"]
+};
+export function configuredProviders() {
+  return providerNames.filter(name => PROVIDER_SECRETS[name].every(key => String(process.env[key] || "").trim()));
+}
 
 export function buildAuthorizationUrl(provider, state) {
   const callback = redirectUri(provider);

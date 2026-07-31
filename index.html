@@ -103,7 +103,7 @@
   .utility-panel.open{display:block;animation:panelReveal .18s ease-out}
   @keyframes panelReveal{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
   .utility-head{display:flex;align-items:flex-start;justify-content:space-between;gap:24px;margin-bottom:18px}.utility-head h3{font-family:var(--serif);font-size:27px;font-weight:400;margin:0}.utility-head p{font-size:12px;color:var(--ink-soft);max-width:72ch;margin:4px 0 0}.utility-close{border:0;background:none;color:var(--ink-soft);font-size:22px;cursor:pointer;padding:0 4px}
-  .import-grid{display:grid;grid-template-columns:minmax(260px,.85fr) minmax(420px,1.65fr);gap:18px}.dropzone{min-height:190px;border:1px dashed var(--terra);background:linear-gradient(180deg,rgba(219,155,127,.07),rgba(255,248,231,.55));display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:25px;transition:background .18s,border-color .18s,transform .18s}.dropzone.over{background:rgba(219,155,127,.14);border-style:solid;transform:translateY(-2px)}.dropseal{width:55px;height:55px;object-fit:contain;margin-bottom:10px}.dropzone h4{font-family:var(--serif);font-size:22px;font-weight:400;margin:0 0 5px}.dropzone p{font-size:11px;color:var(--ink-soft);margin:0 0 14px;max-width:34ch}.dropactions{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+  .import-grid{display:grid;grid-template-columns:minmax(260px,.85fr) minmax(420px,1.65fr);gap:18px}.dropzone{min-height:190px;border:1px dashed var(--terra);background:linear-gradient(180deg,rgba(219,155,127,.07),rgba(255,248,231,.55));display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:25px;transition:background .18s,border-color .18s,transform .18s}.dropzone.over{background:rgba(219,155,127,.14);border-style:solid;transform:translateY(-2px)}.dropseal{width:55px;height:55px;object-fit:contain;margin-bottom:10px}.dropzone h4{font-family:var(--serif);font-size:22px;font-weight:400;margin:0 0 5px}.dropzone p{font-size:11px;color:var(--ink-soft);margin:0 0 14px;max-width:34ch}.dropactions{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}.dropzone code{font:11px/1 ui-monospace,SFMono-Regular,Menlo,monospace;background:rgba(219,155,127,.16);padding:1px 4px}.dropzone.busy{border-style:solid;background:rgba(136,142,111,.12)}.import-busy{margin-top:11px;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--burnt)}.import-defaults{margin-top:16px;padding-top:14px;border-top:1px solid var(--sand);width:100%;text-align:left}.import-default-row{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:7px}.import-default-row label{display:block;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft)}.import-default-row input,.import-default-row select{width:100%;margin-top:3px;padding:7px 8px;border:1px solid var(--sand);background:#fff;font:12px/1.3 var(--sans);color:var(--ink);text-transform:none;letter-spacing:0}.import-defaults .quiet{font-size:10px;line-height:1.45;color:var(--ink-soft);display:block}
   .import-summary{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid var(--sand);margin-bottom:12px}.isum{padding:13px 14px;border-right:1px solid var(--sand)}.isum:last-child{border-right:0}.isum span{display:block;font-size:8.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-soft)}.isum b{font-family:var(--serif);font-size:24px;font-weight:400}
   .fileaudit{border:1px solid var(--sand);max-height:220px;overflow:auto}.fileaudit-empty{height:130px;display:grid;place-items:center;text-align:center;padding:20px;color:var(--ink-soft);font-size:12px}.file-row{display:grid;grid-template-columns:minmax(150px,1.5fr) 76px 64px minmax(130px,1fr) 72px;gap:10px;align-items:center;padding:10px 12px;border-bottom:1px solid var(--sand);font-size:10.5px}.file-row:last-child{border-bottom:0}.file-row.head{position:sticky;top:0;background:var(--sand-2);z-index:1;font-size:8px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft)}.file-name{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.file-ok{color:var(--sage-deep)}.file-warn{color:var(--burnt)}
   .import-actions{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:12px}.import-actions .quiet{font-size:10.5px;color:var(--ink-soft);margin-left:auto}.sourcecards{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:18px}.sourcecard{padding:14px;border:1px solid var(--sand);background:var(--sand-2)}.sourcecard b{display:block;font-family:var(--serif);font-size:18px;font-weight:400}.sourcecard span{display:block;font-size:10.5px;line-height:1.5;color:var(--ink-soft);margin-top:3px}.sourcecard .btn{display:inline-block;margin-top:13px;text-decoration:none}.installcards{grid-template-columns:repeat(3,1fr)}
@@ -123,6 +123,8 @@
   .aistatus{display:none;margin-top:9px;font-size:12px;line-height:1.5;color:var(--ink-soft)}
   .aistatus.show{display:block}
   .aistatus.busy{color:var(--burnt)}
+  .synccfg{margin:12px 0 4px}.synccfg label{display:block;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:4px}.syncurlrow{display:flex;gap:7px;align-items:stretch}.syncurlrow input{flex:1;min-width:0;padding:8px 9px;border:1px solid var(--sand);background:#fff;font:12px/1.3 var(--sans);color:var(--ink)}.synccfg .quiet{display:block;margin-top:5px;font-size:10px;line-height:1.45;color:var(--ink-soft)}
+  .syncconns{margin:12px 0 4px;border:1px solid var(--sand);background:#fff}.syncconn{display:grid;grid-template-columns:minmax(96px,.55fr) minmax(0,1.5fr) auto;gap:12px;align-items:center;padding:11px 13px;border-bottom:1px solid var(--sand);font-size:12px}.syncconn:last-child{border-bottom:0}.syncconn b{font-weight:600}.syncconn .sdetail{color:var(--ink-soft);font-size:11px;line-height:1.4}.sflag{font-size:9px;letter-spacing:.1em;text-transform:uppercase;padding:3px 7px;white-space:nowrap}.sflag.ready{background:rgba(136,142,111,.16);color:var(--sage-deep)}.sflag.choose,.sflag.reconnect{background:rgba(219,155,127,.2);color:var(--burnt)}.sflag.none{background:var(--sand-2);color:var(--ink-soft)}
   .aistatus.busy::before{content:"";display:inline-block;width:11px;height:11px;margin-right:7px;border:2px solid var(--terra-soft);border-top-color:var(--burnt);border-radius:50%;vertical-align:-1px;animation:aispin .8s linear infinite}
   @keyframes aispin{to{transform:rotate(360deg)}}
   .ai-evidence{display:none;margin-top:14px;border-top:1px solid var(--sand);padding-top:12px}.ai-evidence.show{display:block}.ai-evidence h4{font-family:var(--serif);font-size:18px;font-weight:400;margin:0 0 8px}.ai-evidence-row{display:grid;grid-template-columns:66px 1fr;gap:10px;padding:8px 0;border-bottom:1px solid rgba(226,214,193,.65);font-size:11px;line-height:1.45}.ai-evidence-row:last-child{border-bottom:0}.ai-confidence{text-transform:uppercase;letter-spacing:.1em;font-size:8px;font-weight:700;color:var(--ink-soft)}.ai-confidence.high{color:var(--sage-deep)}.ai-confidence.low{color:var(--burnt)}.ai-evidence-row b{font-weight:600}.ai-evidence-row span{color:var(--ink-soft)}
@@ -425,13 +427,22 @@
 </div>
 
 <div class="utility-panel" id="dataPanel">
-  <div class="utility-head"><div><h3>Import data</h3><p>This is the single place for manual data uploads. Choose one CSV, many CSVs, or a whole folder; the report merges and audits them automatically.</p></div><button class="utility-close" id="dataClose" aria-label="Close import center">×</button></div>
+  <div class="utility-head"><div><h3>Import data</h3><p>This is the single place for manual data uploads. Choose one file, many files, or a whole folder in whatever format the platform exported; the report reads, merges, and audits them automatically.</p></div><button class="utility-close" id="dataClose" aria-label="Close import center">×</button></div>
   <div class="import-grid">
     <div class="dropzone" id="importDrop">
       <img class="dropseal" src="cno-seal.png" alt="">
       <h4>Drop the whole reporting folder</h4>
-      <p>Account, post, paid, and outcome CSVs can all be selected together. No renaming or manual copy-and-paste.</p>
-      <div class="dropactions"><label class="btn file">Choose CSVs<input type="file" id="prepFileIn" accept=".csv" multiple></label><label class="btn file">Choose folder<input type="file" id="folderIn" accept=".csv" multiple webkitdirectory directory></label></div>
+      <p>Account, post, paid, and outcome exports can all be selected together. CSV, TSV, Excel <code>.xlsx</code>, JSON, and <code>.zip</code> downloads are read directly — no renaming, converting, or copy-and-paste.</p>
+      <div class="dropactions"><label class="btn file">Choose files<input type="file" id="prepFileIn" accept=".csv,.tsv,.tab,.txt,.xlsx,.xlsm,.xltx,.xls,.zip,.json,.xml,.htm,.html" multiple></label><label class="btn file">Choose folder<input type="file" id="folderIn" multiple webkitdirectory directory></label></div>
+      <div class="import-busy" id="importBusy" hidden></div>
+      <div class="import-defaults">
+        <div class="ailab" style="margin:0 0 6px">When a file does not name the client or platform</div>
+        <div class="import-default-row">
+          <label>Client<input type="text" id="defClient" placeholder="Leave blank to use the folder name" autocomplete="off"></label>
+          <label>Platform<select id="defPlatform"><option value="">Do not assume one</option><option value="instagram">Instagram</option><option value="tiktok">TikTok</option><option value="linkedin">LinkedIn</option><option value="facebook">Facebook</option><option value="youtube">YouTube</option><option value="pinterest">Pinterest</option><option value="threads">Threads</option><option value="x">X</option></select></label>
+        </div>
+        <span class="quiet">Used only for files with no client or platform column. The file and folder names are checked first, and rows are never silently filed under a platform the export did not name.</span>
+      </div>
     </div>
     <div>
       <div class="import-summary" id="importSummary"></div>
@@ -439,7 +450,8 @@
       <div class="import-actions"><button class="btn solid" id="masterBtn">Download combined master CSV</button><button class="btn" id="clearDataBtn">Clear imported data</button><span class="quiet">The original source columns remain available in Full data.</span></div>
     </div>
   </div>
-  <div class="sourcecards"><div class="sourcecard"><b>Rella</b><span>Export account and content data. Add both files; the importer merges them automatically.</span></div><div class="sourcecard"><b>Instagram / Meta</b><span>Export account insights, content, and Ads Manager results when paid or dark ads ran.</span></div><div class="sourcecard"><b>TikTok</b><span>Add account analytics and video-level exports. Watch-time fields are retained when present.</span></div><div class="sourcecard"><b>LinkedIn</b><span>Add visitor, follower, content, and campaign exports. Professional audience fields stay intact.</span></div></div>
+  <div class="sourcecards"><div class="sourcecard"><b>Rella</b><span>Export account and content data as CSV or XLSX. Add both files; the importer merges them automatically.</span></div><div class="sourcecard"><b>Instagram / Meta</b><span>Add account insights, content, and Ads Manager results. Meta's UTF-16 CSVs and multi-tab XLSX exports are read as-is.</span></div><div class="sourcecard"><b>TikTok</b><span>Add account analytics and video-level exports, including the zipped download. Watch-time fields are retained.</span></div><div class="sourcecard"><b>LinkedIn</b><span>Add the XLSX visitor, follower, content, and competitor exports. Every sheet in the workbook is imported separately.</span></div></div>
+  <p class="quiet" style="margin:12px 2px 0;font-size:11px;color:var(--ink-soft)">Readable formats: <b>.csv</b>, <b>.tsv</b>, <b>.txt</b>, <b>.xlsx</b> / <b>.xlsm</b> (each sheet imported on its own), <b>.zip</b> platform downloads, <b>.json</b> data exports, and Excel's XML or HTML "spreadsheet" files. Legacy <b>.xls</b> from Excel 97-2003 has to be re-saved as .xlsx or .csv first — the importer says so rather than reading it wrong.</p>
 </div>
 
 <div class="utility-panel" id="syncPanel">
@@ -450,7 +462,16 @@
     <div class="sourcecard"><b>3 · Confirm the account</b><span>If the login can access several profiles, CNO chooses the exact profile and ad account for this client.</span></div>
     <div class="sourcecard"><b>4 · Stay connected</b><span>Authorization is encrypted and refreshed when the provider permits it. CNO reconnects only after revocation, expiry, or a permission change.</span></div>
   </div>
-  <div class="aibox"><div class="ailab">Browser connection center <span>staff only</span></div><div class="aidesc">The client signs in directly with the social platform. CNO never sees the platform password, two-factor code, or OAuth token.</div><input type="hidden" id="syncServiceUrl" value=""><div class="airow"><button class="btn solid" id="syncOpen">Connect selected client</button><a class="btn" id="syncGuideLink" href="MIGRATE_TO_CNO_ACCOUNTS.md" target="_blank" rel="noopener">CNO setup status</a></div><div class="aistatus" id="syncStatus"></div></div>
+  <div class="aibox"><div class="ailab">Browser connection center <span>staff only</span></div><div class="aidesc">The client signs in directly with the social platform. CNO never sees the platform password, two-factor code, or OAuth token.</div>
+    <div class="synccfg">
+      <label for="syncServiceUrl">CNO connection service address</label>
+      <div class="syncurlrow"><input type="url" id="syncServiceUrl" spellcheck="false" autocomplete="off" placeholder="https://cno-native-sync.onrender.com"><button class="btn" id="syncCheck">Check</button></div>
+      <span class="quiet">Set once per CNO device. The address of the private service a CNO owner deployed; it is not a client-facing link.</span>
+    </div>
+    <div class="aistatus" id="syncStatus"></div>
+    <div class="syncconns" id="syncConnections" hidden></div>
+    <div class="airow"><button class="btn solid" id="syncOpen">Connect selected client</button><button class="btn" id="syncPull" disabled>Refresh and load into this report</button><a class="btn" id="syncGuideLink" href="MIGRATE_TO_CNO_ACCOUNTS.md" target="_blank" rel="noopener">CNO setup status</a></div>
+  </div>
 </div>
 
 <div class="utility-panel" id="aiPanel">
@@ -568,7 +589,7 @@ const median=a=>{a=a.filter(v=>v!==null&&v!==undefined);if(!a.length)return null
 const ratio=(n,d)=>(n!==null&&n!==undefined&&d!==null&&d!==undefined&&d>0)?n/d:null;
 const cap=s=>String(s).charAt(0).toUpperCase()+String(s).slice(1);
 const plural=(n,w)=>n===1?w:w+"s";
-const PLAT={instagram:"Instagram",tiktok:"TikTok",linkedin:"LinkedIn",facebook:"Facebook",meta:"Meta",pinterest:"Pinterest",youtube:"YouTube",threads:"Threads",twitter:"X",x:"X"};
+const PLAT={instagram:"Instagram",tiktok:"TikTok",linkedin:"LinkedIn",facebook:"Facebook",meta:"Meta",pinterest:"Pinterest",youtube:"YouTube",threads:"Threads",twitter:"X",x:"X",unspecified:"Unspecified"};
 const plat=s=>PLAT[String(s).toLowerCase()]||cap(s);
 const platformId=s=>String(s||"instagram").toLowerCase().trim().replace(/[^a-z0-9_-]+/g,"_").replace(/^_+|_+$/g,"").slice(0,48)||"other";
 const FMTNAME={CAROUSEL:"Carousel",REEL:"Reel",POST:"Post",IMAGE:"Image",PHOTO:"Photo",VIDEO:"Video",STORY:"Story",SHORT:"Short",DOCUMENT:"Document",TEXT:"Text",LINK:"Link"};
@@ -587,7 +608,7 @@ function daysBetween(a,b){return Math.round((b-a)/86400000);}
 const ALIAS={};
 (function(){const map={
   record_type:["recordtype","rowtype","datatype","granularity","grain"],
-  client:["client","account","brand","profile","space","page","accountname","username","handle"],
+  client:["client","account","brand","profile","space","page","accountname","username","handle","spacename","accounthandle","pagename","organizationname","channel_title","channeltitle"],
   platform:["platform","network","channel","socialnetwork"],
   data_source:["source","datasource","exportsource","provider","sourcefile"],
   aggregation:["aggregation","aggregationtype","metricgrain","periodtype"],
@@ -667,7 +688,64 @@ const ALIAS={};
   spend:["spend","adspend","amountspent","cost","budgetspent","totalspend"],
   industry:["industry","vertical","category"]
 };
-for(const canon in map){for(const a of map[canon]){ALIAS[a]=canon;}ALIAS[canon.replace(/_/g,"")]=canon;}})();
+/* Headings exactly as the native exports write them. Added separately from the general
+   aliases above so it stays obvious which platform each wording came from. */
+const nativeMap={
+  date:["postpublishdate","publishdate","videopublishtime","publishtime","createtime","scheduledfor","publishedat","posteddate","daterange","reportdate","postedon"],
+  post_type:["mediaproducttype","contentformat","posttypename","videotype","pintype"],
+  caption_snippet:["videodescription","videotitle","posttitle","pintitle","postcontent","tweettext","threadtext","messagetext"],
+  reach:["accountsreached","uniqueimpressions","uniqueusers","pagereach","postreach","totalaudience","uniqueviewers","peoplereached"],
+  impressions:["impressioncounts","totalimpressions","paidandorganicimpressions","impressionsorganic"],
+  views:["videoviews","videoviewcounts","viewcounts","playcounts","totalviews","viewsvideoonly","impressionsvideo"],
+  engagement:["contentinteractions","postengagements","totalengagements","engagedaudience","interactionscount","reactionscommentsandshares"],
+  likes:["likecounts","reactionscount","totalreactions","pagelikes","likesandreactions"],
+  comments:["commentcounts","commentscount","totalcomments"],
+  shares:["sharecounts","sendsandshares","totalshares","repins"],
+  saves:["savedcount","bookmarkcount","bookmarks","totalsaves","pinsaves"],
+  reposts:["quotes","quotetweets","requotes"],
+  follows:["netfollows","followsandunfollows","accountsfollowing","newfollowers7d"],
+  followers_total:["totalfollowers","followerstotalcount","pagefollowers","totalsubscribers","channelsubscribers","totalaudiencesize"],
+  followers_growth:["organicfollowers","organicfollowergain","followergain","followergains","netnewfollowers","subscribersgained","newsubscribers","followerschange","totalfollowergain"],
+  paid_follows:["sponsoredfollowers","paidfollowergain","sponsoredfollowergain"],
+  profile_views:["totalpageviews","overviewpageviews","allpageviews","pageviews","pagevisits","profilevisitscount","channelviews"],
+  link_clicks:["custombuttonclicks","buttonclicks","websitetaps","websitebuttontaps","outboundclickscount","pinclicks","linkclickscount"],
+  clicks:["clickcount","clickcounts","postclicks","totalclickcount"],
+  click_through_rate_reported:["clickthroughratectr","impressionsclickthroughrate","impressionsclickthroughrateper","ctrall"],
+  total_watch_time_hours:["watchtimehours","totalwatchtimehours","hourswatched","watchtimeh"],
+  total_watch_time_seconds:["totaltimewatched","totalplaytime","totalviewtime"],
+  average_view_duration_seconds:["averagetimewatched","avgtimewatched","averageviewduration2","averagewatchtimepervideo"],
+  story_exits:["tapsaway","storytapsaway","exitscount"],
+  story_views:["storyimpressionscount","storyviewcount"],
+  replies:["storyreplies","directreplies","threadreplies"],
+  dms:["messagestarted","messagingconversationsstarted","conversationsstarted","newmessagingconnections"],
+  spend:["amountspentusd","amountspentgbp","totalcost","costusd"],
+  posts:["contentpublished","videospublished","postspublishedcount","numberofposts"],
+  campaign:["campaigngroup","adcampaign","campaigntitle"],
+  pillar:["contenttheme","contentcategory","pillartag"]
+};
+for(const canon in map){for(const a of map[canon]){ALIAS[a]=canon;}ALIAS[canon.replace(/_/g,"")]=canon;}
+for(const canon in nativeMap){for(const a of nativeMap[canon]){if(!ALIAS[a])ALIAS[a]=canon;}ALIAS[canon.replace(/_/g,"")]=canon;}})();
+/* Native exports often carry the platform only in the file or sheet name. */
+const PLATFORM_HINTS=[[/linked\s*_?in/i,"linkedin"],[/tik\s*_?tok/i,"tiktok"],[/instagram|(^|[^a-z])ig([^a-z]|$)|reels?/i,"instagram"],[/facebook|(^|[^a-z])fb([^a-z]|$)/i,"facebook"],[/youtube|(^|[^a-z])yt([^a-z]|$)|shorts/i,"youtube"],[/pinterest/i,"pinterest"],[/threads/i,"threads"],[/twitter|(^|[^a-z])x[-_ ]?(post|export|analytics)/i,"x"],[/ads?[-_ ]?manager|meta[-_ ]?ads/i,"meta"],[/\bmeta\b/i,"meta"]];
+function platformFromName(name){
+  const text=String(name||"").replace(/[\\/_.·-]+/g," ");
+  for(const [pattern,id] of PLATFORM_HINTS)if(pattern.test(text))return id;
+  return "";
+}
+/* "Choose folder" gives paths like "Example Brand/june/linkedin.xlsx"; the nearest folder that
+   is not a date or a generic bucket is the client. Sheet and archive labels after " · " are ignored. */
+const GENERIC_FOLDER=/^(?:[\d\s._-]+|q[1-4]|jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec|january|february|march|april|june|july|august|september|october|november|december|data|export|exports|download|downloads|report|reports|reporting|analytics|insights|csv|csvs|files|social|monthly|raw)$/i;
+function clientFromName(name){
+  const parts=String(name||"").split(" · ")[0].split(/[\\/]/).map(x=>x.trim()).filter(Boolean);
+  for(let i=parts.length-2;i>=0;i--){
+    const folder=parts[i];
+    if(!folder||GENERIC_FOLDER.test(folder)||platformFromName(folder))continue;
+    const clean=folder.replace(/[_-]+/g," ").trim();
+    if(clean&&!GENERIC_FOLDER.test(clean))return clean;
+  }
+  return "";
+}
+let IMPORT_DEFAULTS={client:"",platform:""};
 const normKey=h=>String(h).toLowerCase().replace(/[^a-z0-9]/g,"");
 function normalizeRow(raw,sourceName=""){
   const o={_raw:raw};
@@ -691,17 +769,338 @@ function normalizeRow(raw,sourceName=""){
 }
 const escHtml=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 
-/* ==================== CSV ==================== */
-function parseCSV(text){
-  text=text.replace(/^﻿/,"").replace(/\r\n?/g,"\n");
+/* ==================== delimited text ==================== */
+/* Native exports are not all comma separated UTF-8. Meta and Instagram ship UTF-16, European
+   exports use semicolons, LinkedIn and Facebook put a title row above the real headings, and
+   Excel writes a "sep=" hint line. Everything below reads those without hand editing. */
+function splitDelimited(text,delim){
   const rows=[];let row=[],f="",q=false;
   for(let i=0;i<text.length;i++){const c=text[i];
     if(q){if(c==='"'){if(text[i+1]==='"'){f+='"';i++;}else q=false;}else f+=c;}
-    else{if(c==='"')q=true;else if(c===','){row.push(f);f="";}else if(c==='\n'){row.push(f);rows.push(row);row=[];f="";}else f+=c;}}
+    else{if(c==='"')q=true;else if(c===delim){row.push(f);f="";}else if(c==='\n'){row.push(f);rows.push(row);row=[];f="";}else f+=c;}}
   if(f.length||row.length){row.push(f);rows.push(row);}
-  if(!rows.length)return[];
-  const head=rows[0].map(h=>h.trim());
-  return rows.slice(1).filter(r=>r.some(v=>v.trim()!=="")).map(r=>{const o={};head.forEach((h,i)=>o[h]=(r[i]===undefined?"":r[i]).trim());return o;});
+  return rows;
+}
+function sniffDelimiter(text){
+  const sample=text.split("\n").slice(0,30).join("\n");
+  let best=",",bestScore=0;
+  for(const d of [",",";","\t","|"]){
+    const rows=splitDelimited(sample,d).filter(r=>r.some(v=>v.trim()!==""));
+    if(!rows.length)continue;
+    const counts=rows.map(r=>r.length),widest=Math.max(...counts);
+    if(widest<2)continue;
+    const score=widest*10+counts.filter(n=>n===widest).length;
+    if(score>bestScore){bestScore=score;best=d;}
+  }
+  return best;
+}
+/* Score a candidate heading row so a title, blank, or note line above the real headings is skipped. */
+function headerScore(cells){
+  const filled=cells.filter(c=>String(c).trim()!=="").length;
+  if(filled<2)return -Infinity;
+  let known=0,numeric=0;
+  cells.forEach(c=>{const t=String(c).trim();if(!t)return;const k=normKey(t);if(k&&(ALIAS[k]||/target$/.test(k)))known++;if(num(t)!==null)numeric++;});
+  return known*8+filled-numeric*3;
+}
+function dedupeHeaders(head){
+  const seen=new Map();
+  return head.map(h=>{
+    const name=String(h??"").trim();
+    if(!name)return "";
+    const count=(seen.get(name)||0)+1;seen.set(name,count);
+    return count===1?name:name+"_"+count;
+  });
+}
+function matrixToObjects(matrix){
+  const rows=(matrix||[]).filter(r=>Array.isArray(r)&&r.some(v=>String(v??"").trim()!==""));
+  if(!rows.length)return{rows:[],preamble:0,headers:[]};
+  let headerIndex=0,best=-Infinity;
+  for(let i=0;i<Math.min(rows.length,10);i++){const s=headerScore(rows[i]);if(s>best){best=s;headerIndex=i;}}
+  if(!isFinite(best))headerIndex=0;
+  const head=dedupeHeaders(rows[headerIndex]);
+  const out=rows.slice(headerIndex+1).map(r=>{
+    const o={};head.forEach((h,i)=>{if(h!=="")o[h]=String(r[i]??"").trim();});
+    return o;
+  }).filter(o=>Object.values(o).some(v=>v!==""));
+  return{rows:out,preamble:headerIndex,headers:head.filter(Boolean)};
+}
+function parseDelimitedText(text){
+  text=String(text??"").replace(/^\uFEFF/,"").replace(/\r\n?/g,"\n");
+  let hint=null;
+  const sep=/^sep=(.)[^\n]*\n/i.exec(text);
+  if(sep){hint=sep[1]==="\\t"?"\t":sep[1];text=text.slice(sep[0].length);}
+  return matrixToObjects(splitDelimited(text,hint||sniffDelimiter(text)));
+}
+function parseCSV(text){return parseDelimitedText(text).rows;}
+
+/* ==================== binary and workbook readers ==================== */
+/* Everything here is self contained: no library, no network. Compressed spreadsheet parts are
+   inflated with the browser's own DecompressionStream so the report still works offline. */
+function decodeText(buffer){
+  const b=new Uint8Array(buffer);
+  if(b.length>=2&&b[0]===0xFF&&b[1]===0xFE)return new TextDecoder("utf-16le").decode(b.subarray(2));
+  if(b.length>=2&&b[0]===0xFE&&b[1]===0xFF)return new TextDecoder("utf-16be").decode(b.subarray(2));
+  if(b.length>=3&&b[0]===0xEF&&b[1]===0xBB&&b[2]===0xBF)return new TextDecoder("utf-8").decode(b.subarray(3));
+  /* Meta sometimes exports UTF-16 without a mark. Interleaved zero bytes give it away. */
+  const scan=Math.min(b.length,8192);let even=0,odd=0;
+  for(let i=0;i<scan;i++)if(b[i]===0){if(i%2)odd++;else even++;}
+  if(scan>16&&odd>scan/8&&even<scan/64)return new TextDecoder("utf-16le").decode(b);
+  if(scan>16&&even>scan/8&&odd<scan/64)return new TextDecoder("utf-16be").decode(b);
+  const utf8=new TextDecoder("utf-8").decode(b);
+  if((utf8.match(/\uFFFD/g)||[]).length>2+utf8.length/2000){
+    try{return new TextDecoder("windows-1252").decode(b);}catch(e){/* keep the utf-8 reading */}
+  }
+  return utf8;
+}
+async function inflateRaw(bytes){
+  if(typeof DecompressionStream!=="function")throw new Error("This browser cannot open compressed spreadsheets. Use Chrome, Edge, or Safari 16.4 and later, or export the data as CSV.");
+  const stream=new Blob([bytes]).stream().pipeThrough(new DecompressionStream("deflate-raw"));
+  return new Uint8Array(await new Response(stream).arrayBuffer());
+}
+/* Minimal ZIP reader (central directory, with Zip64 for large platform archives). */
+async function readZip(buffer){
+  const u8=new Uint8Array(buffer),dv=new DataView(buffer);
+  let eocd=-1;
+  for(let i=u8.length-22;i>=0&&i>=u8.length-66000;i--){if(dv.getUint32(i,true)===0x06054b50){eocd=i;break;}}
+  if(eocd<0)throw new Error("This archive could not be opened. Re-download it, or unzip it and add the files directly.");
+  let count=dv.getUint16(eocd+10,true),start=dv.getUint32(eocd+16,true);
+  if(count===0xffff||start===0xffffffff){
+    const locator=eocd-20;
+    if(locator<0||dv.getUint32(locator,true)!==0x07064b50)throw new Error("This archive uses a format the report cannot open. Unzip it and add the files directly.");
+    const z64=Number(dv.getBigUint64(locator+8,true));
+    if(dv.getUint32(z64,true)!==0x06064b50)throw new Error("This archive uses a format the report cannot open. Unzip it and add the files directly.");
+    count=Number(dv.getBigUint64(z64+32,true));start=Number(dv.getBigUint64(z64+48,true));
+  }
+  const entries=[];
+  let p=start;
+  for(let i=0;i<count&&p+46<=u8.length;i++){
+    if(dv.getUint32(p,true)!==0x02014b50)break;
+    const method=dv.getUint16(p+10,true),nameLen=dv.getUint16(p+28,true),extraLen=dv.getUint16(p+30,true),commentLen=dv.getUint16(p+32,true);
+    let compSize=dv.getUint32(p+20,true),offset=dv.getUint32(p+42,true);
+    const name=new TextDecoder("utf-8").decode(u8.subarray(p+46,p+46+nameLen));
+    if(compSize===0xffffffff||offset===0xffffffff){
+      let e=p+46+nameLen;const end=e+extraLen;
+      while(e+4<=end){
+        const id=dv.getUint16(e,true),size=dv.getUint16(e+2,true);
+        if(id===0x0001){
+          let f=e+4;
+          if(dv.getUint32(p+24,true)===0xffffffff)f+=8;
+          if(compSize===0xffffffff){compSize=Number(dv.getBigUint64(f,true));f+=8;}
+          if(offset===0xffffffff)offset=Number(dv.getBigUint64(f,true));
+          break;
+        }
+        e+=4+size;
+      }
+    }
+    entries.push({name,method,compSize,offset});
+    p+=46+nameLen+extraLen+commentLen;
+  }
+  const files=new Map();
+  for(const entry of entries){
+    if(entry.name.endsWith("/"))continue;
+    const lp=entry.offset;
+    if(lp+30>u8.length||dv.getUint32(lp,true)!==0x04034b50)continue;
+    const data=lp+30+dv.getUint16(lp+26,true)+dv.getUint16(lp+28,true);
+    const raw=u8.subarray(data,data+entry.compSize);
+    if(entry.method===0)files.set(entry.name,raw);
+    else if(entry.method===8)files.set(entry.name,await inflateRaw(raw));
+  }
+  return files;
+}
+function xmlDoc(bytes){
+  const doc=new DOMParser().parseFromString(typeof bytes==="string"?bytes:decodeText(bytes.buffer?bytes.buffer.slice(bytes.byteOffset,bytes.byteOffset+bytes.byteLength):bytes),"application/xml");
+  if(doc.getElementsByTagName("parsererror").length)throw new Error("The spreadsheet contents could not be read");
+  return doc;
+}
+const colIndex=ref=>{let n=0;for(const ch of String(ref).replace(/[^A-Za-z]/g,"").toUpperCase())n=n*26+(ch.charCodeAt(0)-64);return Math.max(0,n-1);};
+function excelSerial(serial,date1904){
+  if(!isFinite(serial))return String(serial);
+  const base=date1904?Date.UTC(1904,0,1):Date.UTC(1899,11,30);
+  const d=new Date(base+Math.round(serial*86400000));
+  if(isNaN(d))return String(serial);
+  return Math.abs(serial-Math.round(serial))>1e-6?d.toISOString().slice(0,19)+"Z":ymd(d);
+}
+function dateStyleIndexes(styles){
+  const set=new Set();if(!styles)return set;
+  const builtin=new Set([14,15,16,17,18,19,20,21,22,27,28,29,30,31,32,33,34,35,36,45,46,47,50,51,52,53,54,55,56,57,58]);
+  const custom=new Set();
+  [...styles.querySelectorAll("numFmts > numFmt")].forEach(n=>{
+    const code=String(n.getAttribute("formatCode")||"").replace(/\[[^\]]*\]/g,"").replace(/"[^"]*"/g,"");
+    if(/[ymdhs]/i.test(code))custom.add(Number(n.getAttribute("numFmtId")));
+  });
+  [...styles.querySelectorAll("cellXfs > xf")].forEach((xf,i)=>{
+    const id=Number(xf.getAttribute("numFmtId")||0);
+    if(builtin.has(id)||custom.has(id))set.add(i);
+  });
+  return set;
+}
+function sheetMatrix(doc,shared,dateStyles,date1904){
+  const matrix=[];
+  [...doc.querySelectorAll("sheetData > row")].forEach((row,order)=>{
+    const rowIndex=Number(row.getAttribute("r")||order+1)-1;
+    const cells=[];
+    [...row.querySelectorAll("c")].forEach(c=>{
+      const ref=c.getAttribute("r"),index=ref?colIndex(ref):cells.length;
+      const type=c.getAttribute("t")||"n";
+      let value="";
+      if(type==="inlineStr")value=[...c.querySelectorAll("is t")].map(t=>t.textContent).join("");
+      else{
+        const raw=c.querySelector("v")?c.querySelector("v").textContent:"";
+        if(type==="s")value=shared[Number(raw)]??"";
+        else if(type==="b")value=raw==="1"?"TRUE":"FALSE";
+        else if(type==="e")value="";
+        else if(type==="str")value=raw;
+        else value=(raw!==""&&dateStyles.has(Number(c.getAttribute("s")||-1)))?excelSerial(Number(raw),date1904):raw;
+      }
+      cells[index]=value;
+    });
+    for(let i=0;i<cells.length;i++)if(cells[i]===undefined)cells[i]="";
+    matrix[rowIndex>=0&&rowIndex<1048576?rowIndex:matrix.length]=cells;
+  });
+  for(let i=0;i<matrix.length;i++)if(!matrix[i])matrix[i]=[];
+  return matrix;
+}
+const REL_NS="http://schemas.openxmlformats.org/officeDocument/2006/relationships";
+async function readWorkbook(files,label){
+  const workbookBytes=files.get("xl/workbook.xml");
+  if(!workbookBytes)throw new Error("This file is not a readable Excel workbook");
+  const workbook=xmlDoc(workbookBytes);
+  const pr=workbook.querySelector("workbookPr"),flag=pr?String(pr.getAttribute("date1904")||""):"";
+  const date1904=flag==="1"||flag.toLowerCase()==="true";
+  const shared=files.get("xl/sharedStrings.xml")
+    ? [...xmlDoc(files.get("xl/sharedStrings.xml")).querySelectorAll("sst > si")].map(si=>[...si.querySelectorAll("t")].filter(t=>!t.closest("rPh")).map(t=>t.textContent).join(""))
+    : [];
+  const dateStyles=files.get("xl/styles.xml")?dateStyleIndexes(xmlDoc(files.get("xl/styles.xml"))):new Set();
+  const rels=new Map();
+  if(files.get("xl/_rels/workbook.xml.rels")){
+    [...xmlDoc(files.get("xl/_rels/workbook.xml.rels")).querySelectorAll("Relationship")].forEach(r=>{
+      rels.set(r.getAttribute("Id"),String(r.getAttribute("Target")||"").replace(/^\//,"").replace(/^xl\//,""));
+    });
+  }
+  const sheets=[...workbook.querySelectorAll("sheets > sheet")];
+  const out=[];
+  sheets.forEach((sheet,i)=>{
+    if(String(sheet.getAttribute("state")||"visible")!=="visible")return;
+    const rid=sheet.getAttributeNS(REL_NS,"id")||sheet.getAttribute("r:id");
+    const target=(rid&&rels.get(rid))||`worksheets/sheet${i+1}.xml`;
+    const bytes=files.get("xl/"+target)||files.get(target);
+    if(!bytes)return;
+    const name=String(sheet.getAttribute("name")||`Sheet ${i+1}`);
+    const parsed=matrixToObjects(sheetMatrix(xmlDoc(bytes),shared,dateStyles,date1904));
+    if(parsed.rows.length)out.push({name:sheets.length>1?`${label} · ${name}`:label,rows:parsed.rows,headers:parsed.headers});
+  });
+  if(!out.length)throw new Error("No sheet in this workbook contained a readable table");
+  return out;
+}
+/* Rows out of a JSON export (Instagram/Facebook data downloads, API dumps, Rella JSON). */
+function jsonTables(value,label){
+  const flatten=(obj,prefix="",depth=0)=>{
+    const out={};
+    for(const k in obj){
+      const v=obj[k],key=prefix?prefix+"_"+k:k;
+      if(v===null||v===undefined)out[key]="";
+      else if(Array.isArray(v))out[key]=v.every(x=>x===null||typeof x!=="object")?v.join(" | "):JSON.stringify(v).slice(0,400);
+      else if(typeof v==="object")Object.assign(out,depth<2?flatten(v,key,depth+1):{[key]:JSON.stringify(v).slice(0,400)});
+      else out[key]=String(v);
+    }
+    return out;
+  };
+  const tables=[];
+  const visit=(node,name,depth)=>{
+    if(tables.length>=12||depth>4||!node||typeof node!=="object")return;
+    if(Array.isArray(node)){
+      const objects=node.filter(x=>x&&typeof x==="object"&&!Array.isArray(x));
+      if(objects.length>=1&&objects.length===node.length)tables.push({name,rows:objects.map(x=>flatten(x))});
+      else node.slice(0,20).forEach((x,i)=>visit(x,`${name} [${i}]`,depth+1));
+      return;
+    }
+    for(const k in node)visit(node[k],depth===0?`${name} · ${k}`:`${name}/${k}`,depth+1);
+  };
+  visit(value,label,0);
+  return tables.filter(t=>t.rows.length).map(t=>({name:t.name,rows:t.rows,headers:[...new Set(t.rows.flatMap(r=>Object.keys(r)))]}));
+}
+function domTables(text,label){
+  const doc=new DOMParser().parseFromString(text,"text/html");
+  const out=[];
+  [...doc.querySelectorAll("table")].forEach((table,i)=>{
+    const matrix=[...table.querySelectorAll("tr")].map(tr=>[...tr.querySelectorAll("th,td")].map(td=>td.textContent.trim()));
+    const parsed=matrixToObjects(matrix);
+    if(parsed.rows.length)out.push({name:out.length||doc.querySelectorAll("table").length>1?`${label} · table ${i+1}`:label,rows:parsed.rows,headers:parsed.headers});
+  });
+  return out;
+}
+function spreadsheetMLTables(text,label){
+  const doc=xmlDoc(text);
+  const out=[];
+  [...doc.querySelectorAll("Worksheet")].forEach((sheet,i)=>{
+    const matrix=[...sheet.querySelectorAll("Row")].map(row=>{
+      const cells=[];let index=0;
+      [...row.querySelectorAll("Cell")].forEach(cell=>{
+        const at=Number(cell.getAttribute("ss:Index")||cell.getAttribute("Index")||0);
+        if(at>0)index=at-1;
+        const data=cell.querySelector("Data");
+        cells[index]=data?data.textContent.trim():"";
+        index++;
+      });
+      for(let c=0;c<cells.length;c++)if(cells[c]===undefined)cells[c]="";
+      return cells;
+    });
+    const parsed=matrixToObjects(matrix);
+    const name=sheet.getAttribute("ss:Name")||sheet.getAttribute("Name")||`Sheet ${i+1}`;
+    if(parsed.rows.length)out.push({name:doc.querySelectorAll("Worksheet").length>1?`${label} · ${name}`:label,rows:parsed.rows,headers:parsed.headers});
+  });
+  return out;
+}
+const DATA_FILE_PATTERN=/\.(csv|tsv|tab|txt|xlsx|xlsm|xltx|xls|zip|json|xml|htm|html)$/i;
+const ARCHIVE_SKIP=/(^|\/)(__MACOSX|\.)/;
+/* One uploaded file can hold several logical tables (workbook sheets, archive members). */
+async function readSourceBuffer(buffer,label,depth=0){
+  if(!buffer||buffer.byteLength===0)throw new Error("This file is empty");
+  const head=new Uint8Array(buffer,0,Math.min(buffer.byteLength,8));
+  const sig=[...head].map(x=>x.toString(16).padStart(2,"0")).join("");
+  if(sig.startsWith("d0cf11e0"))throw new Error("This is a legacy Excel 97-2003 file. Open it and save as .xlsx or .csv, then add it again.");
+  if(sig.startsWith("504b")){
+    if(depth>2)throw new Error("Nested archives are not opened this deep. Unzip it and add the files directly.");
+    const files=await readZip(buffer);
+    if(files.get("xl/workbook.xml"))return readWorkbook(files,label);
+    const members=[...files.keys()].filter(n=>DATA_FILE_PATTERN.test(n)&&!ARCHIVE_SKIP.test(n)).sort();
+    if(!members.length)throw new Error("This archive contained no CSV, Excel, or JSON data files");
+    const out=[];
+    for(const member of members){
+      const bytes=files.get(member);
+      try{
+        const nested=await readSourceBuffer(bytes.buffer.slice(bytes.byteOffset,bytes.byteOffset+bytes.byteLength),`${label} · ${member}`,depth+1);
+        out.push(...nested);
+      }catch(e){out.push({name:`${label} · ${member}`,rows:[],headers:[],error:e.message});}
+    }
+    return out;
+  }
+  const text=decodeText(buffer);
+  const trimmed=text.replace(/^\uFEFF/,"").trimStart();
+  if(trimmed.startsWith("{")||trimmed.startsWith("[")){
+    let parsed;
+    try{parsed=JSON.parse(trimmed);}catch(e){throw new Error("This JSON file could not be read: "+e.message);}
+    const tables=jsonTables(parsed,label);
+    if(!tables.length)throw new Error("This JSON file contained no list of records to import");
+    return tables;
+  }
+  if(/^<\?xml/i.test(trimmed)&&/<Workbook/i.test(trimmed.slice(0,4000))){
+    const tables=spreadsheetMLTables(trimmed,label);
+    if(tables.length)return tables;
+  }
+  if(/^</.test(trimmed)&&/<table/i.test(trimmed)){
+    const tables=domTables(trimmed,label);
+    if(tables.length)return tables;
+    throw new Error("No data table was found in this page export");
+  }
+  const parsed=parseDelimitedText(text);
+  if(!parsed.rows.length)throw new Error(parsed.headers.length?"This file has column headings but no data rows yet":"No data rows were found in this file");
+  return[{name:label,rows:parsed.rows,headers:parsed.headers,preamble:parsed.preamble}];
+}
+async function readSourceFile(file){
+  const label=file.webkitRelativePath||file.name||"Imported data";
+  if(file.size>120*1024*1024)throw new Error("This file is larger than 120 MB. Split the export or use CSV.");
+  return readSourceBuffer(await file.arrayBuffer(),label);
 }
 function toCSV(rows){if(!rows.length)return"";const heads=[...new Set(rows.flatMap(r=>Object.keys(r)))];const esc=v=>{v=(v===undefined||v===null)?"":String(v);return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v;};return heads.join(",")+"\n"+rows.map(r=>heads.map(h=>esc(r[h])).join(",")).join("\n");}
 function download(name,text){const b=new Blob([text],{type:"text/csv;charset=utf-8"});const a=document.createElement("a"),url=URL.createObjectURL(b);a.href=url;a.download=name;a.style.display="none";document.body.appendChild(a);a.click();document.body.removeChild(a);setTimeout(()=>URL.revokeObjectURL(url),1500);}
@@ -859,6 +1258,11 @@ function rawDataTables(c,from,to){
 let POSTS=[], PERIODS=[], IMPORT_LOG=[];
 function classify(rows,sourceName=""){
   const posts=[],periods=[];
+  /* A LinkedIn or TikTok export rarely names the client or platform inside the file. Fall back to
+     the folder and file name, then to the staff-entered import defaults, and never guess a platform. */
+  const hintedPlatform=platformFromName(sourceName),hintedClient=clientFromName(sourceName);
+  const resolveClient=r=>String(r.client||hintedClient||IMPORT_DEFAULTS.client||"Unknown").trim()||"Unknown";
+  const resolvePlatform=r=>platformId(String(r.platform||"").trim()||hintedPlatform||IMPORT_DEFAULTS.platform||"unspecified");
   rows.forEach(raw=>{
     const r=normalizeRow(raw,sourceName);
     const hasPostType=r.post_type!==undefined&&String(r.post_type).trim()!=="";
@@ -873,13 +1277,14 @@ function classify(rows,sourceName=""){
       const hasTime=/[T ]\d{1,2}:\d{2}/.test(String(r.date||""));
       const watchSeconds=num(r.total_watch_time_seconds);
       const watchMinutes=num(r.total_watch_time_minutes);
-      posts.push({client:(r.client||"Unknown").trim(),platform:platformId(r.platform),record_type:declared||"post",data_source:(r.data_source||"").trim(),aggregation:(r.aggregation||"post").toLowerCase().trim(),
+      const watchHours=num(r.total_watch_time_hours);
+      posts.push({client:resolveClient(r),platform:resolvePlatform(r),record_type:declared||"post",data_source:(r.data_source||"").trim(),aggregation:(r.aggregation||"post").toLowerCase().trim(),
         date:d, month:ym(d), hour:explicitHour!==null?Math.max(0,Math.min(23,Math.floor(explicitHour))):(hasTime?d.getUTCHours():null),type:(r.post_type||"POST").toUpperCase().replace(/[^A-Z]/g,"")||"POST",
         reach:num(r.reach), impressions:num(r.impressions), views:num(r.views), engagement:num(r.engagement),
         likes:num(r.likes)||0, comments:num(r.comments)||0, shares:num(r.shares)||0,
         saves:num(r.saves)||0, follows:num(r.follows)||0, replies:num(r.replies)||0, reposts:num(r.reposts)||0,
         meaningful_comments:num(r.meaningful_comments)||0, clicks:num(r.clicks)||0,click_through_rate_reported:num(r.click_through_rate_reported),story_views:num(r.story_views),story_exits:num(r.story_exits),story_completions:num(r.story_completions),
-        total_watch_time_seconds:watchSeconds!==null?watchSeconds:(watchMinutes!==null?watchMinutes*60:null),average_view_duration_seconds:num(r.average_view_duration_seconds),
+        total_watch_time_seconds:watchSeconds!==null?watchSeconds:(watchMinutes!==null?watchMinutes*60:(watchHours!==null?watchHours*3600:null)),average_view_duration_seconds:num(r.average_view_duration_seconds),
         paid_clicks:num(r.paid_clicks),paid_leads:num(r.paid_leads),paid_follows:num(r.paid_follows),paid_conversions:num(r.paid_conversions),paid_revenue:num(r.paid_revenue),conversions:num(r.conversions),video_completions:num(r.video_completions)||0,
         tags:num(r.hashtag_count)||0, len:num(r.caption_length)||(r.caption_snippet?String(r.caption_snippet).length:0),
         snippet:r.caption_snippet||"",
@@ -887,12 +1292,12 @@ function classify(rows,sourceName=""){
     } else {
       const mon = r.month ? String(r.month).slice(0,7) : (hasDate?ym(parseDate(r.date)):null);
       if(!mon) return;
-      periods.push({client:(r.client||"Unknown").trim(),platform:platformId(r.platform),record_type:declared||((hasDate)?"account_daily":"account_monthly"),data_source:(r.data_source||"").trim(),aggregation:(r.aggregation||((hasDate)?"daily":"period")).toLowerCase().trim(),month:mon,date:hasDate?parseDate(r.date):null,period_start:parseDate(r.period_start),period_end:parseDate(r.period_end),
-        followers_start:num(r.followers_start),followers_end:num(r.followers_end),followers_total:num(r.followers_total),followers_growth:num(r.followers_growth),
+      periods.push({client:resolveClient(r),platform:resolvePlatform(r),record_type:declared||((hasDate)?"account_daily":"account_monthly"),data_source:(r.data_source||"").trim(),aggregation:(r.aggregation||((hasDate)?"daily":"period")).toLowerCase().trim(),month:mon,date:hasDate?parseDate(r.date):null,period_start:parseDate(r.period_start),period_end:parseDate(r.period_end),
+        followers_start:num(r.followers_start),followers_end:num(r.followers_end),followers_total:num(r.followers_total),followers_growth:num(r.followers_growth)!==null?num(r.followers_growth):num(r.follows),
         reach:num(r.reach),impressions:num(r.impressions),views:num(r.views),engagement:num(r.engagement),likes:num(r.likes),comments:num(r.comments),shares:num(r.shares),saves:num(r.saves),
-        profile_views:num(r.profile_views),link_clicks:num(r.link_clicks),posts:num(r.posts),
+        profile_views:num(r.profile_views),link_clicks:num(r.link_clicks)!==null?num(r.link_clicks):num(r.clicks),posts:num(r.posts),
         dms:num(r.dms),meaningful_comments:num(r.meaningful_comments),comment_replies:num(r.comment_replies),story_views:num(r.story_views),story_exits:num(r.story_exits),story_completions:num(r.story_completions),
-        total_watch_time_seconds:num(r.total_watch_time_seconds)!==null?num(r.total_watch_time_seconds):(num(r.total_watch_time_minutes)!==null?num(r.total_watch_time_minutes)*60:null),average_view_duration_seconds:num(r.average_view_duration_seconds),
+        total_watch_time_seconds:num(r.total_watch_time_seconds)!==null?num(r.total_watch_time_seconds):(num(r.total_watch_time_minutes)!==null?num(r.total_watch_time_minutes)*60:(num(r.total_watch_time_hours)!==null?num(r.total_watch_time_hours)*3600:null)),average_view_duration_seconds:num(r.average_view_duration_seconds),
         leads:num(r.leads),bookings:num(r.bookings),membership_signups:num(r.membership_signups),retail_sales:num(r.retail_sales),revenue:num(r.revenue),
         event_reach:num(r.event_reach),event_engagement:num(r.event_engagement),event_registrations:num(r.event_registrations),event_attendees:num(r.event_attendees),
         conversions:num(r.conversions),paid_reach:num(r.paid_reach),paid_impressions:num(r.paid_impressions),organic_reach:num(r.organic_reach),organic_impressions:num(r.organic_impressions),
@@ -906,17 +1311,31 @@ function classify(rows,sourceName=""){
 function collectTargets(r){const t={};for(const k in r){if(k==="_raw")continue;if(/target$/.test(k)){const base=k.slice(0,-6),v=num(r[k]);if(v!==null&&v!==undefined)t[base]=v;}}return t;}
 function recordKey(r,grain){const raw=r.raw||{};return grain+"|"+Object.keys(raw).sort().map(k=>k+"="+String(raw[k]??"").trim()).join("&");}
 function addUnique(existing,incoming,grain){const seen=new Set(existing.map(r=>recordKey(r,grain))),kept=[];let duplicates=0;incoming.forEach(r=>{const k=recordKey(r,grain);if(seen.has(k))duplicates++;else{seen.add(k);kept.push(r);}});existing.push(...kept);return{kept:kept.length,duplicates};}
-function ingest(text,sourceName=""){
-  const rows=parseCSV(text),headers=rows.length?Object.keys(rows[0]):[],classified=classify(rows,sourceName);
+function ingestRows(rows,sourceName="",headerList=null){
+  rows=Array.isArray(rows)?rows:[];
+  const headers=headerList&&headerList.length?headerList:[...new Set(rows.flatMap(r=>Object.keys(r)))];
+  const classified=classify(rows,sourceName);
   [...classified.posts,...classified.periods].forEach(r=>r.source=sourceName);
   const pa=addUnique(POSTS,classified.posts,"post"),aa=addUnique(PERIODS,classified.periods,"account");
   if(sourceName){const all=[...classified.posts,...classified.periods],dates=all.map(r=>r.date).filter(Boolean),platforms=[...new Set(all.map(r=>r.platform).filter(Boolean))],recognizedHeaders=headers.filter(h=>ALIAS[normKey(h)]||/target$/i.test(normKey(h))).length;
-    IMPORT_LOG.push({name:sourceName,rows:rows.length,used:pa.kept+aa.kept,duplicates:pa.duplicates+aa.duplicates,posts:classified.posts.length,periods:classified.periods.length,grain:classified.posts.length&&classified.periods.length?"Mixed":classified.posts.length?"Post":"Account",platforms,dateFrom:dates.length?ymd(new Date(Math.min(...dates))):"",dateTo:dates.length?ymd(new Date(Math.max(...dates))):"",mapped:recognizedHeaders,headers:headers.length,skipped:Math.max(0,rows.length-classified.posts.length-classified.periods.length)});
+    IMPORT_LOG.push({name:sourceName,rows:rows.length,used:pa.kept+aa.kept,duplicates:pa.duplicates+aa.duplicates,posts:classified.posts.length,periods:classified.periods.length,grain:classified.posts.length&&classified.periods.length?"Mixed":classified.posts.length?"Post":"Account",platforms,dateFrom:dates.length?ymd(new Date(Math.min(...dates))):"",dateTo:dates.length?ymd(new Date(Math.max(...dates))):"",mapped:recognizedHeaders,headers:headers.length,skipped:Math.max(0,rows.length-classified.posts.length-classified.periods.length),note:""});
     renderImportCenter();
   }
   return{posts:pa.kept,periods:aa.kept,duplicates:pa.duplicates+aa.duplicates};
 }
+function ingest(text,sourceName=""){const parsed=parseDelimitedText(text);return ingestRows(parsed.rows,sourceName,parsed.headers);}
+function logUnreadable(name,note){
+  IMPORT_LOG.push({name,rows:0,used:0,duplicates:0,posts:0,periods:0,grain:"Not read",platforms:[],dateFrom:"",dateTo:"",mapped:0,headers:0,skipped:1,note:String(note||"This file could not be read")});
+  renderImportCenter();
+}
 function resetData(){POSTS=[];PERIODS=[];IMPORT_LOG=[];renderImportCenter();}
+/* Removes everything a named source contributed, so re-pulling a native connection replaces its
+   own rows instead of stacking a second near-identical copy beside them. */
+function dropImportedSource(name){
+  const match=r=>String(r.source||"")===name||String(r.source||"").indexOf(name+" · ")===0;
+  POSTS=POSTS.filter(r=>!match(r));PERIODS=PERIODS.filter(r=>!match(r));
+  IMPORT_LOG=IMPORT_LOG.filter(l=>l.name!==name&&String(l.name||"").indexOf(name+" · ")!==0);
+}
 function combinedMasterCSV(){
   const rows=[];
   PERIODS.forEach(p=>rows.push({record_type:p.record_type||(p.date?"account_daily":"account_monthly"),source_file:p.source||"",data_source:p.data_source||"",aggregation:p.aggregation||"",...(p.raw||{}),client:p.client,platform:p.platform,month:p.month,date:p.date?ymd(p.date):"",period_start:p.period_start?ymd(p.period_start):"",period_end:p.period_end?ymd(p.period_end):"",followers_start:p.followers_start,followers_end:p.followers_end,followers_total:p.followers_total,followers_growth:p.followers_growth,reach:p.reach,impressions:p.impressions,views:p.views,engagement:p.engagement,profile_views:p.profile_views,link_clicks:p.link_clicks,dms:p.dms,meaningful_comments:p.meaningful_comments,comment_replies:p.comment_replies,story_views:p.story_views,story_exits:p.story_exits,story_completions:p.story_completions,total_watch_time_seconds:p.total_watch_time_seconds,average_view_duration_seconds:p.average_view_duration_seconds,leads:p.leads,bookings:p.bookings,membership_signups:p.membership_signups,retail_sales:p.retail_sales,revenue:p.revenue,event_reach:p.event_reach,event_engagement:p.event_engagement,event_registrations:p.event_registrations,event_attendees:p.event_attendees,conversions:p.conversions,paid_reach:p.paid_reach,paid_impressions:p.paid_impressions,organic_reach:p.organic_reach,organic_impressions:p.organic_impressions,paid_clicks:p.paid_clicks,paid_leads:p.paid_leads,paid_follows:p.paid_follows,paid_conversions:p.paid_conversions,paid_revenue:p.paid_revenue,paid_cpm_reported:p.paid_cpm_reported,paid_cpc_reported:p.paid_cpc_reported,paid_ctr_reported:p.paid_ctr_reported,paid_frequency_reported:p.paid_frequency_reported,cost_per_paid_lead_reported:p.cost_per_paid_lead_reported,cost_per_paid_conversion_reported:p.cost_per_paid_conversion_reported,roas_reported:p.roas_reported,spend:p.spend,posts:p.posts,top_age_group:p.top_age_group,top_gender:p.top_gender,top_countries:p.top_countries,top_cities:p.top_cities,industry:p.industry,...Object.fromEntries(Object.entries(p.targets||{}).map(([k,v])=>[k+"_target",v]))}));
@@ -929,7 +1348,7 @@ function renderImportCenter(){
   const ps=[...new Set([...POSTS,...PERIODS].map(r=>r.platform))],cs=clients(),dupes=sum(IMPORT_LOG.map(x=>x.duplicates));
   s.innerHTML=[["Files",IMPORT_LOG.length],["Rows ready",POSTS.length+PERIODS.length],["Platforms",ps.length],["Duplicates removed",dupes]].map(x=>`<div class="isum"><span>${x[0]}</span><b>${fmtInt(x[1])}</b></div>`).join("");
   if(!IMPORT_LOG.length){a.innerHTML='<div class="fileaudit-empty">Imported files will appear here with their detected platform, data grain, date coverage, and mapping status.</div>';return;}
-  a.innerHTML=`<div class="file-row head"><span>File</span><span>Type</span><span>Rows</span><span>Coverage</span><span>Status</span></div>`+IMPORT_LOG.map(f=>{const coverage=f.dateFrom?(f.dateFrom+(f.dateTo&&f.dateTo!==f.dateFrom?" → "+f.dateTo:"")):"Period totals";const ok=f.used>0&&f.skipped===0,detail=f.duplicates?f.duplicates+" duplicate"+(f.duplicates===1?"":"s"):f.skipped?f.skipped+" skipped":"Ready";return `<div class="file-row"><span class="file-name" title="${escHtml(f.name)}">${escHtml(f.name)}</span><span>${f.grain}</span><span>${fmtInt(f.used)}</span><span>${escHtml((f.platforms.map(plat).join(", ")||"Unknown")+" · "+coverage)}</span><span class="${ok?"file-ok":"file-warn"}">${escHtml(detail)}</span></div>`;}).join("");
+  a.innerHTML=`<div class="file-row head"><span>File</span><span>Type</span><span>Rows</span><span>Coverage</span><span>Status</span></div>`+IMPORT_LOG.map(f=>{const coverage=f.dateFrom?(f.dateFrom+(f.dateTo&&f.dateTo!==f.dateFrom?" → "+f.dateTo:"")):"Period totals";const ok=f.used>0&&f.skipped===0,detail=f.note?f.note:f.duplicates?f.duplicates+" duplicate"+(f.duplicates===1?"":"s"):f.skipped?f.skipped+" skipped":"Ready";return `<div class="file-row"><span class="file-name" title="${escHtml(f.name)}">${escHtml(f.name)}</span><span>${escHtml(f.grain)}</span><span>${fmtInt(f.used)}</span><span>${escHtml((f.platforms.map(plat).join(", ")||"Unknown")+" · "+coverage)}</span><span class="${ok?"file-ok":"file-warn"}" title="${escHtml(detail)}">${escHtml(detail)}</span></div>`;}).join("");
 }
 
 /* ---- CNO-side data quality checks: diagnostic, never shown in shared client reports ---- */
@@ -966,6 +1385,8 @@ function auditData(c,from,to){
       add("warn","Reported paid rates need reconciliation",details+". The client report displays the platform-reported rate, while this CNO-only audit preserves the independent formula check.");
     }
   }
+  if(plats.includes("unspecified"))add("warn","Some rows do not name their platform","These rows came from a file with no platform column and no platform in its name. Set the platform under Import data before reporting on them, or add a platform column to the export. They are never merged into another platform's numbers.");
+  if(c==="Unknown")add("warn","These rows do not name a client","The export had no client column and its folder name gave no clue. Set the client under Import data and re-import so the report is filed correctly.");
   if(sources.some(s=>s==="Unlabeled source"))add("info","Some rows have no explicit data source","The imported filename is retained, but adding a data_source column such as rella, meta_native, or linkedin_native makes reconciliation easier.");
   const dailyReach=periods.some(p=>p.date&&p.reach!==null&&(p.aggregation==="daily"||p.record_type.includes("daily")));
   const periodReach=periods.some(p=>p.reach!==null&&(!p.date||p.aggregation==="period"||p.aggregation==="monthly"||p.record_type.includes("monthly")||p.record_type.includes("period")));
@@ -993,9 +1414,31 @@ function renderQualityPanel(){
   const label=k=>METRICS[k]?.label||k;
   r.innerHTML='<h4>Account totals versus post detail</h4>'+(q.reconc.length?q.reconc.map(x=>`<div class="qissue"><div class="qstatus ${Math.abs(x.delta||0)>.25?"warn":"info"}">${Math.abs(x.delta||0)>.25?"review":"context"}</div><div><b>${label(x.key)}: account ${fmtInt(x.account)} · post sum ${fmtInt(x.posts)}</b><br><span>${x.delta===null?"No percentage comparison":`${pct(Math.abs(x.delta),0)} ${x.delta>=0?"above":"below"} the account total`}. These figures can legitimately differ when account totals include stories, ads, deleted content, or platform-only surfaces.</span></div></div>`).join(""):'<div class="note">Upload both account-level and post-level exports to activate reconciliation checks.</div>');
 }
-function importFiles(files){
-  if(VIEW_LOCK)return;const csv=[...files].filter(f=>/\.csv$/i.test(f.name));if(!csv.length){appAlert("No CSV files were found in that selection.");return;}
-  openWorkspacePanel("data");let done=0;csv.forEach(f=>{const r=new FileReader();r.onload=e=>{ingest(e.target.result,f.webkitRelativePath||f.name);if(++done===csv.length){refreshAll();renderImportCenter();}};r.onerror=()=>{IMPORT_LOG.push({name:f.name,rows:0,used:0,duplicates:0,posts:0,periods:0,grain:"Unknown",platforms:[],dateFrom:"",dateTo:"",mapped:0,headers:0,skipped:1});if(++done===csv.length){refreshAll();renderImportCenter();}};r.readAsText(f);});
+let IMPORTING=false;
+async function importFiles(files){
+  if(VIEW_LOCK||IMPORTING)return;
+  const list=[...files].filter(f=>DATA_FILE_PATTERN.test(f.webkitRelativePath||f.name||""));
+  if(!list.length){appAlert("No readable data files were found in that selection. CNO Reports opens CSV, TSV, Excel .xlsx, JSON, and .zip exports.","Nothing to import");return;}
+  openWorkspacePanel("data");
+  IMPORTING=true;setImportBusy(list.length);
+  for(const file of list){
+    const label=file.webkitRelativePath||file.name||"Imported data";
+    try{
+      const parts=await readSourceFile(file);
+      const usable=parts.filter(p=>p.rows&&p.rows.length);
+      if(!usable.length)logUnreadable(label,parts.find(p=>p.error)?parts.find(p=>p.error).error:"No data rows were found in this file");
+      else usable.forEach(part=>ingestRows(part.rows,part.name,part.headers));
+      parts.filter(p=>p.error&&usable.length).forEach(p=>logUnreadable(p.name,p.error));
+    }catch(e){logUnreadable(label,e&&e.message?e.message:String(e));}
+  }
+  IMPORTING=false;setImportBusy(0);
+  refreshAll();renderImportCenter();
+}
+function setImportBusy(count){
+  const drop=$("importDrop");if(!drop)return;
+  drop.classList.toggle("busy",!!count);
+  const note=$("importBusy");
+  if(note){note.textContent=count?`Reading ${count} ${plural(count,"file")}…`:"";note.hidden=!count;}
 }
 
 /* ==================== data model ==================== */
@@ -2327,6 +2770,7 @@ function closeWorkspacePanels(except=null){
 function openWorkspacePanel(name,{scroll=true}={}){
   closeWorkspacePanels(name);setWorkspacePanelState(name,true);
   if(name==="quality")renderQualityPanel();if(name==="ai")renderAIEvidence();if(name==="customize")buildCustomUI();
+  if(name==="sync"&&typeof refreshSyncState==="function")refreshSyncState(true);else if(typeof stopSyncPolling==="function")stopSyncPolling();
   if(scroll)setTimeout(()=>$(WORKSPACE_PANELS[name].panel).scrollIntoView({behavior:"smooth",block:"start"}),0);
 }
 function toggleWorkspacePanel(name){
@@ -2336,7 +2780,7 @@ function toggleWorkspacePanel(name){
 function closeWorkspacePanel(name){setWorkspacePanelState(name,false);}
 
 function refreshAll(){const cs=clients();$("clientSel").innerHTML=cs.map(c=>`<option value="${escHtml(c)}">${escHtml(c)}</option>`).join("");refreshPeriods();renderImportCenter();}
-$("clientSel").addEventListener("change",()=>{refreshPeriods();buildCustomUI();});
+$("clientSel").addEventListener("change",()=>{refreshPeriods();buildCustomUI();if(typeof renderSyncConnections==="function")renderSyncConnections();});
 $("periodSel").addEventListener("change",onPeriodChange);
 $("grainSel").addEventListener("change",e=>{cset("grain",e.target.value);saveCustom();render();});
 $("fromDate").addEventListener("change",render);
@@ -2352,31 +2796,150 @@ $("aiForget").addEventListener("click",()=>{localStorage.removeItem("cno_ai_cfg"
 $("syncBtn").addEventListener("click",()=>toggleWorkspacePanel("sync"));
 $("syncClose").addEventListener("click",()=>closeWorkspacePanel("sync"));
 const savedSyncUrl=localStorage.getItem("cno_sync_service_url");$("syncServiceUrl").value=savedSyncUrl||SYNC_BASE;
+$("syncServiceUrl").addEventListener("change",()=>{SYNC_STATE={reachable:false,signedIn:false,connections:[],providers:[],storage:"",durable:true};renderSyncConnections();});
 $("syncGuideLink").href=REPO_BASE+"/blob/main/MIGRATE_TO_CNO_ACCOUNTS.md";
 $("downloadLink").href=REPO_BASE+"/releases/latest";
 $("desktopGuideLink").href=REPO_BASE+"/blob/main/DESKTOP.md";
-$("syncOpen").addEventListener("click",async()=>{
-  const url=$("syncServiceUrl").value.trim().replace(/\/$/,""),status=$("syncStatus");
-  if(!/^https:\/\//i.test(url)&&!/^http:\/\/localhost(?::\d+)?$/i.test(url)){status.textContent="Use an HTTPS service URL (or localhost while developing).";status.className="aistatus show";return;}
-  localStorage.setItem("cno_sync_service_url",url);
-  const popup=window.open("","cnoNativeConnection","popup=yes,width=1080,height=780");
-  if(popup){popup.document.title="CNO secure connection";popup.document.body.innerHTML='<div style="min-height:90vh;display:grid;place-items:center;background:#fff8e7;color:#2b2622;font:18px Georgia,serif"><div style="text-align:center"><img src="'+location.origin+location.pathname.replace(/[^/]*$/,"")+'cno-seal.png" alt="" style="width:90px;height:90px;object-fit:contain"><p>Opening CNO’s secure connection center…</p></div></div>';}
-  status.textContent="Checking CNO’s secure browser connection…";status.className="aistatus show";
-  $("syncOpen").disabled=true;
-  let timer;
+/* ---- native browser connections ---- */
+const SYNC_LABEL_PREFIX="Native connection · ";
+let SYNC_STATE={reachable:false,signedIn:false,connections:[],providers:[],storage:"",durable:true};
+let SYNC_POLL=null;
+function syncBase(){return $("syncServiceUrl").value.trim().replace(/\/$/,"");}
+function syncSay(html,busy){const s=$("syncStatus");s.innerHTML=html;s.className="aistatus show"+(busy?" busy":"");}
+function syncCurrentClient(){return (CURRENT&&CURRENT.client)||$("clientSel").value||"";}
+async function syncFetch(path,options={}){
+  const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),20000);
   try{
-    const controller=new AbortController();timer=setTimeout(()=>controller.abort(),8000);
-    const response=await fetch(url+"/health",{signal:controller.signal,cache:"no-store"});
-    const health=response.ok?await response.json():null;
-    if(!response.ok||!health?.ok)throw new Error("service unavailable");
-    status.textContent="Connection service is ready. Complete the platform sign-in in the secure browser window.";
-    const client=(CURRENT&&CURRENT.client)||$("clientSel").value||"";
+    const response=await fetch(syncBase()+path,{credentials:"include",cache:"no-store",signal:controller.signal,...options});
+    let body={};try{body=await response.json();}catch(e){/* a non-JSON body is reported through the status below */}
+    if(!response.ok){const error=new Error(body.error||("The service returned "+response.status));error.status=response.status;error.body=body;throw error;}
+    return body;
+  }finally{clearTimeout(timer);}
+}
+function renderSyncConnections(){
+  const box=$("syncConnections"),client=syncCurrentClient();
+  const pull=$("syncPull");
+  if(!SYNC_STATE.signedIn||!client){box.hidden=true;if(pull)pull.disabled=true;return;}
+  const mine=SYNC_STATE.connections.filter(c=>c.client_ref===client);
+  const known=new Set(mine.map(c=>c.provider));
+  const rows=SYNC_STATE.providers.map(p=>{
+    const found=mine.find(c=>c.provider===p.name);
+    if(!found)return{provider:p.name,state:p.configured?"none":"unavailable",detail:p.configured?"Not connected for this client yet.":"This platform's CNO app is not set up yet.",selected:[]};
+    return found;
+  }).concat(mine.filter(c=>!SYNC_STATE.providers.some(p=>p.name===c.provider)));
+  const flag={ready:"Ready",choose:"Choose account",reconnect:"Reconnect",none:"Not connected",unavailable:"Not set up"};
+  box.innerHTML=rows.map(c=>{
+    const cls=flag[c.state]?c.state:"none";
+    const detail=c.selected&&c.selected.length?`${escHtml(c.selected.join(" + "))} · ${escHtml(c.detail||"")}`:escHtml(c.detail||"");
+    return `<div class="syncconn"><b>${escHtml(plat(c.provider))}</b><span class="sdetail">${detail}</span><span class="sflag ${cls==="unavailable"?"none":cls}">${escHtml(flag[cls]||cls)}</span></div>`;
+  }).join("")||`<div class="syncconn"><span class="sdetail">No platforms are connected for ${escHtml(client)} yet.</span></div>`;
+  box.hidden=false;
+  if(pull)pull.disabled=!mine.some(c=>c.state==="ready");
+  known.clear();
+}
+async function refreshSyncState(quiet){
+  if(VIEW_LOCK)return SYNC_STATE;
+  const url=syncBase();
+  if(!/^https:\/\//i.test(url)&&!/^http:\/\/localhost(?::\d+)?$/i.test(url)){
+    if(!quiet)syncSay("Use an HTTPS service address, or http://localhost while developing.");
+    return SYNC_STATE;
+  }
+  localStorage.setItem("cno_sync_service_url",url);
+  const wasSignedIn=SYNC_STATE.signedIn;
+  try{
+    const session=await syncFetch("/v1/session");
+    SYNC_STATE.reachable=true;
+    SYNC_STATE.signedIn=!!session.signed_in;
+    SYNC_STATE.providers=Array.isArray(session.providers)?session.providers:[];
+    SYNC_STATE.storage=session.storage||"";
+    SYNC_STATE.durable=session.durable!==false;
+    if(SYNC_STATE.signedIn){
+      try{const list=await syncFetch("/v1/connections");SYNC_STATE.connections=list.connections||[];}
+      catch(e){SYNC_STATE.connections=[];}
+    }else SYNC_STATE.connections=[];
+    /* A quiet refresh only speaks up when the sign-in state actually changed, so a background
+       poll never overwrites the result of the action the staff member just took. */
+    if(!quiet||SYNC_STATE.signedIn!==wasSignedIn){
+      const waiting=SYNC_STATE.providers.filter(p=>!p.configured).map(p=>plat(p.name));
+      const notes=[];
+      if(!SYNC_STATE.durable)notes.push("This service has no database yet, so connections are lost if it restarts. Fine for setup, not for live clients.");
+      if(waiting.length)notes.push(`Still waiting on the CNO ${waiting.join(" and ")} app credentials.`);
+      syncSay(SYNC_STATE.signedIn
+        ? `Connected to CNO's service.${notes.length?" "+escHtml(notes.join(" ")):""}`
+        : `The service is running but this browser is not signed in. Click <b>Connect selected client</b>, sign in once with CNO's internal access token, and this panel fills in.${notes.length?" "+escHtml(notes.join(" ")):""}`);
+    }
+  }catch(e){
+    SYNC_STATE={reachable:false,signedIn:false,connections:[],providers:[],storage:"",durable:true};
+    if(!quiet)syncSay(`No connection service is reachable at that address yet, so no sign-in page was opened. A CNO account owner finishes the one-time setup in Render and the platform developer websites; after that staff only use the buttons here. <a href="${escHtml(REPO_BASE)}/blob/main/MIGRATE_TO_CNO_ACCOUNTS.md" target="_blank" rel="noopener">Open the browser setup checklist</a>.`);
+  }
+  renderSyncConnections();
+  return SYNC_STATE;
+}
+/* The connection popup is cross-origin, so the report cannot listen to it. Poll instead while
+   the staff member finishes the platform sign-in, then stop. */
+function startSyncPolling(){
+  stopSyncPolling();
+  let ticks=0;
+  SYNC_POLL=setInterval(async()=>{
+    ticks++;
+    if(ticks>60||!$("syncPanel").classList.contains("open")){stopSyncPolling();return;}
+    await refreshSyncState(true);
+  },5000);
+}
+function stopSyncPolling(){if(SYNC_POLL){clearInterval(SYNC_POLL);SYNC_POLL=null;}}
+$("syncCheck").addEventListener("click",async()=>{
+  if(VIEW_LOCK)return;
+  $("syncCheck").disabled=true;syncSay("Checking CNO's connection service…",true);
+  await refreshSyncState(false);
+  $("syncCheck").disabled=false;
+});
+$("syncOpen").addEventListener("click",async()=>{
+  if(VIEW_LOCK)return;
+  const url=syncBase(),client=syncCurrentClient();
+  if(!/^https:\/\//i.test(url)&&!/^http:\/\/localhost(?::\d+)?$/i.test(url)){syncSay("Use an HTTPS service address, or http://localhost while developing.");return;}
+  const popup=window.open("","cnoNativeConnection","popup=yes,width=1080,height=800");
+  if(popup){popup.document.title="CNO secure connection";popup.document.body.innerHTML='<div style="min-height:90vh;display:grid;place-items:center;background:#fff8e7;color:#2b2622;font:18px Georgia,serif"><div style="text-align:center"><img src="'+location.origin+location.pathname.replace(/[^/]*$/,"")+'cno-seal.png" alt="" style="width:90px;height:90px;object-fit:contain"><p>Opening CNO’s secure connection center…</p></div></div>';}
+  syncSay("Checking CNO's secure browser connection…",true);
+  $("syncOpen").disabled=true;
+  try{
+    await refreshSyncState(true);
+    if(!SYNC_STATE.reachable)throw new Error("unreachable");
     const destination=url+"/admin"+(client?"?client_ref="+encodeURIComponent(client):"");
-    if(popup){popup.location.replace(destination);popup.focus();}else{status.innerHTML=`Your browser blocked the connection window. <a href="${escHtml(destination)}" target="_blank" rel="noopener">Open the secure connection center</a>.`;}
-  }catch{
+    if(popup){popup.location.replace(destination);popup.focus();}
+    syncSay(popup
+      ? `Finish the sign-in and platform approval in the secure window${client?" for <b>"+escHtml(client)+"</b>":""}. This panel updates itself as soon as it is done.`
+      : `Your browser blocked the connection window. <a href="${escHtml(destination)}" target="_blank" rel="noopener">Open the secure connection center</a>.`);
+    startSyncPolling();
+  }catch(e){
     if(popup)popup.close();
-    status.innerHTML=`Native sync is not live yet, so no sign-in page was opened. A CNO account owner can finish the one-time setup entirely in GitHub, Render, and the platform developer websites. After that, staff only use this button. <a href="${escHtml(REPO_BASE)}/blob/main/MIGRATE_TO_CNO_ACCOUNTS.md" target="_blank" rel="noopener">Open the browser setup checklist</a>.`;
-  }finally{clearTimeout(timer);$("syncOpen").disabled=false;}
+    await refreshSyncState(false);
+  }finally{$("syncOpen").disabled=false;}
+});
+$("syncPull").addEventListener("click",async()=>{
+  if(VIEW_LOCK)return;
+  const client=syncCurrentClient();
+  if(!client){syncSay("Pick a client first.");return;}
+  const button=$("syncPull");button.disabled=true;
+  const from=$("fromDate").value||ymd(addDays(new Date(),-90)),to=$("toDate").value||ymd(new Date());
+  try{
+    syncSay(`Refreshing ${escHtml(client)} from the connected platforms…`,true);
+    let results=[];
+    /* 502 means some platforms refreshed and others did not. Keep going with what worked and
+       report the rest, rather than discarding a good Instagram pull over a TikTok problem. */
+    try{const run=await syncFetch("/v1/sync",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({client_ref:client,from,to})});results=run.results||[];}
+    catch(e){if(e.status!==502)throw e;results=(e.body&&e.body.results)||[];}
+    syncSay("Loading the refreshed analytics into this report…",true);
+    const data=await syncFetch("/v1/rows?client_ref="+encodeURIComponent(client));
+    if(!Array.isArray(data.rows)||!data.rows.length)throw new Error("The connected platforms returned no analytics rows for this period");
+    dropImportedSource(SYNC_LABEL_PREFIX+client);
+    ingestRows(data.rows,SYNC_LABEL_PREFIX+client);
+    refreshAll();renderImportCenter();
+    const failed=results.filter(r=>!r.ok);
+    syncSay(`Loaded ${fmtInt(data.rows.length)} rows for <b>${escHtml(client)}</b> from ${escHtml((data.sources||[]).map(s=>plat(s.provider)).join(", ")||"the connected platforms")}. Run Data audit before reporting.`
+      +(failed.length?` <span style="color:var(--burnt)">${escHtml(failed.map(f=>plat(f.provider)+": "+f.error).join(" · "))}</span>`:""));
+  }catch(e){
+    syncSay("The refresh did not finish: "+escHtml(e.message||String(e)));
+  }finally{button.disabled=false;refreshSyncState(true);}
 });
 $("exportBtn").addEventListener("click",doExport);
 $("shareBtn").addEventListener("click",makeShareLink);
@@ -2386,6 +2949,13 @@ $("masterBtn").addEventListener("click",downloadMaster);
 $("clearDataBtn").addEventListener("click",async()=>{if(!await appConfirm("Clear all imported data from this CNO workspace? This does not delete the original CSV files.","Clear imported data"))return;resetData();refreshAll();});
 $("prepFileIn").addEventListener("change",function(){importFiles(this.files);this.value="";});
 $("folderIn").addEventListener("change",function(){importFiles(this.files);this.value="";});
+(function(){
+  const saved=JSON.parse(localStorage.getItem("cno_import_defaults")||"{}");
+  IMPORT_DEFAULTS={client:String(saved.client||""),platform:String(saved.platform||"")};
+  $("defClient").value=IMPORT_DEFAULTS.client;$("defPlatform").value=IMPORT_DEFAULTS.platform;
+  const save=()=>{IMPORT_DEFAULTS={client:$("defClient").value.trim(),platform:$("defPlatform").value};localStorage.setItem("cno_import_defaults",JSON.stringify(IMPORT_DEFAULTS));};
+  $("defClient").addEventListener("input",save);$("defPlatform").addEventListener("change",save);
+})();
 $("importDrop").addEventListener("dragover",e=>{e.preventDefault();e.stopPropagation();$("importDrop").classList.add("over");});
 $("importDrop").addEventListener("dragleave",e=>{e.stopPropagation();$("importDrop").classList.remove("over");});
 $("importDrop").addEventListener("drop",e=>{e.preventDefault();e.stopPropagation();$("importDrop").classList.remove("over");importFiles(e.dataTransfer.files);});
@@ -2442,7 +3012,7 @@ $("letterSkip").addEventListener("click",closeLetter);
 document.addEventListener("dragover",e=>{if(VIEW_LOCK)return;e.preventDefault();document.body.classList.add("dragging");});
 document.addEventListener("dragleave",e=>{if(!e.relatedTarget)document.body.classList.remove("dragging");});
 document.addEventListener("drop",e=>{if(VIEW_LOCK)return;e.preventDefault();document.body.classList.remove("dragging");
-  const files=[...e.dataTransfer.files].filter(f=>/\.csv$/i.test(f.name));if(!files.length)return;
+  const files=[...e.dataTransfer.files].filter(f=>DATA_FILE_PATTERN.test(f.name||""));if(!files.length)return;
   importFiles(files);});
 
 buildCustomUI();wireCustom();
@@ -2505,11 +3075,31 @@ renderImportCenter();
       if(!/^https:\/\//i.test(endpoint)&&!/^http:\/\/localhost(?::\d+)?\//i.test(endpoint))throw new Error("Invalid sync link");
       const d=await fetch(endpoint,{cache:"no-store"}).then(async r=>{const j=await r.json();if(!r.ok)throw new Error(j.error||"Native sync failed");return j;});
       if(!Array.isArray(d.rows)||!d.rows.length)throw new Error("The sync service returned no analytics rows");
-      resetData();ingest(toCSV(d.rows),(d.client||"Client")+" · Native sync");refreshAll();history.replaceState(null,"",location.pathname);return;
+      const label=SYNC_LABEL_PREFIX+(d.client||"Client");
+      dropImportedSource(label);ingestRows(d.rows,label);refreshAll();history.replaceState(null,"",location.pathname);return;
     }catch(e){appAlert("Native sync could not be imported: "+e.message);return;}
   }
   if(h==="#demo"||h==="#letter"){document.getElementById("demoBtn").click();maybeShowLetter(h==="#letter");}
-  if(h==="#test"){fetch("resources/native_platform_comprehensive_test.csv").then(r=>r.text()).then(t=>{resetData();ingest(t);refreshAll();}).catch(()=>appAlert("The comprehensive test file could not be loaded."));}
+  /* Bookmarkable staff shortcuts straight into a workspace panel. */
+  if(!VIEW_LOCK&&(h==="#connect"||h==="#import")){document.getElementById("demoBtn").click();openWorkspacePanel(h==="#connect"?"sync":"data");}
+  if(h==="#test"){fetch("resources/native_platform_comprehensive_test.csv").then(r=>r.text()).then(t=>{resetData();ingest(t,"native_platform_comprehensive_test.csv");refreshAll();}).catch(()=>appAlert("The comprehensive test file could not be loaded."));}
+  /* #formats loads one fixture per readable format, so the importer can be regression-checked
+     in a browser without hunting for real client exports. */
+  if(h==="#formats"&&!VIEW_LOCK){
+    (async()=>{
+      resetData();
+      /* Every fixture is the same fictional brand, so stand in for the client the way staff would. */
+      const priorDefaults=IMPORT_DEFAULTS;IMPORT_DEFAULTS={client:"Example Brand",platform:""};
+      for(const f of ["native_platform_comprehensive_test.csv","instagram_native_utf16_test.csv","semicolon_delimited_test.csv","linkedin_workbook_test.xlsx","tiktok_export_test.zip","instagram_media_test.json"]){
+        try{
+          const parts=await readSourceBuffer(await fetch("resources/"+f).then(r=>r.arrayBuffer()),f);
+          parts.filter(p=>p.rows&&p.rows.length).forEach(p=>ingestRows(p.rows,p.name,p.headers));
+        }catch(e){logUnreadable(f,e.message);}
+      }
+      IMPORT_DEFAULTS=priorDefaults;
+      refreshAll();openWorkspacePanel("data");
+    })();
+  }
 })();
 
 /* ==================== installable app (PWA) ==================== */
