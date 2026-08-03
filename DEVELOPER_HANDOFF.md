@@ -4,11 +4,11 @@ Last updated: July 31, 2026
 
 Current release: `v1.8.0`
 
-Current repository: `https://github.com/joongsukkie/cno-analytics-report`
+Current repository: `https://github.com/cnocreative/cno-analytics-report` (CNO-owned)
 
-Live pilot: `https://cno-analytics-report.onrender.com/#demo`
+Live pilot: `https://cno-analytics-report-5hi6.onrender.com/#demo` (CNO-owned Render account)
 
-Latest installers: `https://github.com/joongsukkie/cno-analytics-report/releases/tag/v1.7.0`
+Latest installers: `https://github.com/cnocreative/cno-analytics-report/releases`
 
 ## 1. Executive summary
 
@@ -688,10 +688,13 @@ Until step 1 completes, the panel says so instead of offering a button that fail
 
 ### P0 — required before real production automation
 
-1. **Transfer ownership**
-   - Move GitHub and Render to CNO-owned accounts.
-   - Update deployment meta tags and custom domains.
-   - Keep secrets out of GitHub.
+1. **Transfer ownership** — GitHub and the static site are done
+   - GitHub now lives at `cnocreative/cno-analytics-report`.
+   - The static site runs in the CNO Render account and the `cno-report-base` and
+     `cno-repository` meta tags point at it.
+   - Still to do: create the `cno-native-sync` service, then set `cno-sync-base` to its address.
+   - Optional: move both to `reports.cnocreative.co` and `sync.cnocreative.co`.
+   - Keep secrets out of GitHub; Render generates the three service secrets itself.
 
 2. **Deploy the private service**
    - Provision persistent Postgres.

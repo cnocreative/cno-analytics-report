@@ -33,8 +33,10 @@ jobs:
         with:
           node-version: 20
 
+      # .npmrc sets omit=dev so Render's static-site deploy does not download Electron.
+      # The desktop build is the one place that genuinely needs those tools.
       - name: Install dependencies
-        run: npm install
+        run: npm install --include=dev
 
       - name: Build installer
         run: npm run dist -- ${{ matrix.flag }}

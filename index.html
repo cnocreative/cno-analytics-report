@@ -12,9 +12,9 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="CNO Reports">
 <!-- Change these three values when CNO moves the app to its permanent GitHub/Render accounts. -->
-<meta name="cno-report-base" content="https://cno-analytics-report.onrender.com/">
+<meta name="cno-report-base" content="https://cno-analytics-report-5hi6.onrender.com/">
 <meta name="cno-sync-base" content="https://cno-native-sync.onrender.com">
-<meta name="cno-repository" content="https://github.com/joongsukkie/cno-analytics-report">
+<meta name="cno-repository" content="https://github.com/cnocreative/cno-analytics-report">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
 <link rel="stylesheet" href="fonts.css">
@@ -1486,9 +1486,9 @@ async function decryptStr(payload,pw){const parts=payload.split(".");const key=a
 // These deployment values live in three meta tags at the top of this file so CNO can
 // move GitHub/Render accounts without hunting through the reporting engine.
 const metaConfig=name=>(document.querySelector(`meta[name="${name}"]`)?.content||"").trim();
-const HOSTED_BASE=metaConfig("cno-report-base")||"https://cno-analytics-report.onrender.com/";
+const HOSTED_BASE=metaConfig("cno-report-base")||"https://cno-analytics-report-5hi6.onrender.com/";
 const SYNC_BASE=metaConfig("cno-sync-base")||"https://cno-native-sync.onrender.com";
-const REPO_BASE=(metaConfig("cno-repository")||"https://github.com/joongsukkie/cno-analytics-report").replace(/\/$/,"");
+const REPO_BASE=(metaConfig("cno-repository")||"https://github.com/cnocreative/cno-analytics-report").replace(/\/$/,"");
 /* A client link has to open on somebody else's device. localhost, 127.0.0.1, and the desktop app's
    file:// origin only exist on this machine, so those fall back to the published report address
    instead of minting a link that is dead everywhere except here. */

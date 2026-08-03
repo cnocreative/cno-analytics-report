@@ -1,8 +1,8 @@
 {
   "name": "cno-reports",
   "productName": "CNO Reports",
-  "version": "1.7.0",
-  "description": "CNO Creative Co monthly analytics report generator — desktop app.",
+  "version": "1.8.0",
+  "description": "CNO Creative Co monthly analytics report generator \u2014 desktop app.",
   "author": "CNO Creative Co",
   "license": "UNLICENSED",
   "private": true,
@@ -20,7 +20,10 @@
   "build": {
     "appId": "co.cnocreative.reports",
     "productName": "CNO Reports",
-    "directories": { "output": "dist-desktop", "buildResources": "build" },
+    "directories": {
+      "output": "dist-desktop",
+      "buildResources": "build"
+    },
     "files": [
       "electron/**/*",
       "index.html",
@@ -35,7 +38,9 @@
       "resources/*.woff2"
     ],
     "win": {
-      "target": ["nsis"],
+      "target": [
+        "nsis"
+      ],
       "icon": "build/icon.ico"
     },
     "nsis": {
@@ -45,10 +50,14 @@
       "shortcutName": "CNO Reports"
     },
     "mac": {
-      "target": ["dmg"],
+      "target": [
+        "dmg"
+      ],
       "icon": "build/icon.png",
       "category": "public.app-category.business"
     },
-    "dmg": { "title": "CNO Reports ${version}" }
+    "dmg": {
+      "title": "CNO Reports ${version}"
+    }
   }
 }

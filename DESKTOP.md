@@ -21,7 +21,7 @@ get the installers. GitHub builds them for you.
 
 ## Native installer download
 
-Published Windows and Mac installers appear on the repo's [latest release](https://github.com/joongsukkie/cno-analytics-report/releases/latest). If no release is listed yet, use the GitHub build steps below.
+Published Windows and Mac installers appear on the repo's [latest release](https://github.com/cnocreative/cno-analytics-report/releases/latest). If no release is listed yet, use the GitHub build steps below.
 
 ## Updating
 
