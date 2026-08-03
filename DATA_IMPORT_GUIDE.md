@@ -26,7 +26,7 @@ Nothing has to be converted, re-saved, or cleaned up by hand first.
 | `.zip` | Platform download bundles. Every CSV, Excel, and JSON file inside is read; anything else is skipped and listed. |
 | `.json` | Data exports and API dumps. The importer finds the list of records inside the file and flattens nested fields. |
 | `.xml`, `.htm`, `.html` | Excel's "XML Spreadsheet 2003" format, and export pages that are really an HTML table. |
-| `.xls` (Excel 97-2003) | **Not read.** The importer says so and asks for a `.xlsx` or `.csv` re-save rather than guessing at the binary format. |
+| `.xls` (Excel 97-2003) | Read directly. LinkedIn still exports visitor, follower, and competitor workbooks in this format, so they no longer need re-saving. |
 
 Text encoding is detected per file. Meta and Instagram exports are UTF-16 rather than UTF-8; before this was handled they imported as unreadable characters. UTF-8, UTF-16 (either byte order, with or without a byte-order mark), and Windows-1252 are all read correctly.
 
@@ -37,9 +37,12 @@ Export files often put a title, an account name, and a blank line above the real
 Native exports frequently contain neither. The importer resolves them in this order:
 
 1. a `client` / `platform` column in the file;
-2. the file and folder names — `Example Brand/june/linkedin-content.xlsx` gives both;
-3. the **Client** and **Platform** defaults you set in the Import data panel; then
-4. `Unknown` client and `Unspecified` platform.
+2. the file and folder names — `Example Brand/june/linkedin-content.xlsx` gives both, and `cno-creative-co_visitors_1785742483724.xls` gives the client;
+3. headings only one platform uses — a workbook with `Jobs page views` and `Seniority` is LinkedIn even when nothing in its name says so;
+4. the **Client** and **Platform** defaults you set in the Import data panel; then
+5. `Unknown` client and `Unspecified` platform.
+
+Names inferred this way are reconciled against clients named outright elsewhere in the same import, so `cno-creative-co_visitors.xls` files itself under `CNO Creative Co` rather than creating a second, near-identical client.
 
 Rows are never quietly filed under a platform the export did not name. Anything that lands on `Unspecified` raises a warning in **Data audit** so it is fixed before it reaches a client report.
 

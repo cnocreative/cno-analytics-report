@@ -66,10 +66,10 @@ Status meanings:
 | Import Rella data | Complete for file export | Rella account and content exports can be uploaded as CSV or XLSX. There is no live Rella API connection inside the product. |
 | Import native platform data | Complete | Alias normalization supports common Instagram/Meta, TikTok, LinkedIn, YouTube, Facebook, Pinterest, Threads, and X-style headings, including the exact wording each native export uses. |
 | Accept one or many files | Complete | The Import data panel accepts one file, multiple files, a folder, or drag-and-drop. |
-| Accept formats other than CSV | Complete | CSV/TSV with automatic delimiter detection, `.xlsx`/`.xlsm` workbooks (every visible sheet imported separately, Excel date cells converted), `.zip` platform downloads read recursively, `.json` exports, Excel XML and HTML "spreadsheet" files. Legacy `.xls` is refused with instructions rather than misread. |
+| Accept formats other than CSV | Complete | CSV/TSV with automatic delimiter detection, `.xlsx`/`.xlsm` and legacy `.xls` (OLE2/BIFF8) workbooks with every visible sheet imported separately and Excel date cells converted, `.zip` platform downloads read recursively, `.json` exports, Excel XML and HTML "spreadsheet" files. LinkedIn still ships `.xls`, so reading it removes a manual re-save every month. |
 | Handle native text encodings | Complete | UTF-8, UTF-16 either byte order with or without a mark, and Windows-1252 are detected per file. Meta and Instagram ship UTF-16, which previously imported as unreadable characters. |
 | Handle title rows above the headings | Complete | The importer scores the first ten rows and starts at the real heading row, so LinkedIn and Facebook exports import without hand editing. |
-| Fill in a missing client or platform | Complete | Resolved from the file's own columns, then the file and folder names, then staff-set import defaults. Rows are never silently assigned to a platform the export did not name; unresolved rows are flagged in the audit. |
+| Fill in a missing client or platform | Complete | Resolved from the file's own columns, then the folder and file names, then headings only one platform uses, then staff-set import defaults. Inferred client names are reconciled against clients named outright in the same import, so one brand cannot be filed under two spellings. Rows are never silently assigned to a platform the export did not name; unresolved rows are flagged in the audit. |
 | Eliminate confusing separate account/content upload buttons | Complete | There is one import center; it classifies account-period rows and post rows automatically. |
 | Preserve full source data | Complete | Original fields remain available in the normalized export and filter-aware Full Data table. |
 | Download combined master CSV | Complete | CNO can download one standardized combined CSV. |
@@ -781,7 +781,7 @@ Until step 1 completes, the panel says so instead of offering a button that fail
 12. Benchmarks are bundled static references and require periodic review.
 13. Native reach can be non-additive depending on export grain.
 14. Imported data can only be as complete and accurate as the source export.
-14a. The importer refuses legacy Excel 97-2003 `.xls` rather than guessing at the binary format; those files have to be re-saved as `.xlsx` or `.csv`.
+14a. The `.xls` reader covers the records LinkedIn and similar exports emit (NUMBER, RK, MULRK, LABELSST, LABEL, cached FORMULA results). It does not evaluate formulas or read charts and pivot caches.
 14b. Without Postgres the service stores connections in a local file that does not survive a redeploy, so it is a setup and testing mode only.
 15. Desktop automatic updating is not implemented.
 16. Mac builds currently target Apple Silicon.
@@ -821,7 +821,8 @@ Until step 1 completes, the panel says so instead of offering a button that fail
 |---|---|
 | File readers | `readSourceFile`, `readSourceBuffer`, `decodeText`, `readZip`, `readWorkbook`, `jsonTables`, `domTables`, `spreadsheetMLTables` |
 | Delimited text | `parseDelimitedText`, `splitDelimited`, `sniffDelimiter`, `matrixToObjects`, `headerScore` |
-| Column aliases and normalization | `ALIAS`, `nativeMap`, `platformFromName`, `clientFromName`, `normalizeRow`, `classify`, `ingestRows` |
+| Legacy Excel | `readOle`, `readLegacyWorkbook`, `biffString`, `rkValue` |
+| Column aliases and normalization | `ALIAS`, `nativeMap`, `platformFromName`, `platformFromHeaders`, `clientFromName`, `clientFromFileName`, `reconcileInferredClients`, `normalizeRow`, `classify`, `ingestRows` |
 | Native connections | `refreshSyncState`, `renderSyncConnections`, `syncFetch`, `dropImportedSource` |
 | Deduplication | `recordKey`, `addUnique` |
 | Data audit | `auditData`, `renderQualityPanel` |

@@ -13,7 +13,7 @@ The generator takes **one upload that accepts multiple files at once**. You no l
 | `.zip` | Platform download bundles; every CSV, Excel, and JSON member inside is read. |
 | `.json` | Data exports and API dumps; the record list is located and nested fields flattened. |
 | `.xml`, `.htm`, `.html` | Excel "XML Spreadsheet 2003" files and export pages that are really an HTML table. |
-| `.xls` | Excel 97-2003 binary. **Refused with instructions** to re-save as `.xlsx` or `.csv`, rather than misread. |
+| `.xls` | Excel 97-2003 binary (OLE2/BIFF8). Read directly — LinkedIn still exports visitor, follower, and competitor workbooks this way. |
 
 Text encoding is detected per file: UTF-8, UTF-16 in either byte order with or without a byte-order
 mark, and Windows-1252. Meta and Instagram export UTF-16, which is why this matters.
@@ -27,8 +27,11 @@ Native exports frequently name neither. They are resolved in this order:
 
 1. a `client` / `platform` column in the file;
 2. the file and folder names — `Example Brand/june/linkedin-content.xlsx` supplies both;
-3. the **Client** and **Platform** defaults set in the Import data panel; then
-4. `Unknown` client and `Unspecified` platform, both of which raise a warning in Data audit.
+3. headings that only one platform uses (`Jobs page views`, `Seniority`, `Full video watched rate`);
+4. the **Client** and **Platform** defaults set in the Import data panel; then
+5. `Unknown` client and `Unspecified` platform, both of which raise a warning in Data audit.
+
+A client name inferred from a file name is reconciled against clients named outright elsewhere in the same import, so one brand cannot end up filed under two spellings with a platform stranded on each.
 
 A row is never silently filed under a platform its export did not name, because blending unlike
 platform definitions is the one thing the report must never do.

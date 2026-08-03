@@ -26,7 +26,7 @@ not be imported at all.
 | `.zip` archives | `tiktok_export_test.zip` yielded its CSV and its JSON member; `readme.txt` was reported as unreadable rather than silently dropped. Central directory parsing with Zip64 support for large platform downloads |
 | `.json` exports | `instagram_media_test.json` located the nested `media` record list and flattened it, 11 of 11 headings mapped |
 | Excel XML and HTML "spreadsheets" | Parsed through the same table pipeline |
-| Legacy `.xls` | Detected by its OLE2 signature and **refused with instructions** to re-save. Guessing at that binary format would produce wrong numbers silently |
+| Legacy `.xls` | Read directly (OLE2 container + BIFF8 records), verified field-for-field against an independent Python reference implementation on a real LinkedIn visitor export: 5 sheets, 90 daily rows |
 | No new dependency | ZIP inflation uses the browser's own `DecompressionStream`; sheet XML uses `DOMParser`. The report remains one self-contained offline file with no CDN |
 | Existing fixtures unchanged | `native_platform_comprehensive_test.csv` still yields 12 posts / 42 account rows with 61 of 62 headings mapped, identical to v1.7.0 |
 
@@ -51,6 +51,24 @@ platform's contribution stays traceable: `Post publish date`, `Click through rat
 Instagram/Meta, TikTok, LinkedIn, Facebook, YouTube, Pinterest, Threads, and X. Watch time now
 converts from hours as well as minutes and seconds. Account rows fall back from `followers_growth`
 to `follows`, and from `link_clicks` to `clicks`, which is how LinkedIn and Meta label them.
+
+### Client and platform resolution when the export names neither (v1.8.1)
+
+A real CNO import surfaced three faults that made LinkedIn silently vanish from the report:
+
+| Fault | Fix | Verification |
+|---|---|---|
+| Client inferred only from folders | The file's own name is used too, and the reconciler adopts the spelling used by a client named outright in the same import | `cno-creative-co_visitors_1785742483724.xls` files itself under `CNO Creative Co` instead of `Unknown` |
+| A re-imported master CSV carries `client` as the literal string `Unknown` | `Unknown` / `Unspecified` are treated as this app's placeholders, not declared values, so inference can still run | The user's real 307-row master CSV resolves to one client instead of two |
+| A later empty canonical column overwrote a populated alias | First non-empty wins, so a blank `profile_views` column cannot wipe the `Total page views (total)` value that mapped ahead of it | All 90 LinkedIn rows now carry page views; totals sum to 9, matching the source exactly |
+
+Each row now keeps the `source_file` it came from, so a combined master CSV re-imports with its
+original per-row provenance rather than collapsing to the name of the merged file.
+
+Platform detection gained a content fallback for exports that name no platform anywhere: headings
+only one platform emits (`Jobs page views`, `Seniority`, `Full video watched rate`,
+`Watch time (hours)`) identify the source. Checked only after the file and folder names, and it
+never overrides a platform the file declares.
 
 ## Native browser connection
 
@@ -110,5 +128,5 @@ to `follows`, and from `link_clicks` to `clicks`, which is how LinkedIn and Meta
   no CNO-owned app exists yet. The adapters remain unproven against live API responses.
 - The local-file storage mode is a setup and testing convenience. It is not durable on a container
   filesystem and must not hold live client connections.
-- The `.xlsx` reader covers the parts these platforms actually emit. It does not implement formula
-  evaluation, pivot caches, or charts, and it reads cached values rather than recomputing formulas.
+- The `.xlsx` and `.xls` readers cover the parts these platforms actually emit. Neither implements
+  formula evaluation, pivot caches, or charts; both read cached values rather than recomputing.
