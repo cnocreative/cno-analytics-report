@@ -32,6 +32,16 @@ Text encoding is detected per file. Meta and Instagram exports are UTF-16 rather
 
 Export files often put a title, an account name, and a blank line above the real column headings. The importer scores the first ten rows and starts at the real heading row instead of treating the title as column names.
 
+Meta Business Suite goes further: it exports **one file per metric**, names the metric only in that
+title row, and calls the value column `Primary` in every single file. The importer reads the title
+back, so `Follows (2).csv` containing "Facebook follows" imports as follower growth on Facebook
+rather than an unrecognised `Primary` column. The audit lists the metric beside the file name.
+
+Meta's **Audience** export is a set of stacked mini-tables rather than one table. Age and gender,
+top cities, and top countries are read out of it into the report's audience fields. That file has no
+dates in it, so it cannot be placed in a reporting period on its own; the audit says so rather than
+failing silently.
+
 ## When a file does not name the client or platform
 
 Native exports frequently contain neither. The importer resolves them in this order:
@@ -45,6 +55,16 @@ Native exports frequently contain neither. The importer resolves them in this or
 Names inferred this way are reconciled against clients named outright elsewhere in the same import, so `cno-creative-co_visitors.xls` files itself under `CNO Creative Co` rather than creating a second, near-identical client.
 
 Rows are never quietly filed under a platform the export did not name. Anything that lands on `Unspecified` raises a warning in **Data audit** so it is fixed before it reaches a client report.
+
+When an import finishes with rows that named neither, the Import data panel shows an **assignment
+strip** at the top: how many rows are unassigned, a client box pre-filled with the one client that
+did identify itself in that import, and a platform picker. Applying it changes only the rows that
+named nothing, and a name typed there counts as stated, so other spellings picked up from file names
+are pulled onto it. Nothing is merged without that click.
+
+A file named after its metric is never treated as a client. `Follows (2).csv`, `Link clicks (2).csv`
+and `Audience (3).csv` all resolve as metrics, so they do not create clients called "Follows",
+"Link" or "Audience".
 
 ## Recommended monthly workflow
 
@@ -95,6 +115,8 @@ These fictional fixtures in `resources/` exercise the importer without touching 
 | `linkedin_workbook_test.xlsx` | Three-sheet workbook, title rows, Excel date cells |
 | `tiktok_export_test.zip` | Archive holding a CSV and a JSON export together |
 | `instagram_media_test.json` | Nested JSON export with a media record list |
+| `meta_business_suite_metric_test.csv` | Metric named only in the title row, value column called `Primary` |
+| `meta_audience_blocks_test.csv` | Stacked age/gender, cities and countries blocks with no dates |
 
 ## Why the browser cannot silently pull everything
 

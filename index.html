@@ -103,9 +103,11 @@
   .utility-panel.open{display:block;animation:panelReveal .18s ease-out}
   @keyframes panelReveal{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
   .utility-head{display:flex;align-items:flex-start;justify-content:space-between;gap:24px;margin-bottom:18px}.utility-head h3{font-family:var(--serif);font-size:27px;font-weight:400;margin:0}.utility-head p{font-size:12px;color:var(--ink-soft);max-width:72ch;margin:4px 0 0}.utility-close{border:0;background:none;color:var(--ink-soft);font-size:22px;cursor:pointer;padding:0 4px}
-  .import-grid{display:grid;grid-template-columns:minmax(260px,.85fr) minmax(420px,1.65fr);gap:18px}.dropzone{min-height:190px;border:1px dashed var(--terra);background:linear-gradient(180deg,rgba(219,155,127,.07),rgba(255,248,231,.55));display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:25px;transition:background .18s,border-color .18s,transform .18s}.dropzone.over{background:rgba(219,155,127,.14);border-style:solid;transform:translateY(-2px)}.dropseal{width:55px;height:55px;object-fit:contain;margin-bottom:10px}.dropzone h4{font-family:var(--serif);font-size:22px;font-weight:400;margin:0 0 5px}.dropzone p{font-size:11px;color:var(--ink-soft);margin:0 0 14px;max-width:34ch}.dropactions{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}.dropzone code{font:11px/1 ui-monospace,SFMono-Regular,Menlo,monospace;background:rgba(219,155,127,.16);padding:1px 4px}.dropzone.busy{border-style:solid;background:rgba(136,142,111,.12)}.import-busy{margin-top:11px;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--burnt)}.import-defaults{margin-top:16px;padding-top:14px;border-top:1px solid var(--sand);width:100%;text-align:left}.import-default-row{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:7px}.import-default-row label{display:block;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft)}.import-default-row input,.import-default-row select{width:100%;margin-top:3px;padding:7px 8px;border:1px solid var(--sand);background:#fff;font:12px/1.3 var(--sans);color:var(--ink);text-transform:none;letter-spacing:0}.import-defaults .quiet{font-size:10px;line-height:1.45;color:var(--ink-soft);display:block}
+  .import-grid{display:grid;grid-template-columns:minmax(260px,.85fr) minmax(420px,1.65fr);gap:18px}.dropzone{min-height:190px;border:1px dashed var(--terra);background:linear-gradient(180deg,rgba(219,155,127,.07),rgba(255,248,231,.55));display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:25px;transition:background .18s,border-color .18s,transform .18s}.dropzone.over{background:rgba(219,155,127,.14);border-style:solid;transform:translateY(-2px)}.dropseal{width:55px;height:55px;object-fit:contain;margin-bottom:10px}.dropzone h4{font-family:var(--serif);font-size:22px;font-weight:400;margin:0 0 5px}.dropzone p{font-size:11px;color:var(--ink-soft);margin:0 0 14px;max-width:34ch}.dropactions{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}.dropzone code{font:11px/1 ui-monospace,SFMono-Regular,Menlo,monospace;background:rgba(219,155,127,.16);padding:1px 4px}.dropzone.busy{border-style:solid;background:rgba(136,142,111,.12)}.import-busy{margin-top:11px;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--burnt)}.import-defaults{margin-top:16px;padding-top:14px;border-top:1px solid var(--sand);width:100%;text-align:left}.import-default-row{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:7px}.import-default-row label{display:block;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft)}.import-default-row input,.import-default-row select{width:100%;margin-top:3px;padding:7px 8px;border:1px solid var(--sand);background:#fff;font:12px/1.3 var(--sans);color:var(--ink);text-transform:none;letter-spacing:0}.import-defaults .quiet{font-size:10px;line-height:1.45;color:var(--ink-soft);display:block}.import-assign{margin:12px 0;padding:13px 14px;border:1px solid var(--terra);background:rgba(219,155,127,.09)}.import-assign .quiet{font-size:10px;color:var(--ink-soft);flex:1 1 200px}.import-assign .import-default-row{margin-bottom:0}
   .import-summary{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid var(--sand);margin-bottom:12px}.isum{padding:13px 14px;border-right:1px solid var(--sand)}.isum:last-child{border-right:0}.isum span{display:block;font-size:8.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-soft)}.isum b{font-family:var(--serif);font-size:24px;font-weight:400}
-  .fileaudit{border:1px solid var(--sand);max-height:220px;overflow:auto}.fileaudit-empty{height:130px;display:grid;place-items:center;text-align:center;padding:20px;color:var(--ink-soft);font-size:12px}.file-row{display:grid;grid-template-columns:minmax(150px,1.5fr) 76px 64px minmax(130px,1fr) 72px;gap:10px;align-items:center;padding:10px 12px;border-bottom:1px solid var(--sand);font-size:10.5px}.file-row:last-child{border-bottom:0}.file-row.head{position:sticky;top:0;background:var(--sand-2);z-index:1;font-size:8px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft)}.file-name{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.file-ok{color:var(--sage-deep)}.file-warn{color:var(--burnt)}
+  .fileaudit{border:1px solid var(--sand);max-height:220px;overflow:auto}.fileaudit-empty{height:130px;display:grid;place-items:center;text-align:center;padding:20px;color:var(--ink-soft);font-size:12px}.file-row{display:grid;grid-template-columns:minmax(150px,1.5fr) 76px 56px minmax(120px,1fr) minmax(96px,1.1fr);gap:10px;align-items:center;padding:10px 12px;border-bottom:1px solid var(--sand);font-size:10.5px}.file-row:last-child{border-bottom:0}.file-row.head{position:sticky;top:0;background:var(--sand-2);z-index:1;font-size:8px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft)}.file-name{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.file-ok{color:var(--sage-deep)}.file-warn{color:var(--burnt)}
+  /* An explanatory note must not stretch the row; the full text stays in the hover tooltip. */
+  .file-row>span:last-child{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;line-height:1.35}
   .import-actions{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:12px}.import-actions .quiet{font-size:10.5px;color:var(--ink-soft);margin-left:auto}.sourcecards{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:18px}.sourcecard{padding:14px;border:1px solid var(--sand);background:var(--sand-2)}.sourcecard b{display:block;font-family:var(--serif);font-size:18px;font-weight:400}.sourcecard span{display:block;font-size:10.5px;line-height:1.5;color:var(--ink-soft);margin-top:3px}.sourcecard .btn{display:inline-block;margin-top:13px;text-decoration:none}.installcards{grid-template-columns:repeat(3,1fr)}
   @media(max-width:900px){.import-grid{grid-template-columns:1fr}.sourcecards{grid-template-columns:1fr 1fr}.file-row{grid-template-columns:minmax(140px,1fr) 65px 55px minmax(105px,1fr)}}
   @media(max-width:620px){.utility-panel{padding:20px 14px}.import-summary{grid-template-columns:1fr 1fr}.isum:nth-child(2){border-right:0}.isum:nth-child(-n+2){border-bottom:1px solid var(--sand)}.sourcecards{grid-template-columns:1fr}.file-row{grid-template-columns:1fr 58px 50px}.file-row>:nth-child(4),.file-row>:nth-child(5){display:none}}
@@ -446,6 +448,7 @@
     </div>
     <div>
       <div class="import-summary" id="importSummary"></div>
+      <div class="import-assign" id="importAssign" hidden></div>
       <div class="fileaudit" id="fileAudit"><div class="fileaudit-empty">Imported files will appear here with their detected platform, data grain, date coverage, and mapping status.</div></div>
       <div class="import-actions"><button class="btn solid" id="masterBtn">Download combined master CSV</button><button class="btn" id="clearDataBtn">Clear imported data</button><span class="quiet">The original source columns remain available in Full data.</span></div>
     </div>
@@ -698,7 +701,8 @@ const nativeMap={
   date:["postpublishdate","publishdate","videopublishtime","publishtime","createtime","scheduledfor","publishedat","posteddate","daterange","reportdate","postedon"],
   post_type:["mediaproducttype","contentformat","posttypename","videotype","pintype"],
   caption_snippet:["videodescription","videotitle","posttitle","pintitle","postcontent","tweettext","threadtext","messagetext"],
-  reach:["accountsreached","uniqueimpressions","uniqueusers","pagereach","postreach","totalaudience","uniqueviewers","peoplereached"],
+  /* Meta Business Suite wording: "Views" counts times seen, "Viewers" counts the people. */
+  reach:["accountsreached","uniqueimpressions","uniqueusers","pagereach","postreach","totalaudience","uniqueviewers","peoplereached","viewers"],
   impressions:["impressioncounts","totalimpressions","paidandorganicimpressions","impressionsorganic"],
   views:["videoviews","videoviewcounts","viewcounts","playcounts","totalviews","viewsvideoonly","impressionsvideo"],
   engagement:["contentinteractions","postengagements","totalengagements","engagedaudience","interactionscount","reactionscommentsandshares"],
@@ -714,7 +718,7 @@ const nativeMap={
   /* LinkedIn's visitor export splits each metric into desktop / mobile / total. Only "(total)" is
      mapped: aliasing the splits as well would make the value depend on column order. The desktop
      and mobile breakdowns stay available in Full data. */
-  profile_views:["totalpageviews","totalpageviewstotal","overviewpageviews","overviewpageviewstotal","allpageviews","pageviews","pagevisits","profilevisitscount","channelviews"],
+  profile_views:["totalpageviews","totalpageviewstotal","overviewpageviews","overviewpageviewstotal","allpageviews","pageviews","pagevisits","profilevisitscount","channelviews","visits","accountvisits"],
   link_clicks:["custombuttonclicks","buttonclicks","websitetaps","websitebuttontaps","outboundclickscount","pinclicks","linkclickscount"],
   clicks:["clickcount","clickcounts","postclicks","totalclickcount"],
   click_through_rate_reported:["clickthroughratectr","impressionsclickthroughrate","impressionsclickthroughrateper","ctrall"],
@@ -759,16 +763,24 @@ function platformFromHeaders(headers){
 const GENERIC_FOLDER=/^(?:[\d\s._-]+|q[1-4]|jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec|january|february|march|april|june|july|august|september|october|november|december|data|export|exports|download|downloads|report|reports|reporting|analytics|insights|csv|csvs|files|social|monthly|raw)$/i;
 /* Words a platform bolts onto an export file name. Everything before the first one of these is
    usually the account it came from: "cno-creative-co_visitors_178574…xls" -> "cno creative co". */
-const FILE_DESCRIPTOR=/^(?:visitors?|followers?|following|content|posts?|updates?|videos?|reels?|stories|competitors?|demographics?|audience|engagement|impressions|clicks|leads|ads?|campaigns?|analytics|insights|export|exports|report|reports|data|metrics|performance|overview|summary|totals?|daily|weekly|monthly|all|page|pages|company|organization|account|profile|business|creator|studio|manager|\d{4,}|[\d.\-]+)$/i;
+const FILE_DESCRIPTOR=/^(?:visitors?|viewers?|views?|visits?|follow(?:er)?s?|following|interactions?|reach|impressions?|content|posts?|updates?|videos?|reels?|stories|competitors?|demographics?|audience|engagement|clicks?|linkclicks?|likes?|comments?|shares?|saves?|leads?|ads?|campaigns?|analytics|insights|export|exports|report|reports|data|metrics|performance|overview|summary|totals?|daily|weekly|monthly|all|page|pages|company|organization|account|profile|business|creator|studio|manager|\d{4,}|[\d.\-]+)$/i;
 function clientFromFileName(file){
-  const base=String(file||"").split(" · ")[0].split(/[\\/]/).pop().replace(/\.[a-z0-9]+$/i,"");
+  /* Platforms number repeat downloads "Follows (2).csv"; that suffix is not part of a name. */
+  const base=String(file||"").split(" · ")[0].split(/[\\/]/).pop().replace(/\.[a-z0-9]+$/i,"").replace(/\s*\(\d+\)\s*$/,"");
+  /* Reject the whole name first. "Link clicks" is one metric, and tokenising it before this check
+     would keep the leading "Link" and file the data under a client by that name. */
+  if(!base.trim()||ALIAS[normKey(base)]||FILE_DESCRIPTOR.test(base.trim()))return "";
   const kept=[];
   for(const token of base.split(/[\s_\-–—]+/).filter(Boolean)){
     if(FILE_DESCRIPTOR.test(token)||platformFromName(token))break;
     kept.push(token);
   }
   const name=kept.join(" ").trim();
-  return name.length>1&&!GENERIC_FOLDER.test(name)?name:"";
+  if(name.length<2||GENERIC_FOLDER.test(name))return "";
+  /* A file named after the metric it contains is not a client. "Follows", "Views", "Audience"
+     and friends all resolve as metrics, so reject anything the alias map recognises. */
+  if(ALIAS[normKey(name)]||FILE_DESCRIPTOR.test(name))return "";
+  return name;
 }
 function clientFromName(name){
   const parts=String(name||"").split(" · ")[0].split(/[\\/]/).map(x=>x.trim()).filter(Boolean);
@@ -878,7 +890,7 @@ function matrixToObjects(matrix){
     const o={};head.forEach((h,i)=>{if(h!=="")o[h]=String(r[i]??"").trim();});
     return o;
   }).filter(o=>Object.values(o).some(v=>v!==""));
-  return{rows:out,preamble:headerIndex,headers:head.filter(Boolean)};
+  return{rows:out,preamble:headerIndex,preambleRows:rows.slice(0,headerIndex),headers:head.filter(Boolean),matrix:rows};
 }
 function parseDelimitedText(text){
   text=String(text??"").replace(/^\uFEFF/,"").replace(/\r\n?/g,"\n");
@@ -1271,6 +1283,81 @@ function readLegacyWorkbook(buffer,label){
   if(!out.length)throw new Error("No sheet in this Excel file contained a readable table");
   return out;
 }
+/* ---- exports that name the metric in a title row instead of the column heading ----
+   Meta Business Suite writes one file per metric shaped like:
+       Facebook follows          <- the metric, on its own line
+       Date, Primary             <- the actual headings
+       2026-07-06T00:00:00, 0
+   The value column is called "Primary" in every one of them, so without reading the title back
+   the whole file imports as an unrecognised column. */
+const GENERIC_VALUE_COLUMN=/^(?:primary|value|values|total|totals|count|metric|series|amount|result|data)$/i;
+function metricFromTitleRows(preambleRows){
+  for(let i=(preambleRows||[]).length-1;i>=0;i--){
+    const filled=preambleRows[i].map(c=>String(c==null?"":c).trim()).filter(Boolean);
+    if(filled.length!==1)continue;
+    const title=filled[0];
+    const platform=platformFromName(title);
+    /* Strip a leading platform word so "Facebook follows" resolves on "follows". */
+    const bare=platform?title.replace(/^\s*(?:facebook|instagram|threads|meta|linkedin|tiktok|youtube|pinterest)\b[\s:.-]*/i,""):title;
+    const canon=ALIAS[normKey(bare)]||ALIAS[normKey(title)];
+    if(canon)return{canon,platform,title};
+  }
+  return null;
+}
+function applyTitleMetric(part){
+  const info=metricFromTitleRows(part.preambleRows);
+  const generic=(part.headers||[]).find(h=>GENERIC_VALUE_COLUMN.test(String(h).trim()));
+  if(!info||!generic)return part;
+  part.rows=part.rows.map(row=>{
+    const out={};
+    for(const k in row)out[k===generic?info.canon:k]=row[k];
+    if(info.platform&&!out.platform)out.platform=info.platform;
+    return out;
+  });
+  part.headers=part.headers.map(h=>h===generic?info.canon:h).concat(info.platform?["platform"]:[]);
+  part.name=`${part.name} · ${info.title}`;
+  return part;
+}
+/* ---- exports built from stacked mini-tables (Meta's Audience file) ----
+   Several titled blocks in one file, each a row of labels above a row of percentages. */
+function demographicsFromMatrix(matrix,label){
+  const blocks=[];let current=null;
+  (matrix||[]).forEach(row=>{
+    const cells=(row||[]).map(c=>String(c==null?"":c).trim());
+    const filled=cells.filter(Boolean);
+    if(!filled.length)return;
+    if(filled.length===1&&/^[A-Za-z][A-Za-z &/'-]*$/.test(filled[0])){current={title:filled[0],rows:[]};blocks.push(current);return;}
+    if(current)current.rows.push(cells);
+  });
+  if(blocks.length<2||!blocks.some(b=>b.rows.length))return null;
+  const row={record_type:"account_period",aggregation:"snapshot"};
+  const pairsFrom=b=>{
+    if(b.rows.length<2)return[];
+    const labels=b.rows[0],values=b.rows[1];
+    return labels.map((name,i)=>({name,value:num(values[i])})).filter(x=>x.name&&x.value!==null);
+  };
+  let used=0;
+  blocks.forEach(b=>{
+    const key=normKey(b.title);
+    if(/agegender|age$/.test(key)){
+      const head=b.rows[0]||[],body=b.rows.slice(1);
+      const totals=body.map(cells=>({band:cells[0],total:cells.slice(1).reduce((a,v)=>a+(num(v)||0),0)})).filter(x=>x.band);
+      const topBand=totals.sort((a,b2)=>b2.total-a.total)[0];
+      if(topBand){row.top_age_group=topBand.band;used++;}
+      const genderTotals=head.map((g,i)=>i===0?null:{gender:g,total:body.reduce((a,cells)=>a+(num(cells[i])||0),0)}).filter(Boolean);
+      const topGender=genderTotals.sort((a,b2)=>b2.total-a.total)[0];
+      if(topGender&&topGender.gender){row.top_gender=topGender.gender;used++;}
+    }else if(/cit(y|ies)/.test(key)){
+      const p=pairsFrom(b).sort((a,b2)=>b2.value-a.value).slice(0,5);
+      if(p.length){row.top_cities=p.map(x=>x.name).join("; ");used++;}
+    }else if(/countr/.test(key)){
+      const p=pairsFrom(b).sort((a,b2)=>b2.value-a.value).slice(0,5);
+      if(p.length){row.top_countries=p.map(x=>x.name).join("; ");used++;}
+    }
+  });
+  if(!used)return null;
+  return{name:`${label} · audience`,rows:[row],headers:Object.keys(row),demographicsOnly:true};
+}
 const DATA_FILE_PATTERN=/\.(csv|tsv|tab|txt|xlsx|xlsm|xltx|xls|zip|json|xml|htm|html)$/i;
 const ARCHIVE_SKIP=/(^|\/)(__MACOSX|\.)/;
 /* One uploaded file can hold several logical tables (workbook sheets, archive members). */
@@ -1317,8 +1404,11 @@ async function readSourceBuffer(buffer,label,depth=0){
     throw new Error("No data table was found in this page export");
   }
   const parsed=parseDelimitedText(text);
+  /* Stacked demographic blocks look nothing like a table, so check that before giving up. */
+  const demographics=demographicsFromMatrix(parsed.matrix,label);
+  if(demographics)return[demographics];
   if(!parsed.rows.length)throw new Error(parsed.headers.length?"This file has column headings but no data rows yet":"No data rows were found in this file");
-  return[{name:label,rows:parsed.rows,headers:parsed.headers,preamble:parsed.preamble}];
+  return[applyTitleMetric({name:label,rows:parsed.rows,headers:parsed.headers,preamble:parsed.preamble,preambleRows:parsed.preambleRows})];
 }
 async function readSourceFile(file){
   const label=file.webkitRelativePath||file.name||"Imported data";
@@ -1552,7 +1642,12 @@ function classify(rows,sourceName=""){
 function collectTargets(r){const t={};for(const k in r){if(k==="_raw")continue;if(/target$/.test(k)){const base=k.slice(0,-6),v=num(r[k]);if(v!==null&&v!==undefined)t[base]=v;}}return t;}
 function recordKey(r,grain){const raw=r.raw||{};return grain+"|"+Object.keys(raw).sort().map(k=>k+"="+String(raw[k]??"").trim()).join("&");}
 function addUnique(existing,incoming,grain){const seen=new Set(existing.map(r=>recordKey(r,grain))),kept=[];let duplicates=0;incoming.forEach(r=>{const k=recordKey(r,grain);if(seen.has(k))duplicates++;else{seen.add(k);kept.push(r);}});existing.push(...kept);return{kept:kept.length,duplicates};}
-function ingestRows(rows,sourceName="",headerList=null){
+/* Explains a part that parses fine but contributes no reportable rows, so the reason reaches the
+   audit no matter which path ingested it. */
+const partEmptyNote=part=>part&&part.demographicsOnly
+  ? "Audience breakdown was read, but this export carries no dates so it cannot be placed in a reporting period. Export the audience view with a date range, or add a month or date column."
+  : "";
+function ingestRows(rows,sourceName="",headerList=null,emptyNote=""){
   rows=Array.isArray(rows)?rows:[];
   const headers=headerList&&headerList.length?headerList:[...new Set(rows.flatMap(r=>Object.keys(r)))];
   const classified=classify(rows,sourceName);
@@ -1560,7 +1655,7 @@ function ingestRows(rows,sourceName="",headerList=null){
   [...classified.posts,...classified.periods].forEach(r=>r.source=r.origin||sourceName);
   const pa=addUnique(POSTS,classified.posts,"post"),aa=addUnique(PERIODS,classified.periods,"account");
   if(sourceName){const all=[...classified.posts,...classified.periods],dates=all.map(r=>r.date).filter(Boolean),platforms=[...new Set(all.map(r=>r.platform).filter(Boolean))],recognizedHeaders=headers.filter(h=>ALIAS[normKey(h)]||/target$/i.test(normKey(h))).length;
-    IMPORT_LOG.push({name:sourceName,rows:rows.length,used:pa.kept+aa.kept,duplicates:pa.duplicates+aa.duplicates,posts:classified.posts.length,periods:classified.periods.length,grain:classified.posts.length&&classified.periods.length?"Mixed":classified.posts.length?"Post":"Account",platforms,dateFrom:dates.length?ymd(new Date(Math.min(...dates))):"",dateTo:dates.length?ymd(new Date(Math.max(...dates))):"",mapped:recognizedHeaders,headers:headers.length,skipped:Math.max(0,rows.length-classified.posts.length-classified.periods.length),note:""});
+    IMPORT_LOG.push({name:sourceName,rows:rows.length,used:pa.kept+aa.kept,duplicates:pa.duplicates+aa.duplicates,posts:classified.posts.length,periods:classified.periods.length,grain:classified.posts.length&&classified.periods.length?"Mixed":classified.posts.length?"Post":"Account",platforms,dateFrom:dates.length?ymd(new Date(Math.min(...dates))):"",dateTo:dates.length?ymd(new Date(Math.max(...dates))):"",mapped:recognizedHeaders,headers:headers.length,skipped:Math.max(0,rows.length-classified.posts.length-classified.periods.length),note:(pa.kept+aa.kept)?"":String(emptyNote||"")});
     renderImportCenter();
   }
   return{posts:pa.kept,periods:aa.kept,duplicates:pa.duplicates+aa.duplicates};
@@ -1585,8 +1680,43 @@ function combinedMasterCSV(){
   return toCSV(rows);
 }
 function downloadMaster(){if(!POSTS.length&&!PERIODS.length){appAlert("Import data first.");return;}download("cno_combined_master.csv",combinedMasterCSV());}
+/* Native exports routinely name neither the client nor the platform, so after an import that left
+   rows unassigned the panel offers to file them rather than guessing on the staff member's behalf. */
+function unassignedRows(){
+  const all=[...POSTS,...PERIODS];
+  return{client:all.filter(r=>r.client==="Unknown"),platform:all.filter(r=>r.platform==="unspecified")};
+}
+function renderAssignStrip(){
+  const box=$("importAssign");if(!box)return;
+  const un=unassignedRows();
+  if(!un.client.length&&!un.platform.length){box.hidden=true;box.innerHTML="";return;}
+  /* Offer the most likely name: a client already present in this import that did identify itself. */
+  const named=[...new Set([...POSTS,...PERIODS].map(r=>r.client))].filter(c=>c!=="Unknown");
+  const suggestion=named.length===1?named[0]:"";
+  const bits=[];
+  if(un.client.length)bits.push(`${fmtInt(un.client.length)} ${plural(un.client.length,"row")} did not name a client`);
+  if(un.platform.length)bits.push(`${fmtInt(un.platform.length)} did not name a platform`);
+  box.innerHTML=`<div class="ailab" style="margin:0 0 6px">${escHtml(bits.join(" · "))}</div>
+    <div class="import-default-row">
+      <label>File them under client<input type="text" id="assignClient" placeholder="Client name" value="${escHtml(suggestion)}" autocomplete="off"${un.client.length?"":" disabled"}></label>
+      <label>And platform<select id="assignPlatform"${un.platform.length?"":" disabled"}><option value="">Leave unassigned</option><option value="instagram">Instagram</option><option value="facebook">Facebook</option><option value="tiktok">TikTok</option><option value="linkedin">LinkedIn</option><option value="youtube">YouTube</option><option value="pinterest">Pinterest</option><option value="threads">Threads</option><option value="x">X</option></select></label>
+    </div>
+    <div class="airow" style="margin-top:8px"><button class="btn solid" id="assignApply">Apply to these rows</button><span class="quiet">Only rows that named nothing are changed. Everything the exports did state is left alone.</span></div>`;
+  box.hidden=false;
+  $("assignApply").addEventListener("click",()=>{
+    const name=($("assignClient").value||"").trim(),platform=$("assignPlatform").value;
+    if(!name&&!platform)return;
+    /* A name a staff member typed is a declaration, not a guess. Marking it as such lets the
+       reconciler pull spellings inferred from file names onto it. */
+    if(name)[...POSTS,...PERIODS].forEach(r=>{if(r.client==="Unknown"){r.client=name;r.clientInferred=false;}});
+    if(platform)[...POSTS,...PERIODS].forEach(r=>{if(r.platform==="unspecified")r.platform=platform;});
+    reconcileInferredClients();
+    refreshAll();renderImportCenter();
+  });
+}
 function renderImportCenter(){
   const s=$("importSummary"),a=$("fileAudit");if(!s||!a)return;
+  renderAssignStrip();
   const ps=[...new Set([...POSTS,...PERIODS].map(r=>r.platform))],cs=clients(),dupes=sum(IMPORT_LOG.map(x=>x.duplicates));
   s.innerHTML=[["Files",IMPORT_LOG.length],["Rows ready",POSTS.length+PERIODS.length],["Platforms",ps.length],["Duplicates removed",dupes]].map(x=>`<div class="isum"><span>${x[0]}</span><b>${fmtInt(x[1])}</b></div>`).join("");
   if(!IMPORT_LOG.length){a.innerHTML='<div class="fileaudit-empty">Imported files will appear here with their detected platform, data grain, date coverage, and mapping status.</div>';return;}
@@ -1669,7 +1799,7 @@ async function importFiles(files){
       const parts=await readSourceFile(file);
       const usable=parts.filter(p=>p.rows&&p.rows.length);
       if(!usable.length)logUnreadable(label,parts.find(p=>p.error)?parts.find(p=>p.error).error:"No data rows were found in this file");
-      else usable.forEach(part=>ingestRows(part.rows,part.name,part.headers));
+      else usable.forEach(part=>ingestRows(part.rows,part.name,part.headers,partEmptyNote(part)));
       parts.filter(p=>p.error&&usable.length).forEach(p=>logUnreadable(p.name,p.error));
     }catch(e){logUnreadable(label,e&&e.message?e.message:String(e));}
   }
@@ -3410,10 +3540,10 @@ renderImportCenter();
       resetData();
       /* Every fixture is the same fictional brand, so stand in for the client the way staff would. */
       const priorDefaults=IMPORT_DEFAULTS;IMPORT_DEFAULTS={client:"Example Brand",platform:""};
-      for(const f of ["native_platform_comprehensive_test.csv","instagram_native_utf16_test.csv","semicolon_delimited_test.csv","linkedin_workbook_test.xlsx","tiktok_export_test.zip","instagram_media_test.json"]){
+      for(const f of ["native_platform_comprehensive_test.csv","instagram_native_utf16_test.csv","semicolon_delimited_test.csv","linkedin_workbook_test.xlsx","tiktok_export_test.zip","instagram_media_test.json","meta_business_suite_metric_test.csv","meta_audience_blocks_test.csv"]){
         try{
           const parts=await readSourceBuffer(await fetch("resources/"+f).then(r=>r.arrayBuffer()),f);
-          parts.filter(p=>p.rows&&p.rows.length).forEach(p=>ingestRows(p.rows,p.name,p.headers));
+          parts.filter(p=>p.rows&&p.rows.length).forEach(p=>ingestRows(p.rows,p.name,p.headers,partEmptyNote(p)));
         }catch(e){logUnreadable(f,e.message);}
       }
       IMPORT_DEFAULTS=priorDefaults;
