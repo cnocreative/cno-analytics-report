@@ -24,11 +24,24 @@ app.use(helmet({ contentSecurityPolicy: { directives: { defaultSrc: ["'self'"], 
 app.use(express.urlencoded({ extended: false, limit: "32kb" }));
 app.use(express.json({ limit: "4mb" }));
 
+/* Reading one saved client report is deliberately open to any origin. The client opening the link
+   has no CNO account, may be on any network, and CNO may serve the report from a domain this
+   service was never told about — an origin allowlist there turns into "the link works for staff
+   and nobody else". The link itself is the credential: a random id, a payload encrypted at rest,
+   scoped to one client, expiring, revocable, and optionally password-locked in the browser. */
+const isPublicReportRead = req => req.method === "GET" && /^\/v1\/reports\/[^/]+$/.test(req.path);
+
 app.use((req, res, next) => {
   if (!req.body) req.body = {};
   const origin = req.headers.origin;
   const allowed = !!origin && reportOrigins.includes(trim(origin));
-  if (allowed) {
+  const publicRead = isPublicReportRead(req) || (req.method === "OPTIONS" && /^\/v1\/reports\/[^/]+$/.test(req.path));
+  if (publicRead) {
+    /* No credentials header here: "*" and Allow-Credentials are mutually exclusive, and this
+       endpoint must never be reachable with a staff cookie attached. */
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    res.setHeader("Access-Control-Allow-Methods", "GET,OPTIONS");
+  } else if (allowed) {
     res.setHeader("Access-Control-Allow-Origin", origin);
     res.setHeader("Vary", "Origin");
     res.setHeader("Access-Control-Allow-Methods", "GET,POST,OPTIONS");
@@ -38,7 +51,7 @@ app.use((req, res, next) => {
   /* Helmet defaults Cross-Origin-Resource-Policy to same-origin, which would block the report
      window from reading these JSON responses even with CORS approval. */
   if (req.path.startsWith("/v1/")) res.setHeader("Cross-Origin-Resource-Policy", "cross-origin");
-  if (req.method === "OPTIONS") return res.sendStatus(allowed ? 204 : 403);
+  if (req.method === "OPTIONS") return res.sendStatus(publicRead || allowed ? 204 : 403);
   next();
 });
 

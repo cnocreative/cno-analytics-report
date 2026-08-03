@@ -1175,7 +1175,13 @@ const metaConfig=name=>(document.querySelector(`meta[name="${name}"]`)?.content|
 const HOSTED_BASE=metaConfig("cno-report-base")||"https://cno-analytics-report.onrender.com/";
 const SYNC_BASE=metaConfig("cno-sync-base")||"https://cno-native-sync.onrender.com";
 const REPO_BASE=(metaConfig("cno-repository")||"https://github.com/joongsukkie/cno-analytics-report").replace(/\/$/,"");
-function shareBase(){return location.protocol.startsWith("http")?(location.origin+location.pathname):HOSTED_BASE;}
+/* A client link has to open on somebody else's device. localhost, 127.0.0.1, and the desktop app's
+   file:// origin only exist on this machine, so those fall back to the published report address
+   instead of minting a link that is dead everywhere except here. */
+function shareBase(){
+  const localOnly=/^(?:localhost|127\.0\.0\.1|0\.0\.0\.0|\[?::1\]?)$/i.test(location.hostname);
+  return (location.protocol.startsWith("http")&&!localOnly)?(location.origin+location.pathname):HOSTED_BASE;
+}
 async function saveShortReport(payload,encrypted,client){
   const base=($("syncServiceUrl")?.value||SYNC_BASE).trim().replace(/\/$/,"");
   const response=await fetch(base+"/v1/reports",{method:"POST",credentials:"include",headers:{"content-type":"application/json"},body:JSON.stringify({payload,encrypted:!!encrypted,client_ref:client})});
