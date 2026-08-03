@@ -84,7 +84,7 @@ Status meanings:
 | Request | Status | Current behavior / remaining work |
 |---|---|---|
 | Platform checkboxes | Complete | Detected platforms appear as checkable chips. |
-| Do not combine Instagram and TikTok metrics | Complete | One platform is selected by default. AI and sharing require exactly one platform. |
+| Do not combine Instagram and TikTok metrics | Complete | One platform is selected by default. Several may be selected, and the AI letter then covers each separately: it receives one metric block per platform and no blended figure at all, and must name the platform beside every number. Only genuinely additive business outcomes (spend, leads, bookings, revenue) are offered as a combined total. |
 | Multi-platform comparison | Complete with guardrails | Staff can select several platforms, but the report renders separate platform cards and charts instead of a blended engagement rate or funnel. |
 | Select any reporting period without re-uploading | Complete | Month, last 30 days, last 90 days, all time, and custom ranges recalculate in place. |
 | Daily, weekly, or monthly chart detail | Complete when dates exist | Post/date-aware metrics honor the selected grain. Monthly-only exports cannot honestly produce daily trends. |
@@ -258,6 +258,7 @@ Recommended future improvements:
 Current behavior:
 
 - AI analysis is required before sharing or printing a client-ready report.
+- The letter may cover one platform or several. With several, the AI receives a separate metric block per platform and no blended figure exists in its context, so it cannot quote a cross-platform rate even by accident. It is instructed to name the platform beside every number and never to rank one platform against another. The word allowance and number allowance scale with the platform count so the letter has room without becoming a list.
 - OpenAI and Anthropic are supported in the pilot.
 - The default is `gpt-5-mini`, low reasoning, concise output, and a strict JSON schema.
 - OpenAI uses the Responses API with `store: false`.
@@ -408,7 +409,7 @@ Important limitation:
 
 Implemented:
 
-- Client bundles contain only the selected client and one platform.
+- Client bundles contain only the selected client and only the selected platforms.
 - CNO-only evidence, confidence, analyst notes, API keys, and other clients’ data are removed.
 - Portable links use gzip compression.
 - Optional passwords use PBKDF2-SHA-256 with 150,000 rounds plus AES-GCM.
@@ -582,7 +583,7 @@ Reconciliation differences are not automatically errors. Account totals may incl
 1. Open the website or desktop app.
 2. Import all available client CSVs together.
 3. Select the client.
-4. Select one platform for the official report.
+4. Select the platform, or platforms, for the official report.
 5. Select period and chart detail.
 6. Run Data audit.
 7. Reconcile headline numbers against the native platform for the exact dates.
@@ -859,7 +860,7 @@ Before every public commit:
 2. Confirm demo/test data remains fictional.
 3. Run syntax and formula checks.
 4. Test staff and client views.
-5. Test that client links contain one client and one platform.
+5. Test that client links contain one client and only the selected platforms.
 6. Confirm API keys/tokens are absent from bundles and Git.
 
 ## 15. Release and testing expectations

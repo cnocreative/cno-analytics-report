@@ -161,6 +161,7 @@
   .letterleaf{position:relative;padding:8px 0 2px}
   .letter-kicker{display:flex;align-items:center;justify-content:space-between;gap:20px;margin-bottom:24px;padding-bottom:12px;border-bottom:1px solid rgba(153,97,55,.22)}
   .letter-kicker .date{font-family:var(--serif);font-style:italic;font-size:15px;color:var(--ink-soft)}
+  .platform-scope{margin:-8px 0 20px;padding:9px 13px;background:rgba(219,155,127,.1);border-left:2px solid var(--terra);font-size:11.5px;line-height:1.5;color:var(--ink-soft)}
   .letterlead{font-family:var(--serif);font-size:clamp(20px,2vw,25px);line-height:1.72;color:var(--ink);width:100%;max-width:none;margin:0 0 28px;letter-spacing:-.006em}
   .letterlead b{font-weight:600}
   .letterlead .ed{display:block}.ai-section-note{margin:12px 0 22px;padding:14px 17px;border-left:3px solid var(--terra);background:linear-gradient(90deg,rgba(219,155,127,.09),rgba(255,255,255,0));font-family:var(--serif);font-size:17px;line-height:1.6;color:var(--ink)}.ai-section-note::before{content:"A note from CNO";display:block;margin-bottom:4px;font-family:var(--sans);font-size:8.5px;font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:var(--burnt)}.ai-required-banner{padding:13px 18px;background:#fff4ed;border-top:1px solid var(--terra-soft);border-bottom:1px solid var(--terra-soft);display:flex;align-items:center;justify-content:space-between;gap:14px;font-size:12px;color:var(--ink)}.ai-required-banner b{font-family:var(--serif);font-size:17px;font-weight:500}.ai-required-banner .btn{flex:none}
@@ -477,7 +478,7 @@
   <div class="utility-head"><div><h3>Required AI client letter</h3><p>Every client-ready report needs a short, evidence-based letter and plain-language explanations. The charts remain deterministic; AI writes the human interpretation.</p></div><button class="utility-close" id="aiClose" aria-label="Close AI analysis">×</button></div>
   <div class="aibox" style="margin-top:0">
     <div class="ailab">✦ Write the client-ready report <span>required before sharing</span></div>
-    <div class="aidesc">CNO-side only. The selected platform's metrics, patterns, cautions, and your context are sent to the chosen AI provider. The saved key stays on this CNO device and is never included in a client link.</div>
+    <div class="aidesc">CNO-side only. The selected platforms' metrics, patterns, cautions, and your context are sent to the chosen AI provider. The saved key stays on this CNO device and is never included in a client link. Select several platforms and the letter covers each one separately, naming the platform beside every figure — reach, views, and engagement rates are never added or averaged across them.</div>
     <textarea id="aiHumanContext" placeholder="Optional CNO context: campaign launch, promotion, event, seasonality, staffing change, creative shift, client feedback, or anything the numbers alone cannot explain."></textarea>
     <div class="airow">
       <select id="aiProvider"><option value="openai">OpenAI</option><option value="anthropic">Claude (Anthropic)</option></select>
@@ -588,6 +589,7 @@ const median=a=>{a=a.filter(v=>v!==null&&v!==undefined);if(!a.length)return null
 const ratio=(n,d)=>(n!==null&&n!==undefined&&d!==null&&d!==undefined&&d>0)?n/d:null;
 const cap=s=>String(s).charAt(0).toUpperCase()+String(s).slice(1);
 const plural=(n,w)=>n===1?w:w+"s";
+const listWords=a=>a.length<2?(a[0]||""):a.slice(0,-1).join(", ")+" and "+a[a.length-1];
 const PLAT={instagram:"Instagram",tiktok:"TikTok",linkedin:"LinkedIn",facebook:"Facebook",meta:"Meta",pinterest:"Pinterest",youtube:"YouTube",threads:"Threads",twitter:"X",x:"X",unspecified:"Unspecified"};
 const plat=s=>PLAT[String(s).toLowerCase()]||cap(s);
 const platformId=s=>String(s||"instagram").toLowerCase().trim().replace(/[^a-z0-9_-]+/g,"_").replace(/^_+|_+$/g,"").slice(0,48)||"other";
@@ -1415,7 +1417,7 @@ async function makeShareLink(){
   if(!POSTS.length&&!PERIODS.length){appAlert("Load data first, then create a share link.");return;}
   const client=(CURRENT&&CURRENT.client)||$("clientSel").value;
   if(!client){appAlert("Pick a client first, then create their share link.");return;}
-  if(selectedPlats(client).size!==1){appAlert("Select one platform before sharing. Each client report needs a separate, platform-specific AI analysis.","Choose one platform");return;}
+  if(selectedPlats(client).size<1){appAlert("Select at least one platform before sharing.","Choose a platform");return;}
   if(!AINARR[CTX]){await appAlert("Generate the required AI letter and plain-language analysis before sharing this report.","AI analysis required");openWorkspacePanel("ai");return;}
   // Scope the link to THIS client only: their data, their edits, their AI narrative. Nobody else's.
   const platformSet=selectedPlats(client);
@@ -2242,16 +2244,19 @@ How you work:
 - Find the one or two things that actually matter this period. State the good news plainly, state the bad news kindly but directly, and end with one practical next move.
 - When previous_report_findings are supplied, explicitly decide whether the current evidence confirms, weakens, or leaves each important prior finding unresolved. Build the story forward without recycling an old claim as a current fact.
 - Respect data-quality cautions and sample sizes. Do not make creative-pattern claims from fewer than three relevant posts, and do not call a daily-reach sum an exact monthly unique total.
-- Analyze one platform at a time. Do not blend platform-specific reach, views, engagement rates, funnels, or benchmarks.
+- When one platform is supplied, write about that platform. When several appear in platform_metrics, cover each on its own terms and name the platform beside every figure you quote.
+- Never add, average, rank by, or compare reach, impressions, views, engagement rates, funnels, or benchmarks across platforms. Those definitions differ by platform, so a combined or comparative rate would be false. Only the figures inside combined_business_outcomes may be described as a combined total, because they count the same real-world events everywhere.
+- With several platforms, every finding, concern, and recommendation must say which platform it belongs to. If one platform carries the month and another is flat, say so plainly rather than averaging them into one verdict.
+- Do not claim one platform "outperformed" another. You may say each performed well or poorly against its own history.
 - Use the CNO engagement-rate standard exactly as supplied in formula_notes. Never substitute followers, impressions, or views as its denominator.
 - Never create, infer, estimate, round, recommend, or imply a numeric target. A numeric target is real only when it appears in approved_targets with a non-null value and source. Copy an approved target exactly. If approved_targets is empty, discuss direction and priorities without inventing a goal number.
 - Use short sentences, familiar words, and a warm, thoughtful tone. Write as CNO speaking directly to a client it knows well. Never sound like a dashboard, consultant, template, recap, or chatbot.
 - Do not begin with "Here is your report," "The simple version," "This report covers," or another administrative introduction.
-- Use four short paragraphs after the greeting: the overall story, the encouraging signal and why it matters, the concern and the most supportable explanation, and the recommended next move.
-- Numbers support the story rather than lead it. Use no more than four numbers in the entire letter unless the client supplied explicit goal targets that require another.
+- Use four short paragraphs after the greeting: the overall story, the encouraging signal and why it matters, the concern and the most supportable explanation, and the recommended next move. With several platforms, keep those four paragraphs and move platform by platform inside them rather than adding a paragraph per platform.
+- Numbers support the story rather than lead it. Use no more than letter_guidance.max_numbers numbers in the entire letter unless the client supplied explicit goal targets that require another.
 - Never use em dashes. Use commas, periods, or the word and. Avoid buzzwords, hype, and hedging.
 - The letter must begin exactly with "Dear [client name]," and end with "With care,<br>CNO Creative Co".
-- Keep the letter between 180 and 280 words including the greeting and sign-off.
+- Keep the letter within letter_guidance.word_range, counting the greeting and sign-off.
 - Each section note must be one short sentence, no more than 28 words. It should explain the meaning, not repeat a heading or list metrics.
 - In the letter string, separate paragraphs with <br><br>. The only permitted emphasis tags are <b> and <em>.
 
@@ -2304,21 +2309,28 @@ function buildAIContext(){
   const cur=windowMetrics(c,from,to);
   const pr=prevRange(from,to);const prev=windowMetrics(c,pr.from,pr.to);
   const plats=[...new Set(cur._periods.map(p=>p.platform).concat(cur._posts.map(p=>p.platform)))];
-  const metrics={};
-  ["reach","reach_rate","impressions","views","engagement","er","profile_views","link_clicks","dms","followers_start","followers_end","followers_growth","follower_growth_rate","followers_total","posts","shares","saves","comments","likes","meaningful_comments","story_views","story_exit_rate","story_completion_rate","total_watch_time_seconds","average_view_duration_seconds","video_completion_rate","click_through_rate","leads","bookings","membership_signups","retail_sales","revenue","event_registrations","event_attendees","paid_clicks","paid_leads","paid_conversions","paid_revenue","paid_cpm","paid_ctr","paid_frequency","cost_per_paid_click","cost_per_paid_lead","cost_per_paid_follow","cost_per_paid_conversion","roas"].forEach(k=>{
-    if(cur[k]!=null){metrics[k]={value:cur[k],prev:(prev&&prev[k]!=null)?prev[k]:null,pct_change:pctChange(cur[k],prev?prev[k]:null)};}
-  });
-  const approvedTargets={};
-  TARGET_DEFS.forEach(def=>{
-    const k=def.key,tk=targetStoreKey(k),t=cur._targets?cur._targets[tk]:undefined;
-    if(cur[k]!=null&&t!==undefined&&t!==null){
-      const progress=def.direction==="max"?(cur[k]===0?100:Math.round(t/cur[k]*100)):t===0?null:Math.round(cur[k]/t*100);
-      approvedTargets[k]={actual:cur[k],target:t,direction:def.direction==="max"?"at_or_below":"at_or_above",pct_of_target:progress,source:(cur._targetSources&&cur._targetSources[tk])||"approved target"};
-    }
-  });
+  const CONTEXT_METRICS=["reach","reach_rate","impressions","views","engagement","er","profile_views","link_clicks","dms","followers_start","followers_end","followers_growth","follower_growth_rate","followers_total","posts","shares","saves","comments","likes","meaningful_comments","story_views","story_exit_rate","story_completion_rate","total_watch_time_seconds","average_view_duration_seconds","video_completion_rate","click_through_rate","leads","bookings","membership_signups","retail_sales","revenue","event_registrations","event_attendees","paid_clicks","paid_leads","paid_conversions","paid_revenue","paid_cpm","paid_ctr","paid_frequency","cost_per_paid_click","cost_per_paid_lead","cost_per_paid_follow","cost_per_paid_conversion","roas"];
+  const metricBlock=(now,before)=>{
+    const out={};
+    CONTEXT_METRICS.forEach(k=>{if(now[k]!=null)out[k]={value:now[k],prev:(before&&before[k]!=null)?before[k]:null,pct_change:pctChange(now[k],before?before[k]:null)};});
+    return out;
+  };
+  const metrics=metricBlock(cur,prev);
+  const targetsFor=m=>{
+    const out={};
+    TARGET_DEFS.forEach(def=>{
+      const k=def.key,tk=targetStoreKey(k),t=m._targets?m._targets[tk]:undefined;
+      if(m[k]!=null&&t!==undefined&&t!==null){
+        const progress=def.direction==="max"?(m[k]===0?100:Math.round(t/m[k]*100)):t===0?null:Math.round(m[k]/t*100);
+        out[k]={actual:m[k],target:t,direction:def.direction==="max"?"at_or_below":"at_or_above",pct_of_target:progress,source:(m._targetSources&&m._targetSources[tk])||"approved target"};
+      }
+    });
+    return out;
+  };
+  const approvedTargets=targetsFor(cur);
   let paid=null;
   if(cur.spend!=null&&cur.spend>0){paid={spend:cur.spend,paid_reach:cur.paid_reach,organic_reach:cur.organic_reach,paid_impressions:cur.paid_impressions,organic_impressions:cur.organic_impressions,paid_clicks:cur.paid_clicks,paid_leads:cur.paid_leads,paid_follows:cur.paid_follows,paid_conversions:cur.paid_conversions,paid_revenue:cur.paid_revenue,paid_cpm:cur.paid_cpm,paid_ctr:cur.paid_ctr,paid_frequency:cur.paid_frequency,roas:cur.roas,cost_per_paid_click:cur.cost_per_paid_click,cost_per_paid_lead:cur.cost_per_paid_lead,cost_per_paid_follow:cur.cost_per_paid_follow,cost_per_paid_conversion:cur.cost_per_paid_conversion,metric_source:cur._metricSource};}
-  const top=cur._posts.slice().map(p=>({...p,_e:postEng(p),_er:(p.reach&&p.reach>0)?postEng(p)/p.reach:null})).sort((a,b)=>(b._er??-1)-(a._er??-1)||b._e-a._e).slice(0,5).map((p,i)=>({evidence_key:"top_post_"+(i+1),type:fmtName(p.type),reach:p.reach,views:p.views,engagement:p._e,engagement_rate:p._er,shares:p.shares,saves:p.saves,follows:p.follows,campaign:p.campaign||null,pillar:p.pillar||null,caption:(p.snippet||"").slice(0,140)}));
+  const top=cur._posts.slice().map(p=>({...p,_e:postEng(p),_er:(p.reach&&p.reach>0)?postEng(p)/p.reach:null})).sort((a,b)=>(b._er??-1)-(a._er??-1)||b._e-a._e).slice(0,5).map((p,i)=>({evidence_key:"top_post_"+(i+1),platform:plat(p.platform),type:fmtName(p.type),reach:p.reach,views:p.views,engagement:p._e,engagement_rate:p._er,shares:p.shares,saves:p.saves,follows:p.follows,campaign:p.campaign||null,pillar:p.pillar||null,caption:(p.snippet||"").slice(0,140)}));
   let audience=null;const ar=cur._periods.filter(p=>p.top_age_group||p.top_countries||p.top_cities).slice(-1)[0];
   if(ar)audience={top_age_group:ar.top_age_group,top_gender:ar.top_gender,top_countries:ar.top_countries,top_cities:ar.top_cities};
   const groupSummary=field=>{const by={};cur._posts.filter(p=>p[field]).forEach(p=>(by[p[field]]=by[p[field]]||[]).push(p));return Object.keys(by).map(name=>{const rows=by[name],eng=rows.map(postEng),reach=rows.filter(p=>p.reach!==null).map(p=>p.reach),ers=rows.filter(p=>p.reach>0).map(p=>postEng(p)/p.reach);return{name,posts:rows.length,median_engagement:median(eng),median_engagement_rate:ers.length?median(ers):null,median_reach:median(reach),shares:sum(rows.map(p=>p.shares)),follows:sum(rows.map(p=>p.follows))};}).sort((a,b)=>(b.median_engagement_rate??-1)-(a.median_engagement_rate??-1)||b.median_engagement-a.median_engagement);};
@@ -2327,17 +2339,59 @@ function buildAIContext(){
   const platformKey=platformContextKey(c);
   let priorRecommendation=null;try{const moves=JSON.parse(localStorage.getItem(LSK+"_lastmove")||"{}");priorRecommendation=moves[c+"|"+platformKey]||moves[c]||null;}catch(e){}
   const previousReportFindings=previousAINarrative(c);
+  /* Several platforms in one letter: each gets its own metric block computed on its own rows, so
+     the model never sees a cross-platform reach or engagement rate it could quote as one number. */
+  const multiPlatform=plats.length>1;
+  const platformMetrics={},platformTargets={};
+  if(multiPlatform){
+    plats.forEach(p=>{
+      const one=new Set([p]);
+      const nowM=windowMetrics(c,from,to,one),beforeM=windowMetrics(c,pr.from,pr.to,one);
+      const label=plat(p);
+      platformMetrics[label]={
+        engagement_rate_pct:nowM.er!=null?+(nowM.er*100).toFixed(1):null,
+        engagement_rate_source:nowM._metricSource?nowM._metricSource.er:null,
+        sample_sizes:{account_rows:nowM._periods.length,post_rows:nowM._posts.length},
+        metrics:metricBlock(nowM,beforeM),
+        paid_vs_organic:(nowM.spend!=null&&nowM.spend>0)?{spend:nowM.spend,paid_reach:nowM.paid_reach,organic_reach:nowM.organic_reach,paid_impressions:nowM.paid_impressions,organic_impressions:nowM.organic_impressions,paid_clicks:nowM.paid_clicks,paid_leads:nowM.paid_leads,paid_conversions:nowM.paid_conversions,paid_revenue:nowM.paid_revenue,paid_cpm:nowM.paid_cpm,paid_ctr:nowM.paid_ctr,paid_frequency:nowM.paid_frequency,roas:nowM.roas,cost_per_paid_click:nowM.cost_per_paid_click,cost_per_paid_lead:nowM.cost_per_paid_lead,cost_per_paid_conversion:nowM.cost_per_paid_conversion,metric_source:nowM._metricSource}:null
+      };
+      const t=targetsFor(nowM);
+      if(Object.keys(t).length)platformTargets[label]=t;
+    });
+  }
+  /* The only figures that mean the same thing on every platform, so the only ones that may be
+     spoken about as one combined total. Rates, reach, and impressions are deliberately excluded. */
+  const ADDITIVE=["spend","leads","bookings","membership_signups","retail_sales","revenue","conversions","event_registrations","event_attendees","paid_leads","paid_conversions","paid_revenue"];
+  let combinedOutcomes=null;
+  if(multiPlatform){
+    const out={};
+    ADDITIVE.forEach(k=>{if(cur[k]!=null)out[k]=cur[k];});
+    if(Object.keys(out).length)combinedOutcomes={note:"Counts of the same real-world event across every selected platform. Safe to state as one total.",totals:out};
+  }
+  /* A letter covering three platforms honestly needs more room and more numbers than one covering a
+     single platform, but it must not become a list. */
+  const letterGuidance=multiPlatform
+    ? {word_range:[180+80*(plats.length-1),280+90*(plats.length-1)],max_numbers:3+plats.length}
+    : {word_range:[180,280],max_numbers:4};
   return {
     client:cgetFor(c,"name","")||c, period:label,
     date_range:`${MON[from.getUTCMonth()]} ${from.getUTCDate()} to ${MON[to.getUTCMonth()]} ${to.getUTCDate()}, ${to.getUTCFullYear()}`,
     platforms:plats.map(plat), report_goal:cget("goal","balanced"),
     has_prior_period:!!(prev&&(prev.reach!=null||prev.engagement!=null)),
-    engagement_rate_pct:cur.er!=null?+(cur.er*100).toFixed(1):null,
+    letter_guidance:letterGuidance,
+    /* Single platform keeps the flat shape it has always had. Multi-platform swaps it for the
+       per-platform blocks, so there is no blended total in the context to quote by accident. */
+    ...(multiPlatform
+      ? {platform_metrics:platformMetrics,
+         approved_targets_by_platform:platformTargets,
+         combined_business_outcomes:combinedOutcomes,
+         cross_platform_policy:"Report each platform on its own terms. Never add, average, rank, or compare reach, impressions, views, or any rate across platforms."}
+      : {engagement_rate_pct:cur.er!=null?+(cur.er*100).toFixed(1):null, metrics}),
     sample_sizes:{account_rows:cur._periods.length,post_rows:cur._posts.length,selected_platforms:plats.length},
-    metrics, approved_targets:approvedTargets, target_policy:"Only approved_targets are valid numeric goals. Never invent or infer another target.", paid_vs_organic:paid, top_posts:top, audience,
+    approved_targets:multiPlatform?{}:approvedTargets, target_policy:"Only approved_targets are valid numeric goals. Never invent or infer another target.", paid_vs_organic:multiPlatform?null:paid, top_posts:top, audience,
     campaigns:groupSummary("campaign"),content_pillars:groupSummary("pillar"),
     trend_series:trendSeries,
-    formula_notes:{engagement_rate:"CNO primary standard: (likes + comments + shares + saves) divided by reach. Current source: "+cur._metricSource.er+". Never use followers as the primary denominator.",follower_growth_rate:"net follower growth divided by starting followers",reach_rate:"reach divided by ending followers",story_completion_rate:"direct completed Story views divided by Story views; if completions are absent, 1 minus exits divided by Story views",paid:"platform-reported CPM, CPC, CTR, frequency, CPL, CPA, and ROAS are displayed when supplied; paid-specific raw totals independently recalculate them for CNO validation and fill only missing rates",tracking:"cost per conversion and ROAS are unavailable without paid conversion/revenue attribution",reach:qa&&qa.issues.some(x=>x.title.startsWith("Reach "))?"directional because unique reach is being added across smaller windows":"platform period total",cross_platform:"one platform selected; platform definitions are not blended"},
+    formula_notes:{engagement_rate:"CNO primary standard: (likes + comments + shares + saves) divided by reach. Current source: "+cur._metricSource.er+". Never use followers as the primary denominator.",follower_growth_rate:"net follower growth divided by starting followers",reach_rate:"reach divided by ending followers",story_completion_rate:"direct completed Story views divided by Story views; if completions are absent, 1 minus exits divided by Story views",paid:"platform-reported CPM, CPC, CTR, frequency, CPL, CPA, and ROAS are displayed when supplied; paid-specific raw totals independently recalculate them for CNO validation and fill only missing rates",tracking:"cost per conversion and ROAS are unavailable without paid conversion/revenue attribution",reach:qa&&qa.issues.some(x=>x.title.startsWith("Reach "))?"directional because unique reach is being added across smaller windows":"platform period total",cross_platform:multiPlatform?`${plats.length} platforms selected. Every rate and audience figure lives inside its own platform_metrics block and must be quoted with its platform named. Only combined_business_outcomes may be stated as one total.`:"one platform selected; platform definitions are not blended",campaigns_and_pillars:multiPlatform?"Campaign and pillar summaries pool the tagged posts of every selected platform, because a campaign deliberately runs across channels. Treat them as campaign-level, not platform-level, evidence.":"single platform"},
     data_quality:qa?qa.issues.map(x=>({level:x.level,title:x.title,detail:x.detail})):[],
     previous_recommendation:priorRecommendation,
     previous_report_findings:previousReportFindings,
@@ -2360,7 +2414,15 @@ function safeAIHtml(value,allowBreaks){
 }
 function validateAINarrative(obj,ctx){
   if(!obj||typeof obj!=="object"||!obj.letter||!obj.headline||!obj.best_move)return null;
-  const validEvidence=new Set(Object.keys(ctx.metrics||{}).concat(Object.keys(ctx.approved_targets||{}),["approved_targets","target_policy","data_quality","human_context","previous_recommendation","previous_report_findings","paid_vs_organic","campaigns","content_pillars","audience","trend_series","formula_notes"],(ctx.top_posts||[]).map(x=>x.evidence_key)));
+  const validEvidence=new Set(Object.keys(ctx.metrics||{}).concat(Object.keys(ctx.approved_targets||{}),["approved_targets","target_policy","data_quality","human_context","previous_recommendation","previous_report_findings","paid_vs_organic","campaigns","content_pillars","audience","trend_series","formula_notes","platform_metrics","combined_business_outcomes","cross_platform_policy"],(ctx.top_posts||[]).map(x=>x.evidence_key)));
+  /* Multi-platform findings cite per-platform keys such as "Instagram.reach". Accept both the
+     platform name on its own and the platform-qualified metric. */
+  Object.entries(ctx.platform_metrics||{}).forEach(([label,block])=>{
+    validEvidence.add(label);
+    Object.keys(block.metrics||{}).forEach(k=>{validEvidence.add(label+"."+k);validEvidence.add(label+" "+k);});
+    Object.keys((ctx.approved_targets_by_platform||{})[label]||{}).forEach(k=>validEvidence.add(label+"."+k));
+  });
+  Object.keys((ctx.combined_business_outcomes||{}).totals||{}).forEach(k=>validEvidence.add("combined."+k));
   let refs=0,invalid=0;
   const finding=x=>{if(!x||typeof x!=="object")return null;const evidence=Array.isArray(x.evidence)?x.evidence.map(String).slice(0,5):[];evidence.forEach(k=>{if(validEvidence.has(k)||k.startsWith("campaign:")||k.startsWith("pillar:"))refs++;else invalid++;});return{t:safeAIHtml(x.t,false),d:safeAIHtml(x.d,true),evidence,confidence:["high","medium","low"].includes(x.confidence)?x.confidence:"low"};};
   const best=finding(obj.best_move);if(!best)return null;
@@ -2394,7 +2456,7 @@ async function callOpenAI(key,model,sys,user,depth){
 async function generateAINarrative(){
   if(VIEW_LOCK)return;
   if(!CURRENT.client){aiSay("Load data and pick a client first.");return;}
-  if(selectedPlats(CURRENT.client).size!==1){aiSay("Select one platform before writing with AI. Platform definitions should not be blended in one narrative.");return;}
+  if(selectedPlats(CURRENT.client).size<1){aiSay("Select at least one platform before writing with AI.");return;}
   const provider=$("aiProvider").value,key=$("aiKey").value.trim(),depth=$("aiDepth").value,remember=$("aiRemember").checked;
   let model=$("aiModel").value.trim()||aiDefaultModel(provider);
   if(!key){aiSay("Enter the CNO "+(provider==="openai"?"OpenAI":"Anthropic")+" API key first.");return;}
@@ -2562,7 +2624,7 @@ function organizeReportPages(ai,multiPlat){
   const report=$("report"),foot=report.querySelector(".foot");
   sectionOrder().forEach(key=>{const section=report.querySelector(`section[data-section="${key}"]`);if(section){section.dataset.page=String(sectionPage(key));if(foot)report.insertBefore(section,foot);}});
   applyAISectionNotes(ai);
-  if(!ai&&!VIEW_LOCK&&!multiPlat){
+  if(!ai&&!VIEW_LOCK){
     const head=report.querySelector(".rhead"),banner=document.createElement("div");banner.className="ai-required-banner";banner.innerHTML='<div><b>AI analysis is required before this report is client-ready.</b><br>Add the CNO key once, then generate the plain-language letter and section explanations.</div><button class="btn solid" type="button">Write required analysis</button>';
     head.insertAdjacentElement("afterend",banner);banner.querySelector("button").addEventListener("click",()=>openWorkspacePanel("ai"));
   }
@@ -2794,9 +2856,10 @@ function render(){
     <div class="data-status">${dataBasis}</div>
   </div>
 
-  ${!multiPlat?`<section class="narrative-section" id="story" data-page="1">
+  ${(!multiPlat||ai)?`<section class="narrative-section" id="story" data-page="1">
     <div class="letterleaf">
       <div class="letter-kicker"><div class="sec-label">A letter from CNO ${aiBadge}</div><div class="date">${dateSpan}</div></div>
+      ${multiPlat?`<div class="platform-scope">Covering ${listWords(platsUsed.map(p=>escHtml(plat(p))))}, each on its own terms. Reach, views, and engagement rates are never added or averaged across platforms.</div>`:""}
       <div class="letterlead">${letterLeadHtml}</div>
       ${followup}
       <div class="letter-observations">
@@ -2820,7 +2883,7 @@ function render(){
         <div class="d">${ed("best_d",stripEmDash(bestSrc.d))}</div>
       </div>
     </div>
-  </section>`:`<section class="narrative-section" id="story" data-page="1"><div class="sec-label">Cross-platform comparison</div><div class="headline">Each platform is shown on its own terms.</div><div class="letterlead">This view compares ${platsUsed.map(p=>escHtml(plat(p))).join(", ")} without adding unlike reach, view, or engagement definitions together. Use the separate cards and charts below for the portfolio read, then select one platform above for its complete goals, funnel, content diagnostics, paid efficiency, and recommendations.</div></section>`}
+  </section>`:`<section class="narrative-section" id="story" data-page="1"><div class="sec-label">Cross-platform comparison</div><div class="headline">Each platform is shown on its own terms.</div><div class="letterlead">This view compares ${listWords(platsUsed.map(p=>escHtml(plat(p))))} without adding unlike reach, view, or engagement definitions together. Generate the AI analysis to add a client letter covering all of them, or select one platform above for its complete goals, funnel, content diagnostics, paid efficiency, and recommendations.</div></section>`}
 
   ${showSec("outcomes")&&!multiPlat?`<section id="outcomes" data-section="outcomes"><div class="sec-label">Goal snapshot</div><div class="sec-sub">The four clearest measures tied to this client's selected priority.</div>${goalSnapshot}</section>`:""}
 
@@ -2864,7 +2927,7 @@ function render(){
 
   ${showSec("content_list")?`<section data-section="content_list"><div class="sec-label">Top posts by engagement rate</div>${contentList}</section>`:""}
 
-  ${showSec("recommendations")&&!multiPlat?`<section data-section="recommendations"><div class="sec-label">Recommendations</div><ol class="recs">${[bestSrc,...watchSrc.slice(0,2).map(w=>({t:w.t,d:w.d}))].map((r,i)=>`<li>${ed("rec"+i,stripEmDash("<b>"+r.t+".</b> "+String(r.d||"").replace(/<[^>]+>/g,"")))}</li>`).join("")}</ol></section>`:""}
+  ${showSec("recommendations")&&(!multiPlat||ai)?`<section data-section="recommendations"><div class="sec-label">Recommendations</div><ol class="recs">${[bestSrc,...watchSrc.slice(0,2).map(w=>({t:w.t,d:w.d}))].map((r,i)=>`<li>${ed("rec"+i,stripEmDash("<b>"+r.t+".</b> "+String(r.d||"").replace(/<[^>]+>/g,"")))}</li>`).join("")}</ol></section>`:""}
 
   ${showSec("matrix")&&matrixHtml&&!multiPlat?`<section data-section="matrix"><div class="sec-label">Every metric, month by month</div><div class="sec-sub">The full history in one table. Scroll sideways for more months.</div>${matrixHtml}</section>`:""}
 

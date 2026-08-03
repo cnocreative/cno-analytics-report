@@ -30,7 +30,7 @@ Most social tools show isolated platform numbers. This one turns them into a **v
 - **CNO-approved client targets** — Customize includes a client-and-platform target library for organic, business, campaign, and paid metrics. Blank means no goal; CNO values override imported targets, and AI is prohibited from inventing a number.
 - **Effort vs. return per platform** — posts published against what they actually earned; flags dead channels
 - **CNO-only data audit** — checks source coverage, row grain, non-additive reach, overlapping exports, missing KPIs, and account-total versus post-detail reconciliation before a report is published
-- **No false blending** — when several platforms are checked, headline KPIs and trend charts are shown in separate platform panels instead of one cross-platform engagement rate
+- **No false blending** — when several platforms are checked, headline KPIs and trend charts are shown in separate platform panels instead of one cross-platform engagement rate. The AI letter can cover all of them at once: it is given one metric block per platform and no combined figure, and must name the platform beside every number it uses. Only counts that mean the same thing everywhere (spend, leads, bookings, revenue) are ever stated as a combined total.
 
 **Story-first and yours to shape.**
 - **Page 1 begins as a real client letter**: “Dear [client],” followed by a connected narrative about what changed, what it means, what CNO is watching, and what happens next, ending with “With care, CNO Creative Co.” Goals, paid vs. organic, outcomes, and the most important KPIs follow the letter.

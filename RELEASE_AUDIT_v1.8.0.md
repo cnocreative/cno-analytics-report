@@ -70,6 +70,27 @@ only one platform emits (`Jobs page views`, `Seniority`, `Full video watched rat
 `Watch time (hours)`) identify the source. Checked only after the file and folder names, and it
 never overrides a platform the file declares.
 
+## Multi-platform AI letters (v1.8.2)
+
+The AI letter and client sharing previously required exactly one platform. They now accept several,
+without loosening the rule that unlike platform definitions must never be blended.
+
+| Change | Verification |
+|---|---|
+| Per-platform context | With three platforms selected the context contains one metric block per platform and **no** top-level `metrics` object and **no** `engagement_rate_pct` at all, so there is no blended figure available to quote. Instagram 5.9%, LinkedIn 9.4%, TikTok 12.5% were carried separately and never averaged |
+| Single-platform shape unchanged | For each platform on its own, the context still has the flat `metrics` object, no per-platform blocks, and the original 180-280 word range. Verified for all three platforms |
+| Combined totals restricted | `combined_business_outcomes` carries only counts that mean the same thing on every platform (spend, leads, bookings, membership signups, retail sales, revenue, conversions, event registrations and attendees, paid leads/conversions/revenue). Reach, impressions, views, engagement, follower and rate fields are excluded by construction |
+| Prompt rules | The model must name the platform beside every figure, must not add, average, rank or compare rates across platforms, and must not claim one platform outperformed another. It may only speak of each against its own history |
+| Letter scales with scope | Word range and number allowance scale with platform count (three platforms gives 340-460 words and six numbers) so the letter has room without becoming a list |
+| Evidence validation | Findings citing `Instagram.reach`, `TikTok.er`, `LinkedIn.profile_views` validate with zero invalid references. Per-platform target keys and `combined.*` keys are accepted too |
+| Letter now renders | The multi-platform page previously replaced the letter with a comparison notice. It renders the letter when an analysis exists, with a scope banner naming every platform covered, and falls back to the comparison notice when none exists |
+| Paid kept per platform | Paid figures moved inside each platform block rather than being dropped, so the paid takeaway still works with several platforms |
+| Guards that stay | Benchmarks still refuse to compare across platforms (different denominators), and target editing remains single-platform so one platform's goal cannot be reused for another |
+| Sharing | A bundle with three platforms selected carries all three, excludes the unselected platform, and excludes a second client entirely |
+
+The per-platform blocks are built by running the metric engine once per platform, so the letter is
+grounded in exactly the same numbers the per-platform report cards display.
+
 ## Native browser connection
 
 | Change | Verification |
