@@ -1492,6 +1492,13 @@ const REPO_BASE=(metaConfig("cno-repository")||"https://github.com/cnocreative/c
 /* A client link has to open on somebody else's device. localhost, 127.0.0.1, and the desktop app's
    file:// origin only exist on this machine, so those fall back to the published report address
    instead of minting a link that is dead everywhere except here. */
+/* fetch with a real deadline: a hung request must fail with a message, not hang forever. */
+async function fetchWithTimeout(url,options={},ms=30000){
+  const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),ms);
+  try{return await fetch(url,{...options,signal:controller.signal});}
+  catch(e){throw (e&&e.name==="AbortError")?new Error("The report service did not answer in time. Try the link again in a minute."):e;}
+  finally{clearTimeout(timer);}
+}
 function shareBase(){
   const localOnly=/^(?:localhost|127\.0\.0\.1|0\.0\.0\.0|\[?::1\]?)$/i.test(location.hostname);
   return (location.protocol.startsWith("http")&&!localOnly)?(location.origin+location.pathname):HOSTED_BASE;
@@ -3490,7 +3497,14 @@ renderImportCenter();
     try{
       const service=(params.get("service")||SYNC_BASE).replace(/\/$/,"");
       if(!/^https:\/\//i.test(service)&&!/^http:\/\/localhost(?::\d+)?$/i.test(service))throw new Error("The report service address is invalid");
-      const response=await fetch(service+"/v1/reports/"+encodeURIComponent(reportId),{cache:"no-store"});
+      /* A sleeping free-tier service takes up to a minute to answer the first request. Without
+         this the client stares at an empty page and assumes CNO sent a broken link. */
+      const notice=$("report");
+      if(notice)notice.innerHTML='<div class="empty"><img src="cno-seal.png" alt="" style="width:56px;height:56px;object-fit:contain;margin-bottom:14px"><div style="font-family:var(--serif);font-size:22px;color:var(--ink)">Opening your report</div><div id="reportWaitNote" style="margin-top:8px;font-size:12px;color:var(--ink-soft)">One moment.</div></div>';
+      const slow=setTimeout(()=>{const n=$("reportWaitNote");if(n)n.textContent="Still opening. The first visit of the day can take up to a minute while the report service wakes up.";},6000);
+      let response;
+      try{response=await fetchWithTimeout(service+"/v1/reports/"+encodeURIComponent(reportId),{cache:"no-store"},75000);}
+      finally{clearTimeout(slow);}
       const saved=await response.json();
       if(!response.ok||!saved.payload)throw new Error(saved.error||"This saved report is unavailable");
       if(saved.encrypted){

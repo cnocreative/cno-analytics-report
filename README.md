@@ -107,6 +107,8 @@ Static site, no build. On [Render](https://render.com): connect the repo, choose
 | `resources/brand-style.md` | Official brand palette, type, and voice |
 | `01_METRICS_DICTIONARY.md` | Every metric and its exact formula |
 | `06_CSV_SCHEMA.md` | The data contract and readable file formats (including optional `<metric>_target` goal columns) |
+| `PROVIDER_APP_REVIEW.md` | What to submit to Meta, TikTok and LinkedIn to enable native syncing |
+| `RUNNING_COSTS.md` | Running the whole system for free, and where that costs you |
 | `DATA_IMPORT_GUIDE.md` | Monthly import workflow and realistic native-platform connection options |
 | `DATA_ACCURACY_AND_ACCESS.md` | Metric-governance rules and the CNO staff/client access roadmap |
 | `CLOUD_AUTOMATION_BLUEPRINT.md` | Managed accounts, report archive, monthly delivery, and production security plan |

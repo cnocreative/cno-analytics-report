@@ -703,7 +703,7 @@ Until step 1 completes, the panel says so instead of offering a button that fail
    - Verify `/health`.
    - Confirm short links open on another device and can be revoked.
 
-3. **Complete provider setup**
+3. **Complete provider setup** — see `PROVIDER_APP_REVIEW.md` for the submissions
    - Register CNO-owned Meta, TikTok, and LinkedIn apps.
    - Configure callback URLs.
    - Complete provider review/approval.
@@ -805,6 +805,8 @@ Until step 1 completes, the panel says so instead of offering a button that fail
 | `RELEASE_AUDIT_v1.8.0.md` | Current release verification and honest limitations |
 | `RELEASE_AUDIT_v1.7.0.md` | Previous release verification |
 | `MIGRATE_TO_CNO_ACCOUNTS.md` | GitHub/Render/domain/provider migration runbook |
+| `PROVIDER_APP_REVIEW.md` | Ready-to-paste Meta/TikTok/LinkedIn app-review submissions and per-permission justifications |
+| `RUNNING_COSTS.md` | What is free permanently, what the free tier costs in behaviour, and the Postgres trap |
 | `resources/brand-style.md` | Brand colors, fonts, voice, and assets |
 | `resources/template_accounts.csv` | Account/period CSV template |
 | `resources/template_content.csv` | Post/content CSV template |
