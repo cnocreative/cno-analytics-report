@@ -1,6 +1,6 @@
 /* CNO Reports service worker — offline app shell.
    Bump CACHE when shipping a new build so clients pick it up. */
-const CACHE = "cno-reports-v12";
+const CACHE = "cno-reports-v13";
 const SHELL = [
   "./index.html",
   "./fonts.css",
@@ -31,6 +31,8 @@ self.addEventListener("fetch", e => {
   // Never touch cross-origin (e.g. AI API calls) — let them go straight to the network.
   if (url.origin !== self.location.origin) return;
 
+  // Legal pages are handed to platform reviewers; never serve a stale copy of them.
+  if (/\/(privacy|data-deletion)\.html$/.test(url.pathname)) return;
   const isDoc = req.mode === "navigate" || url.pathname.endsWith("/index.html") || url.pathname.endsWith("/");
   if (isDoc) {
     // Network-first for the app itself so redeploys land, falling back to cache offline.
