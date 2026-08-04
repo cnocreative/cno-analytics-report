@@ -23,10 +23,13 @@ services:
         value: production
       - key: REPORT_ORIGIN
         value: https://cno-analytics-report-5hi6.onrender.com
-      # Leave unset while the service answers on its onrender.com address; it then derives its own
-      # hostname automatically. The moment a custom domain is added this MUST be set to it, because
-      # every OAuth redirect_uri is built from this value and has to match what was registered with
-      # the provider exactly. Set it to e.g. https://sync.cnocreative.co
+      # Leave this UNSET unless the service is reached through a custom domain. Unset, it derives
+      # its own address from Render and therefore always matches where the service actually answers.
+      #
+      # Every OAuth redirect_uri is built from this value and must match what was registered with
+      # the provider exactly, so a wrong value here fails every sign-in with a redirect_uri
+      # mismatch and nothing explains why. Only set it once the custom domain resolves, never
+      # before, or it will point providers at a hostname that does not exist yet.
       - key: PUBLIC_BASE_URL
         sync: false
       # Optional. Without it the service keeps connections in a local file that does not
