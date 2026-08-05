@@ -92,7 +92,10 @@ Say out loud, or caption, which permission produced which number.
 ## TikTok
 
 Start at [developers.tiktok.com](https://developers.tiktok.com) → **Manage apps** → create an app.
-Add **Login Kit** and the **Display API**.
+Add **Login Kit**. There is no Display API tile to add: TikTok now grants those reads through the
+**Scopes** panel instead, so adding the three scopes below is the whole configuration. Say
+"Login Kit is the only product used" in the review form — claiming a product the app does not
+list is a contradiction a reviewer will see.
 
 **Redirect URI:**
 
