@@ -320,7 +320,11 @@ app.get("/oauth/:provider/callback", async (req, res) => {
       ? "Authorization is complete. One last step is required: choose the exact social and, when applicable, ad account that belongs to this client."
       : accounts.length === 1
         ? `${accounts[0].name || "The account"} was assigned automatically because it was the only account returned.`
-        : "The provider did not return an account to assign. Check the approved permissions and reconnect.";
+        /* Say what actually failed. The generic wording sent people to re-check permissions that
+           were never the problem, while the real reason sat unread in the stored metadata. */
+        : discoveryError
+          ? `No account could be read back. ${discoveryError}`
+          : "The provider returned no account to assign. Check the approved permissions and reconnect.";
     res.send(layout("Connected", `<div class="card"><div class="status">Connected securely</div><h1>${esc(provider)} is connected</h1><p>The token is encrypted in server storage and will not be returned to this browser.</p><p>${esc(assignmentNote)}</p><a class="btn solid" href="${esc(next)}">Review account assignment</a></div>`));
   } catch (error) {
     res.status(400).send(layout("Connection failed", `<div class="card"><h1>Connection failed</h1><p class="error">${esc(error.message)}</p><a class="btn" href="/admin">Return</a></div>`));

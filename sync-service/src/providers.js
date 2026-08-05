@@ -15,7 +15,11 @@ async function apiJson(url, options = {}) {
   const text = await res.text();
   let data;
   try { data = JSON.parse(text); } catch { data = { raw: text.slice(0, 500) }; }
-  if (!res.ok || data?.error?.code) {
+  /* TikTok returns an error object on every response, carrying code "ok" when the call
+     succeeded, so presence alone cannot mean failure. Meta sends numeric codes and LinkedIn
+     omits the field, and neither ever reports success as "ok". */
+  const code = data?.error?.code;
+  if (!res.ok || (code && code !== "ok")) {
     const message = data?.error?.message || data?.message || data?.error_description || `HTTP ${res.status}`;
     throw new Error(String(message).slice(0, 300));
   }
