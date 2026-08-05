@@ -20,7 +20,12 @@ const SESSION_DAYS = 30;
 
 app.set("trust proxy", 1);
 app.disable("x-powered-by");
-app.use(helmet({ contentSecurityPolicy: { directives: { defaultSrc: ["'self'"], styleSrc: ["'self'", "'unsafe-inline'"], imgSrc: ["'self'", "data:"], formAction: ["'self'"], frameAncestors: ["'none'"] } } }));
+/* form-action must name the providers' sign-in hosts. Starting a connection submits a form to
+   this service, which answers with a redirect to the provider — and browsers apply form-action
+   to every hop of a form submission, not just the first. Restricted to 'self' the redirect is
+   blocked with nothing but a console entry, so the button appears to do nothing at all. */
+const oauthHosts = ["https://www.facebook.com", "https://www.tiktok.com", "https://www.linkedin.com"];
+app.use(helmet({ contentSecurityPolicy: { directives: { defaultSrc: ["'self'"], styleSrc: ["'self'", "'unsafe-inline'"], imgSrc: ["'self'", "data:"], formAction: ["'self'", ...oauthHosts], frameAncestors: ["'none'"] } } }));
 app.use(express.urlencoded({ extended: false, limit: "32kb" }));
 app.use(express.json({ limit: "4mb" }));
 
