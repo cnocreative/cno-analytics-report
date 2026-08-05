@@ -151,6 +151,18 @@ const setupBanner = () => {
 app.get("/health", (_req, res) => res.json({ ok: true, service: "cno-native-sync", version: "0.7.0", storage: store.kind, durable: store.durable, setup_complete: setupIssues().length === 0 }));
 app.get("/", (_req, res) => res.redirect("/admin"));
 
+/* TikTok will not accept an OAuth redirect URI on a URL prefix it has not verified, and it
+   verifies one by fetching a signature file from that prefix. This service publishes no static
+   files, so the file is served from an environment variable instead: set TIKTOK_VERIFICATION to
+   the downloaded file's entire contents. The file is named after the code inside it, so deriving
+   the path from the contents means the two can never disagree. */
+app.use((req, res, next) => {
+  const body = String(process.env.TIKTOK_VERIFICATION || "").trim();
+  const code = /^tiktok-developers-site-verification=([A-Za-z0-9_-]+)$/.exec(body);
+  if (!code || req.method !== "GET" || req.path !== `/tiktok${code[1]}.txt`) return next();
+  res.type("text/plain").send(body);
+});
+
 /* Lets the report app show honest connection state before asking staff to sign in. */
 app.get("/v1/session", async (req, res) => {
   const configured = configuredProviders();

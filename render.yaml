@@ -46,6 +46,10 @@ services:
         sync: false
       - key: META_CLIENT_SECRET
         sync: false
+      # Paste the whole contents of the signature file TikTok issues when verifying this
+      # service's URL prefix. The service serves it back at the path TikTok asks for.
+      - key: TIKTOK_VERIFICATION
+        sync: false
       - key: TIKTOK_CLIENT_KEY
         sync: false
       - key: TIKTOK_CLIENT_SECRET
