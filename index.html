@@ -1353,6 +1353,10 @@ function applyTitleMetric(part){
     const out={};
     for(const k in row)out[k===generic?info.canon:k]=row[k];
     if(platform&&!out.platform)out.platform=platform;
+    /* One metric a day for the whole account. Left undeclared, a file of dated engagement totals
+       looks exactly like a list of posts to the classifier, and 28 days become 28 captionless
+       posts with no reach that cannot be ranked. */
+    if(!out.record_type)out.record_type="account_daily";
     return out;
   });
   part.headers=part.headers.map(h=>h===generic?info.canon:h).concat(platform?["platform"]:[]);
@@ -1372,7 +1376,7 @@ function datedBlockPart(block,label,platform){
   const canon=ALIAS[normKey(block.title)];
   if(!canon)return null;
   const rows=block.rows.slice(1).map(cells=>{
-    const out={date:cells[dateAt],[canon]:cells[valueAt]};
+    const out={date:cells[dateAt],[canon]:cells[valueAt],record_type:"account_daily"};
     if(platform)out.platform=platform;
     return out;
   }).filter(r=>r.date);
@@ -1677,9 +1681,13 @@ function classify(rows,sourceName=""){
     const hasPostType=r.post_type!==undefined&&String(r.post_type).trim()!=="";
     const hasDate=r.date!==undefined && parseDate(r.date);
     const hasFollowers=r.followers_total!==undefined;
+    /* A post has no profile views and no follower change; both belong to the account. Exports that
+       name neither a post nor an account grain - TikTok's Overview is one - are otherwise read as
+       posts purely because they carry likes. */
+    const hasAccountOnly=r.profile_views!==undefined||r.followers_growth!==undefined;
     const hasCaption=(r.caption_snippet!==undefined&&String(r.caption_snippet).trim()!=="")||(r.caption_length!==undefined&&String(r.caption_length).trim()!=="");
     const declared=String(r.record_type||"").toLowerCase();
-    const isPost = declared.includes("post")||(!declared.includes("account")&&!declared.includes("daily")&&(hasPostType || (hasDate && !hasFollowers && (hasCaption || r.engagement!==undefined || r.likes!==undefined))));
+    const isPost = declared.includes("post")||(!declared.includes("account")&&!declared.includes("daily")&&(hasPostType || (hasDate && !hasFollowers && !hasAccountOnly && (hasCaption || r.engagement!==undefined || r.likes!==undefined))));
     if(isPost && hasDate){
       const d=parseDate(r.date);
       const explicitHour=num(r.published_hour);
@@ -2478,9 +2486,11 @@ How you work:
 Return only the requested structured object. Each finding must include evidence keys copied from the supplied context and a confidence of high, medium, or low. High means a direct metric or adequately sized repeated pattern, medium means a directional association, and low means a hypothesis that needs human confirmation.`;
 
 const AI_FINDING_SCHEMA={type:"object",additionalProperties:false,required:["t","d","evidence","confidence"],properties:{t:{type:"string"},d:{type:"string"},evidence:{type:"array",items:{type:"string"},maxItems:5},confidence:{type:"string",enum:["high","medium","low"]}}};
-const AI_SECTION_NOTES_SCHEMA={type:"object",additionalProperties:false,required:["overview","paid","outcomes","performance","funnel","audience","retention","trends","profile","content","campaigns","benchmarks","recommendations"],properties:{
-  overview:{type:["string","null"]},paid:{type:["string","null"]},outcomes:{type:["string","null"]},performance:{type:["string","null"]},funnel:{type:["string","null"]},audience:{type:["string","null"]},retention:{type:["string","null"]},trends:{type:["string","null"]},profile:{type:["string","null"]},content:{type:["string","null"]},campaigns:{type:["string","null"]},benchmarks:{type:["string","null"]},recommendations:{type:["string","null"]}
-}};
+/* Every section gets its own note, and the list is derived from the sections themselves so a new
+   section cannot be added without the model being asked to explain it. Eleven sections used to
+   share a neighbour's sentence, which read as canned because it was written about something else. */
+const AI_NOTE_KEYS=SECTION_DEFS.map(x=>x.key);
+const AI_SECTION_NOTES_SCHEMA={type:"object",additionalProperties:false,required:AI_NOTE_KEYS,properties:Object.fromEntries(AI_NOTE_KEYS.map(k=>[k,{type:["string","null"]}]))};
 const AI_NARRATIVE_SCHEMA={type:"object",additionalProperties:false,required:["headline","letter","working_now","needs_attention","best_move","paid_takeaway","section_notes","analyst_note"],properties:{
   headline:{type:"string"},letter:{type:"string"},
   working_now:{type:"array",items:AI_FINDING_SCHEMA,maxItems:2},needs_attention:{type:"array",items:AI_FINDING_SCHEMA,maxItems:2},
@@ -2645,7 +2655,7 @@ function validateAINarrative(obj,ctx){
   if(!plain.textContent.trim().toLowerCase().startsWith("dear "))letter=`Dear ${safeAIHtml(ctx.client,false)},<br><br>${letter}`;
   plain=document.createElement("div");plain.innerHTML=letter;
   if(!plain.textContent.trim().toLowerCase().endsWith("cno creative co"))letter+=`<br><br>With care,<br>CNO Creative Co`;
-  const noteKeys=["overview","paid","outcomes","performance","funnel","audience","retention","trends","profile","content","campaigns","benchmarks","recommendations"],section_notes={};
+  const noteKeys=AI_NOTE_KEYS,section_notes={};
   noteKeys.forEach(k=>section_notes[k]=obj.section_notes&&obj.section_notes[k]!=null?safeAIHtml(obj.section_notes[k],false):null);
   const clean={headline:safeAIHtml(obj.headline,true),letter,working_now:(Array.isArray(obj.working_now)?obj.working_now:[]).map(finding).filter(Boolean).slice(0,2),needs_attention:(Array.isArray(obj.needs_attention)?obj.needs_attention:[]).map(finding).filter(Boolean).slice(0,2),best_move:best,paid_takeaway:obj.paid_takeaway==null?null:safeAIHtml(obj.paid_takeaway,true),section_notes,analyst_note:safeAIHtml(obj.analyst_note||"",false),_validation:{refs,invalid}};
   return clean;
@@ -2659,12 +2669,12 @@ function renderAIEvidence(){
   el.className="ai-evidence show";
 }
 async function callAnthropic(key,model,sys,user){
-  const res=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"content-type":"application/json","x-api-key":key,"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},body:JSON.stringify({model:model,max_tokens:1800,system:sys,messages:[{role:"user",content:user}]})});
+  const res=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"content-type":"application/json","x-api-key":key,"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},body:JSON.stringify({model:model,max_tokens:3400,system:sys,messages:[{role:"user",content:user}]})});
   if(!res.ok)throw new Error("Anthropic "+res.status+": "+(await res.text()).slice(0,180));
   const d=await res.json();return(d.content&&d.content[0]&&d.content[0].text)||"";
 }
 async function callOpenAI(key,model,sys,user,depth){
-  const res=await fetch("https://api.openai.com/v1/responses",{method:"POST",headers:{"content-type":"application/json","authorization":"Bearer "+key},body:JSON.stringify({model,instructions:sys,input:user,reasoning:{effort:depth||"low"},text:{verbosity:"low",format:{type:"json_schema",name:"cno_monthly_narrative",description:"Evidence-grounded monthly social analytics narrative",strict:true,schema:AI_NARRATIVE_SCHEMA}},max_output_tokens:2600,store:false})});
+  const res=await fetch("https://api.openai.com/v1/responses",{method:"POST",headers:{"content-type":"application/json","authorization":"Bearer "+key},body:JSON.stringify({model,instructions:sys,input:user,reasoning:{effort:depth||"low"},text:{verbosity:"low",format:{type:"json_schema",name:"cno_monthly_narrative",description:"Evidence-grounded monthly social analytics narrative",strict:true,schema:AI_NARRATIVE_SCHEMA}},max_output_tokens:4600,store:false})});
   if(!res.ok)throw new Error("OpenAI "+res.status+": "+(await res.text()).slice(0,180));
   const d=await res.json();if(d.output_text)return d.output_text;for(const item of d.output||[])for(const part of item.content||[])if(part.type==="output_text"&&part.text)return part.text;return"";
 }
@@ -2680,7 +2690,10 @@ async function generateAINarrative(){
   aiSay("Reading the data and writing the letter. This usually takes five to fifteen seconds...",true);
   $("aiRun").disabled=true;
   try{
-    const user="Write a warm, complete monthly letter directly to "+ctx.client+", followed by two plain-language good signals, no more than two concerns, one next move, and one-sentence explanations for the deeper report sections. The letter must begin exactly with Dear "+ctx.client+", and read as a connected narrative rather than a list of metrics. It must end exactly with With care,<br>CNO Creative Co. Use only evidence present in this JSON. Evidence arrays must use metric keys, top_post_N keys, or the named context groups. The data is below.\n\n"+JSON.stringify(ctx,null,1)+"\n\nRequired JSON schema:\n"+JSON.stringify(AI_NARRATIVE_SCHEMA);
+    const present=[...document.querySelectorAll("#report section[data-section]")].map(el=>el.dataset.section);
+    const labelFor=k=>{const d=SECTION_DEFS.find(x=>x.key===k);return d?k+" ("+d.label+")":k;};
+    const notesAsk=" section_notes must contain every one of these keys: "+AI_NOTE_KEYS.join(", ")+". Write a genuine one or two sentence explanation for each section this report actually contains: "+(present.length?present.map(labelFor).join(", "):"none")+". Each note explains what that particular section shows and what it means for this client, in plain English, naming the platform beside any figure. Do not reuse a sentence across sections, and set to null only the sections not listed as present.";
+    const user="Write a warm, complete monthly letter directly to "+ctx.client+", followed by two plain-language good signals, no more than two concerns, one next move, and a note for every section of this report."+notesAsk+" The letter must begin exactly with Dear "+ctx.client+", and read as a connected narrative rather than a list of metrics. It must end exactly with With care,<br>CNO Creative Co. Use only evidence present in this JSON. Evidence arrays must use metric keys, top_post_N keys, or the named context groups. The data is below.\n\n"+JSON.stringify(ctx,null,1)+"\n\nRequired JSON schema:\n"+JSON.stringify(AI_NARRATIVE_SCHEMA);
     const text=await(provider==="openai"?callOpenAI(key,model,AI_SYSTEM,user,depth):callAnthropic(key,model,AI_SYSTEM,user));
     const obj=validateAINarrative(parseAIJSON(text),ctx);
     if(!obj||!obj.letter)throw new Error("the model did not return usable JSON. Try again, or try a different model.");
@@ -2815,7 +2828,9 @@ function applyAISectionNotes(ai){
   if(!ai||!ai.section_notes)return;
   const map={overview:"overview",paid:"paid",paid_deep:"paid",outcomes:"outcomes",goals_deep:"outcomes",performance:"performance",funnel:"funnel",audience:"audience",retention:"retention",trends:"trends",profile:"profile",content:"content",format:"content",campaigns:"campaigns",pillars:"content",bestday:"content",content_deep:"content",consistency:"content",content_list:"content",benchmarks:"benchmarks",recommendations:"recommendations"};
   document.querySelectorAll("#report section[data-section]").forEach(section=>{
-    const key=section.dataset.section,note=ai.section_notes[map[key]||key];if(!note)return;
+    /* Own note first. The map stays as a fallback for a model that skipped a key, but a section
+       that has its own sentence must never show a neighbour's. */
+    const key=section.dataset.section,note=ai.section_notes[key]!=null?ai.section_notes[key]:ai.section_notes[map[key]||key];if(!note)return;
     const anchor=section.querySelector(".sec-sub")||section.querySelector(".sec-label");
     const box=document.createElement("div");box.className="ai-section-note";box.innerHTML=edBlock("ai_note_"+key,note);
     if(anchor)anchor.insertAdjacentElement("afterend",box);else section.prepend(box);
@@ -3140,7 +3155,7 @@ function render(){
 
   ${showSec("consistency")&&consHtml&&!multiPlat?`<section data-section="consistency"><div class="sec-label">Consistency check</div><div class="sec-sub">Is reach steady, or riding on one viral post?</div>${consHtml}</section>`:""}
 
-  ${showSec("content_list")?`<section data-section="content_list"><div class="sec-label">Top posts by engagement rate</div>${contentList}</section>`:""}
+  ${showSec("content_list")&&con.length?`<section data-section="content_list"><div class="sec-label">Top posts by engagement rate</div>${contentList}</section>`:""}
 
   ${showSec("recommendations")&&(!multiPlat||ai)?`<section data-section="recommendations"><div class="sec-label">Recommendations</div><ol class="recs">${[bestSrc,...watchSrc.slice(0,2).map(w=>({t:w.t,d:w.d}))].map((r,i)=>`<li>${ed("rec"+i,stripEmDash("<b>"+r.t+".</b> "+String(r.d||"").replace(/<[^>]+>/g,"")))}</li>`).join("")}</ol></section>`:""}
 
