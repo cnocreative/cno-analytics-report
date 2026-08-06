@@ -795,11 +795,34 @@ function clientFromName(name){
 /* An inferred name has to end up spelled the same as the client it belongs to, or the report files
    the same brand twice and one platform silently disappears from the other's report. */
 const clientKey=s=>String(s||"").toLowerCase().replace(/[^a-z0-9]/g,"");
+const upperCount=s=>(String(s).match(/[A-Z]/g)||[]).length;
 function reconcileInferredClients(){
+  const rows=[...POSTS,...PERIODS];
   const declared=new Map();
-  [...POSTS,...PERIODS].forEach(r=>{if(!r.clientInferred&&r.client)declared.set(clientKey(r.client),r.client);});
+  rows.forEach(r=>{if(!r.clientInferred&&r.client)declared.set(clientKey(r.client),r.client);});
+  /* A name a staff member typed into the import defaults is a declaration too, even though the
+     rows themselves never carried a client column. */
+  const typed=String(IMPORT_DEFAULTS.client||"").trim();
+  if(typed)declared.set(clientKey(typed),declared.get(clientKey(typed))||typed);
+  /* When every spelling of one brand is inferred, the map above is empty and nothing merges, so
+     a file named "cno-creative-co_visitors.xls" becomes a second client and that platform
+     disappears from the real one's report. Settle on the most common spelling, preferring the
+     capitalised form when it is a tie. */
+  const variants=new Map();
+  rows.forEach(r=>{
+    if(!r.clientInferred||!r.client)return;
+    const k=clientKey(r.client);
+    if(!k||declared.has(k))return;
+    const seen=variants.get(k)||new Map();
+    seen.set(r.client,(seen.get(r.client)||0)+1);
+    variants.set(k,seen);
+  });
+  variants.forEach((seen,k)=>{
+    const best=[...seen.entries()].sort((a,b)=>b[1]-a[1]||upperCount(b[0])-upperCount(a[0])||a[0].localeCompare(b[0]))[0];
+    if(best)declared.set(k,best[0]);
+  });
   let merged=0;
-  [...POSTS,...PERIODS].forEach(r=>{
+  rows.forEach(r=>{
     if(!r.clientInferred)return;
     const exact=declared.get(clientKey(r.client));
     if(exact&&exact!==r.client){r.client=exact;merged++;}
@@ -1304,17 +1327,30 @@ function metricFromTitleRows(preambleRows){
   }
   return null;
 }
+/* Meta Business Suite writes one metric per file: a single-cell title, then Date and a value
+   column called Primary. Only the Facebook series name their surface in that title; every other
+   file is the account the export was taken for. Left unnamed they fall through to whatever the
+   import default happens to be, which is how an Instagram export ends up filed under TikTok. */
+function metaSuiteExport(part){
+  const headers=(part.headers||[]).map(h=>String(h).trim());
+  /* Keyed on "Primary" specifically, not the whole generic-value list. "Total" or "Count" above a
+     date column is ordinary enough that another platform could produce it, and mislabelling a
+     TikTok export as Instagram would be a worse failure than leaving it unresolved. */
+  if(!headers.some(h=>/^primary$/i.test(h))||!headers.some(h=>/^dates?$/i.test(h)))return false;
+  return (part.preambleRows||[]).some(row=>row.map(c=>String(c==null?"":c).trim()).filter(Boolean).length===1);
+}
 function applyTitleMetric(part){
   const info=metricFromTitleRows(part.preambleRows);
   const generic=(part.headers||[]).find(h=>GENERIC_VALUE_COLUMN.test(String(h).trim()));
   if(!info||!generic)return part;
+  const platform=info.platform||(metaSuiteExport(part)?"instagram":"");
   part.rows=part.rows.map(row=>{
     const out={};
     for(const k in row)out[k===generic?info.canon:k]=row[k];
-    if(info.platform&&!out.platform)out.platform=info.platform;
+    if(platform&&!out.platform)out.platform=platform;
     return out;
   });
-  part.headers=part.headers.map(h=>h===generic?info.canon:h).concat(info.platform?["platform"]:[]);
+  part.headers=part.headers.map(h=>h===generic?info.canon:h).concat(platform?["platform"]:[]);
   part.name=`${part.name} · ${info.title}`;
   return part;
 }
