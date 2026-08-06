@@ -1919,6 +1919,13 @@ function reconcileSuiteSurface(parts){
   const suite=parts.filter(p=>p&&p._suiteAssumed!==undefined);
   if(!suite.length)return 0;
   const named=[...new Set(suite.map(p=>p._suiteNamed).filter(Boolean))];
+  /* Two surfaces named in one import means two downloads were merged, and an unnamed file could
+     belong to either. A guess here files one surface's numbers under the other, silently, which is
+     worse than leaving it unassigned - so strip the assumption and let the assign strip ask. */
+  if(named.length>1){
+    suite.filter(p=>p._suiteAssumed).forEach(part=>{(part.rows||[]).forEach(row=>{delete row.platform;});});
+    return 0;
+  }
   if(named.length!==1)return 0;
   const surface=named[0];
   let moved=0;
