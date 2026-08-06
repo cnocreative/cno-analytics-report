@@ -1813,7 +1813,14 @@ function renderAssignStrip(){
   const bits=[];
   if(un.client.length)bits.push(`${fmtInt(un.client.length)} ${plural(un.client.length,"row")} did not name a client`);
   if(un.platform.length)bits.push(`${fmtInt(un.platform.length)} did not name a platform`);
-  box.innerHTML=`<div class="ailab" style="margin:0 0 6px">${escHtml(bits.join(" · "))}</div>
+  /* Say which platforms are stranded. Rows with no client belong to no client, so their platform
+     disappears from the report the moment another file names one - and the count alone never
+     suggests that the missing platform and these rows are the same problem. */
+  const stranded=[...new Set(un.client.map(r=>r.platform).filter(p=>p&&p!=="unspecified"))].sort();
+  const strandedNote=stranded.length&&named.length
+    ? `<div class="ailab" style="margin:0 0 6px">Until they are filed, ${escHtml(listWords(stranded.map(plat)))} will not appear under ${escHtml(named.length===1?named[0]:"the selected client")}.</div>`
+    : "";
+  box.innerHTML=`<div class="ailab" style="margin:0 0 6px">${escHtml(bits.join(" · "))}</div>${strandedNote}
     <div class="import-default-row">
       <label>File them under client<input type="text" id="assignClient" placeholder="Client name" value="${escHtml(suggestion)}" autocomplete="off"${un.client.length?"":" disabled"}></label>
       <label>And platform<select id="assignPlatform"${un.platform.length?"":" disabled"}><option value="">Leave unassigned</option><option value="instagram">Instagram</option><option value="facebook">Facebook</option><option value="tiktok">TikTok</option><option value="linkedin">LinkedIn</option><option value="youtube">YouTube</option><option value="pinterest">Pinterest</option><option value="threads">Threads</option><option value="x">X</option></select></label>
