@@ -756,6 +756,11 @@ const PLATFORM_SIGNATURES=[
 function platformFromHeaders(headers){
   const keys=(headers||[]).map(normKey);
   for(const [id,pattern] of PLATFORM_SIGNATURES)if(keys.some(k=>pattern.test(k)))return id;
+  /* TikTok's Overview export names the platform nowhere and every one of its headings is generic
+     on its own. The pair is not: Instagram counts profile visits rather than views, and no other
+     account-level export puts video views and profile views in the same table. Checked after the
+     signatures so a more specific match always wins. */
+  if(keys.includes("videoviews")&&keys.includes("profileviews"))return "tiktok";
   return "";
 }
 /* "Choose folder" gives paths like "Example Brand/june/linkedin.xlsx"; the nearest folder that
@@ -1356,6 +1361,23 @@ function applyTitleMetric(part){
 }
 /* ---- exports built from stacked mini-tables (Meta's Audience file) ----
    Several titled blocks in one file, each a row of labels above a row of percentages. */
+/* Meta files a dated series under the breakdowns in the same export. It is a real metric series,
+   not a breakdown, and reducing the file to one demographics row throws it away silently. */
+function datedBlockPart(block,label,platform){
+  const head=(block.rows[0]||[]).map(c=>String(c==null?"":c).trim());
+  const dateAt=head.findIndex(h=>/^dates?$/i.test(h));
+  if(dateAt<0||block.rows.length<2)return null;
+  const valueAt=head.findIndex((h,i)=>i!==dateAt&&h);
+  if(valueAt<0)return null;
+  const canon=ALIAS[normKey(block.title)];
+  if(!canon)return null;
+  const rows=block.rows.slice(1).map(cells=>{
+    const out={date:cells[dateAt],[canon]:cells[valueAt]};
+    if(platform)out.platform=platform;
+    return out;
+  }).filter(r=>r.date);
+  return rows.length?{name:`${label} · ${block.title}`,rows,headers:Object.keys(rows[0])}:null;
+}
 function demographicsFromMatrix(matrix,label){
   const blocks=[];let current=null;
   (matrix||[]).forEach(row=>{
@@ -1392,7 +1414,20 @@ function demographicsFromMatrix(matrix,label){
     }
   });
   if(!used)return null;
-  return{name:`${label} · audience`,rows:[row],headers:Object.keys(row),demographicsOnly:true};
+  /* "Primary" as a value column is Meta Business Suite's marker, the same one metaSuiteExport
+     keys on. Only the Facebook series name their surface, so an unnamed one is the account the
+     export was taken for. */
+  const suite=blocks.some(b=>(b.rows[0]||[]).some(c=>/^primary$/i.test(String(c==null?"":c).trim())));
+  const platform=suite?"instagram":"";
+  if(platform)row.platform=platform;
+  const series=blocks.map(b=>datedBlockPart(b,label,platform)).filter(Boolean);
+  /* A breakdown carries no date of its own and would be dropped for that alone. The dated series
+     in the same file states the period it describes, so borrow it rather than lose the audience. */
+  const dates=series.flatMap(part=>part.rows.map(r=>String(r.date))).filter(Boolean).sort();
+  /* A row without a date is dropped no matter what period it names, so the breakdown is dated to
+     the close of the period it describes and kept as a snapshot, the same way a follower total is. */
+  if(dates.length){row.period_start=dates[0];row.period_end=dates[dates.length-1];row.date=row.period_end;}
+  return[{name:`${label} · audience`,rows:[row],headers:Object.keys(row),demographicsOnly:true},...series];
 }
 const DATA_FILE_PATTERN=/\.(csv|tsv|tab|txt|xlsx|xlsm|xltx|xls|zip|json|xml|htm|html)$/i;
 const ARCHIVE_SKIP=/(^|\/)(__MACOSX|\.)/;
@@ -1442,7 +1477,7 @@ async function readSourceBuffer(buffer,label,depth=0){
   const parsed=parseDelimitedText(text);
   /* Stacked demographic blocks look nothing like a table, so check that before giving up. */
   const demographics=demographicsFromMatrix(parsed.matrix,label);
-  if(demographics)return[demographics];
+  if(demographics)return demographics;
   if(!parsed.rows.length)throw new Error(parsed.headers.length?"This file has column headings but no data rows yet":"No data rows were found in this file");
   return[applyTitleMetric({name:label,rows:parsed.rows,headers:parsed.headers,preamble:parsed.preamble,preambleRows:parsed.preambleRows})];
 }
@@ -1687,9 +1722,16 @@ function recordKey(r,grain){const raw=r.raw||{};return grain+"|"+Object.keys(raw
 function addUnique(existing,incoming,grain){const seen=new Set(existing.map(r=>recordKey(r,grain))),kept=[];let duplicates=0;incoming.forEach(r=>{const k=recordKey(r,grain);if(seen.has(k))duplicates++;else{seen.add(k);kept.push(r);}});existing.push(...kept);return{kept:kept.length,duplicates};}
 /* Explains a part that parses fine but contributes no reportable rows, so the reason reaches the
    audit no matter which path ingested it. */
-const partEmptyNote=part=>part&&part.demographicsOnly
-  ? "Audience breakdown was read, but this export carries no dates so it cannot be placed in a reporting period. Export the audience view with a date range, or add a month or date column."
-  : "";
+const partEmptyNote=part=>{
+  if(!part)return "";
+  if(part.demographicsOnly)return "Audience breakdown was read, but this export carries no dates so it cannot be placed in a reporting period. Export the audience view with a date range, or add a month or date column.";
+  /* LinkedIn's job function, seniority and company size sheets read cleanly and then contribute
+     nothing, because every row describes a segment rather than a day. A bare skipped count reads
+     like a parsing failure, so name the actual reason. */
+  const dated=(part.headers||[]).some(h=>{const c=ALIAS[normKey(h)];return c==="date"||c==="month"||c==="period_start"||c==="period_end";});
+  if((part.rows||[]).length&&!dated)return "Every row was read, but this sheet breaks its total down by segment rather than by date, so there is no reporting period to place it in. Nothing was lost from the dated sheets in the same file.";
+  return "";
+};
 function ingestRows(rows,sourceName="",headerList=null,emptyNote=""){
   rows=Array.isArray(rows)?rows:[];
   const headers=headerList&&headerList.length?headerList:[...new Set(rows.flatMap(r=>Object.keys(r)))];
