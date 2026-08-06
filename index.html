@@ -1586,7 +1586,7 @@ async function decryptStr(payload,pw){const parts=payload.split(".");const key=a
 // move GitHub/Render accounts without hunting through the reporting engine.
 const metaConfig=name=>(document.querySelector(`meta[name="${name}"]`)?.content||"").trim();
 const HOSTED_BASE=metaConfig("cno-report-base")||"https://cno-analytics-report-5hi6.onrender.com/";
-const SYNC_BASE=metaConfig("cno-sync-base")||"https://cno-native-sync.onrender.com";
+const SYNC_BASE=metaConfig("cno-sync-base")||"https://cno-native-sync-gp4h.onrender.com";
 const REPO_BASE=(metaConfig("cno-repository")||"https://github.com/cnocreative/cno-analytics-report").replace(/\/$/,"");
 /* A client link has to open on somebody else's device. localhost, 127.0.0.1, and the desktop app's
    file:// origin only exist on this machine, so those fall back to the published report address
