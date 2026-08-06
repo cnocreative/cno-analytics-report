@@ -1348,7 +1348,10 @@ function applyTitleMetric(part){
   const info=metricFromTitleRows(part.preambleRows);
   const generic=(part.headers||[]).find(h=>GENERIC_VALUE_COLUMN.test(String(h).trim()));
   if(!info||!generic)return part;
-  const platform=info.platform||(metaSuiteExport(part)?"instagram":"");
+  /* Tested before the headings are rewritten: the rewrite renames the "Primary" column this
+     detection keys on, so asking afterwards always answers no. */
+  const isSuite=metaSuiteExport(part);
+  const platform=info.platform||(isSuite?"instagram":"");
   part.rows=part.rows.map(row=>{
     const out={};
     for(const k in row)out[k===generic?info.canon:k]=row[k];
@@ -1360,6 +1363,9 @@ function applyTitleMetric(part){
     return out;
   });
   part.headers=part.headers.map(h=>h===generic?info.canon:h).concat(platform?["platform"]:[]);
+  /* Remember whether the surface was stated or assumed. Assumed ones are corrected below once the
+     whole import is visible, because a single file cannot tell which filter produced it. */
+  if(isSuite){part._suiteNamed=info.platform||"";part._suiteAssumed=!info.platform;}
   part.name=`${part.name} · ${info.title}`;
   return part;
 }
@@ -1431,7 +1437,8 @@ function demographicsFromMatrix(matrix,label){
   /* A row without a date is dropped no matter what period it names, so the breakdown is dated to
      the close of the period it describes and kept as a snapshot, the same way a follower total is. */
   if(dates.length){row.period_start=dates[0];row.period_end=dates[dates.length-1];row.date=row.period_end;}
-  return[{name:`${label} · audience`,rows:[row],headers:Object.keys(row),demographicsOnly:true},...series];
+  const mark=part=>{if(suite){part._suiteNamed="";part._suiteAssumed=true;}return part;};
+  return[mark({name:`${label} · audience`,rows:[row],headers:Object.keys(row),demographicsOnly:true}),...series.map(mark)];
 }
 const DATA_FILE_PATTERN=/\.(csv|tsv|tab|txt|xlsx|xlsm|xltx|xls|zip|json|xml|htm|html)$/i;
 const ARCHIVE_SKIP=/(^|\/)(__MACOSX|\.)/;
@@ -1879,6 +1886,25 @@ function renderQualityPanel(){
   const label=k=>METRICS[k]?.label||k;
   r.innerHTML='<h4>Account totals versus post detail</h4>'+(q.reconc.length?q.reconc.map(x=>`<div class="qissue"><div class="qstatus ${Math.abs(x.delta||0)>.25?"warn":"info"}">${Math.abs(x.delta||0)>.25?"review":"context"}</div><div><b>${label(x.key)}: account ${fmtInt(x.account)} · post sum ${fmtInt(x.posts)}</b><br><span>${x.delta===null?"No percentage comparison":`${pct(Math.abs(x.delta),0)} ${x.delta>=0?"above":"below"} the account total`}. These figures can legitimately differ when account totals include stories, ads, deleted content, or platform-only surfaces.</span></div></div>`).join(""):'<div class="note">Upload both account-level and post-level exports to activate reconciliation checks.</div>');
 }
+/* Meta Business Suite names the surface on only some files in an export - "Facebook follows" is
+   named, "Views" is not - but every file in one download came from the same filter. So an
+   unnamed file belongs to whatever surface its siblings name, and only a download that names
+   nothing at all falls back to the assumption. Judged per import, because a single file on its
+   own genuinely cannot tell you which filter produced it. */
+function reconcileSuiteSurface(parts){
+  const suite=parts.filter(p=>p&&p._suiteAssumed!==undefined);
+  if(!suite.length)return 0;
+  const named=[...new Set(suite.map(p=>p._suiteNamed).filter(Boolean))];
+  if(named.length!==1)return 0;
+  const surface=named[0];
+  let moved=0;
+  suite.filter(p=>p._suiteAssumed).forEach(part=>{
+    (part.rows||[]).forEach(row=>{row.platform=surface;});
+    if(!(part.headers||[]).includes("platform"))part.headers=(part.headers||[]).concat(["platform"]);
+    moved++;
+  });
+  return moved;
+}
 let IMPORTING=false;
 async function importFiles(files){
   if(VIEW_LOCK||IMPORTING)return;
@@ -1886,16 +1912,19 @@ async function importFiles(files){
   if(!list.length){appAlert("No readable data files were found in that selection. CNO Reports opens CSV, TSV, Excel .xlsx, JSON, and .zip exports.","Nothing to import");return;}
   openWorkspacePanel("data");
   IMPORTING=true;setImportBusy(list.length);
+  const collected=[];
   for(const file of list){
     const label=file.webkitRelativePath||file.name||"Imported data";
     try{
       const parts=await readSourceFile(file);
       const usable=parts.filter(p=>p.rows&&p.rows.length);
       if(!usable.length)logUnreadable(label,parts.find(p=>p.error)?parts.find(p=>p.error).error:"No data rows were found in this file");
-      else usable.forEach(part=>ingestRows(part.rows,part.name,part.headers,partEmptyNote(part)));
+      else collected.push(...usable);
       parts.filter(p=>p.error&&usable.length).forEach(p=>logUnreadable(p.name,p.error));
     }catch(e){logUnreadable(label,e&&e.message?e.message:String(e));}
   }
+  reconcileSuiteSurface(collected);
+  collected.forEach(part=>ingestRows(part.rows,part.name,part.headers,partEmptyNote(part)));
   IMPORTING=false;setImportBusy(0);
   reconcileInferredClients();
   refreshAll();renderImportCenter();
