@@ -602,7 +602,24 @@ const MON=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","De
 const mLabel=m=>{const p=m.split("-");return (MON[(+p[1])-1]||m)+" "+p[0];};
 const mShort=m=>MON[(+m.split("-")[1])-1]||m;
 const VIDEO_FORMATS=["REEL","VIDEO","SHORT"];
-function parseDate(s){if(!s)return null;const d=new Date(s);return isNaN(d)?null:d;}
+/* A month and day with no year - TikTok's Overview export writes "July 8" - is parsed by the
+   engine as the year 2001, which files a whole export a quarter century outside the reporting
+   period while still looking correctly read. Assume the most recent occurrence instead: this
+   year, or last year when this year would be in the future. Only the spelled-out month forms
+   qualify; a bare "7/8" is ambiguous between conventions and is left to fail visibly. */
+const YEARLESS_DATE=/^(?:[A-Za-z]{3,9}\.?\s+\d{1,2}|\d{1,2}\s+[A-Za-z]{3,9}\.?)$/;
+function parseDate(s){
+  if(!s)return null;
+  const text=String(s).trim();
+  if(YEARLESS_DATE.test(text)){
+    const now=new Date();
+    let d=new Date(`${text} ${now.getUTCFullYear()} UTC`);
+    if(isNaN(d))return null;
+    if(d.getTime()>now.getTime()+86400000)d=new Date(`${text} ${now.getUTCFullYear()-1} UTC`);
+    return isNaN(d)?null:d;
+  }
+  const d=new Date(text);return isNaN(d)?null:d;
+}
 function ymd(d){return d.getUTCFullYear()+"-"+String(d.getUTCMonth()+1).padStart(2,"0")+"-"+String(d.getUTCDate()).padStart(2,"0");}
 function ym(d){return d.getUTCFullYear()+"-"+String(d.getUTCMonth()+1).padStart(2,"0");}
 function addDays(d,n){const x=new Date(d);x.setUTCDate(x.getUTCDate()+n);return x;}
