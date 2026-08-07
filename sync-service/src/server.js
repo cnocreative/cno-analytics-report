@@ -192,6 +192,13 @@ app.post("/v1/reports", requireJsonSameSite, requireAdmin, async (req, res) => {
   if (payload.length < 40 || payload.length > 1_500_000 || !/^[A-Za-z0-9_.-]+$/.test(payload)) {
     return res.status(400).json({ error: "The report payload is invalid or too large" });
   }
+  /* A link promises the client a year. File storage cannot keep that promise: the file lives on a
+     container that is replaced on every deploy and every idle shutdown, so the link dies within
+     hours and reads to the client as an expiry. Refuse to mint one rather than hand over a link
+     that is already broken - the report app falls back to a self-contained link and says why. */
+  if (!store.durable) {
+    return res.status(503).json({ error: "This service is running without a database, so a saved link could not survive. Set DATABASE_URL, then create the link again." });
+  }
   const id = randomToken(18);
   await store.createReportShare({ idHash: hash(id), clientRef, cipher: encrypt(payload), encrypted: !!req.body.encrypted, days: 365 });
   res.setHeader("Cache-Control", "no-store");

@@ -13,7 +13,7 @@
 <meta name="apple-mobile-web-app-title" content="CNO Reports">
 <!-- Change these three values when CNO moves the app to its permanent GitHub/Render accounts. -->
 <meta name="cno-report-base" content="https://cno-analytics-report-5hi6.onrender.com/">
-<meta name="cno-sync-base" content="https://cno-native-sync.onrender.com">
+<meta name="cno-sync-base" content="https://cno-native-sync-gp4h.onrender.com">
 <meta name="cno-repository" content="https://github.com/cnocreative/cno-analytics-report">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
@@ -468,7 +468,7 @@
   <div class="aibox"><div class="ailab">Browser connection center <span>staff only</span></div><div class="aidesc">The client signs in directly with the social platform. CNO never sees the platform password, two-factor code, or OAuth token.</div>
     <div class="synccfg">
       <label for="syncServiceUrl">CNO connection service address</label>
-      <div class="syncurlrow"><input type="url" id="syncServiceUrl" spellcheck="false" autocomplete="off" placeholder="https://cno-native-sync.onrender.com"><button class="btn" id="syncCheck">Check</button></div>
+      <div class="syncurlrow"><input type="url" id="syncServiceUrl" spellcheck="false" autocomplete="off" placeholder="https://cno-native-sync-gp4h.onrender.com"><button class="btn" id="syncCheck">Check</button></div>
       <span class="quiet">Set once per CNO device. The address of the private service a CNO owner deployed; it is not a client-facing link.</span>
     </div>
     <div class="aistatus" id="syncStatus"></div>
@@ -3405,7 +3405,16 @@ $("aiClose").addEventListener("click",()=>closeWorkspacePanel("ai"));
 $("aiForget").addEventListener("click",()=>{localStorage.removeItem("cno_ai_cfg");localStorage.removeItem("cno_ai_key");sessionStorage.removeItem("cno_ai_key");$("aiKey").value="";aiSay("API key removed from this CNO device.");});
 $("syncBtn").addEventListener("click",()=>toggleWorkspacePanel("sync"));
 $("syncClose").addEventListener("click",()=>closeWorkspacePanel("sync"));
-const savedSyncUrl=localStorage.getItem("cno_sync_service_url");$("syncServiceUrl").value=savedSyncUrl||SYNC_BASE;
+/* This address is remembered per device and outranks the built-in default, so a device that saved
+   the previous service keeps writing links to it long after the default moved - and those links
+   die with that service. Retire a saved address that names a service this build has superseded. */
+const RETIRED_SYNC_BASES=["https://cno-native-sync.onrender.com"];
+let savedSyncUrl=localStorage.getItem("cno_sync_service_url");
+if(savedSyncUrl&&RETIRED_SYNC_BASES.includes(String(savedSyncUrl).trim().replace(/\/$/,""))){
+  localStorage.removeItem("cno_sync_service_url");
+  savedSyncUrl=null;
+}
+$("syncServiceUrl").value=savedSyncUrl||SYNC_BASE;
 $("syncServiceUrl").addEventListener("change",()=>{SYNC_STATE={reachable:false,signedIn:false,connections:[],providers:[],storage:"",durable:true};renderSyncConnections();});
 $("syncGuideLink").href=REPO_BASE+"/blob/main/MIGRATE_TO_CNO_ACCOUNTS.md";
 $("downloadLink").href=REPO_BASE+"/releases/latest";
