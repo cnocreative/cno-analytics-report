@@ -3648,18 +3648,30 @@ renderImportCenter();
   const params=new URLSearchParams(location.search),reportId=params.get("report");
   if(reportId){
     try{
-      const service=(params.get("service")||SYNC_BASE).replace(/\/$/,"");
-      if(!/^https:\/\//i.test(service)&&!/^http:\/\/localhost(?::\d+)?$/i.test(service))throw new Error("The report service address is invalid");
+      /* The service address is written into the link at the moment it is created, so a link in a
+         client's inbox outlives any change to that address - and the host does change on its own
+         when the platform reassigns a default hostname. Try the address the link carries first,
+         then this build's own service, so a link issued before such a change still opens. */
+      const validService=u=>/^https:\/\//i.test(u)||/^http:\/\/localhost(?::\d+)?$/i.test(u);
+      const services=[...new Set([String(params.get("service")||"").replace(/\/$/,""),String(SYNC_BASE||"").replace(/\/$/,"")].filter(u=>u&&validService(u)))];
+      if(!services.length)throw new Error("The report service address is invalid");
       /* A sleeping free-tier service takes up to a minute to answer the first request. Without
          this the client stares at an empty page and assumes CNO sent a broken link. */
       const notice=$("report");
       if(notice)notice.innerHTML='<div class="empty"><img src="cno-seal.png" alt="" style="width:56px;height:56px;object-fit:contain;margin-bottom:14px"><div style="font-family:var(--serif);font-size:22px;color:var(--ink)">Opening your report</div><div id="reportWaitNote" style="margin-top:8px;font-size:12px;color:var(--ink-soft)">One moment.</div></div>';
       const slow=setTimeout(()=>{const n=$("reportWaitNote");if(n)n.textContent="Still opening. The first visit of the day can take up to a minute while the report service wakes up.";},6000);
-      let response;
-      try{response=await fetchWithTimeout(service+"/v1/reports/"+encodeURIComponent(reportId),{cache:"no-store"},75000);}
-      finally{clearTimeout(slow);}
-      const saved=await response.json();
-      if(!response.ok||!saved.payload)throw new Error(saved.error||"This saved report is unavailable");
+      let saved=null,lastError=null;
+      try{
+        for(const service of services){
+          try{
+            const response=await fetchWithTimeout(service+"/v1/reports/"+encodeURIComponent(reportId),{cache:"no-store"},75000);
+            const body=await response.json();
+            if(response.ok&&body.payload){saved=body;break;}
+            lastError=new Error(body.error||"This saved report is unavailable");
+          }catch(error){lastError=error;}
+        }
+      }finally{clearTimeout(slow);}
+      if(!saved)throw lastError||new Error("This saved report is unavailable");
       if(saved.encrypted){
         for(let i=0;i<3;i++){
           const pw=await appPrompt("Enter the password CNO sent separately to open this client report.",{title:"Protected client report",type:"password",confirmText:"Open report"});
