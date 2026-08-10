@@ -23,7 +23,7 @@
     --page:#fbf3e2; --card:#ffffff; --ink:#2b2622; --ink-soft:#6f645a;
     --terra:#db9b7f; --terra-soft:#ecc7b3; --burnt:#a05f34; --burnt-deep:#8a5230;
     --sage:#888e6f; --sage-deep:#5f6a4a; --cream:#fff8e7; --sand:#ece2cf; --sand-2:#f7f0e2;
-    --pos:#5f6a4a; --neg:#a05f34; --prev:#c9bda8;
+    --pos:#2f7a4d; --neg:#b23b2e; --prev:#c9bda8;
     --serif:'CNO Cormorant','Fraunces',Georgia,'Times New Roman',serif;
     --sans:'CNO DM Sans','Jost',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
   }
@@ -154,7 +154,9 @@
   .rhead .meta span{color:var(--terra);margin:0 8px}
   .rhead .daterange{font-family:var(--serif);font-style:italic;font-size:15px;color:var(--ink-soft);margin-top:8px;letter-spacing:0}
   .rhead .data-status{display:inline-flex;margin-top:13px;padding:4px 9px;border:1px solid var(--sand);border-radius:999px;font-size:8.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft);background:rgba(255,255,255,.55)}
-  .platform-split{display:grid;grid-template-columns:repeat(auto-fit,minmax(275px,1fr));gap:14px}.platform-card{border:1px solid var(--sand);background:#fff;padding:20px}.platform-card h4{font-family:var(--serif);font-size:25px;font-weight:400;margin:0 0 4px}.platform-basis{font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:15px}.platform-kpis{display:grid;grid-template-columns:1fr 1fr;gap:12px 16px}.platform-kpi span{display:block;font-size:8.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-soft)}.platform-kpi b{display:block;font-family:var(--serif);font-size:22px;font-weight:400;line-height:1.15;margin-top:2px}.platform-kpi small{font-size:9px;color:var(--ink-soft)}
+  .platform-split{display:grid;grid-template-columns:repeat(auto-fit,minmax(275px,1fr));gap:14px}.platform-card{border:1px solid var(--sand);background:#fff;padding:20px}.platform-card h4{font-family:var(--serif);font-size:25px;font-weight:400;margin:0 0 4px}.platform-basis{font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:15px}.platform-kpis{display:grid;grid-template-columns:1fr 1fr;gap:12px 16px}.platform-kpi span{display:block;font-size:8.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-soft)}.platform-kpi b{display:block;font-family:var(--serif);font-size:22px;font-weight:400;line-height:1.15;margin-top:2px}.letter-next{margin-top:26px;padding-top:18px;border-top:1px solid var(--sand)}
+  .letter-next .btn{cursor:pointer;font:inherit}
+  .platform-kpi small{font-size:9px;color:var(--ink-soft);font-weight:600}.platform-kpi small.pos{color:var(--pos)}.platform-kpi small.neg{color:var(--neg)}
   section{padding:34px 40px;border-bottom:1px solid var(--sand)}
   section:last-of-type{border-bottom:none}
   .sec-label{font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--burnt);font-weight:500;margin-bottom:7px}
@@ -2277,7 +2279,7 @@ const SECTION_DEFS=[
   {key:"content",label:"Content insights",page:3},{key:"format",label:"Format analysis",page:3},{key:"campaigns",label:"Campaign comparison",page:3},{key:"pillars",label:"Content pillars",page:3},{key:"bestday",label:"Best posting time",page:3},{key:"content_deep",label:"What makes posts work",page:3},{key:"consistency",label:"Consistency check",page:3},{key:"content_list",label:"Top posts",page:3},
   {key:"benchmarks",label:"Benchmark context",page:4},{key:"effort",label:"Effort vs. return",page:4},{key:"matrix",label:"Metrics matrix",page:4},{key:"data",label:"Full data table",page:4}
 ];
-const PAGE_LABELS={1:"Summary",2:"Performance",3:"Content",4:"Full data"};
+const PAGE_LABELS={0:"Letter",1:"Summary",2:"Performance",3:"Content",4:"Full data"};
 const TARGET_DEFS=[
   {key:"reach",group:"Organic visibility",unit:"count",direction:"min"},
   {key:"impressions",group:"Organic visibility",unit:"count",direction:"min"},
@@ -2753,7 +2755,11 @@ async function generateAINarrative(){
     const present=[...document.querySelectorAll("#report section[data-section]")].map(el=>el.dataset.section);
     const labelFor=k=>{const d=SECTION_DEFS.find(x=>x.key===k);return d?k+" ("+d.label+")":k;};
     const notesAsk=" section_notes must contain every one of these keys: "+AI_NOTE_KEYS.join(", ")+". Write a genuine one or two sentence explanation for each section this report actually contains: "+(present.length?present.map(labelFor).join(", "):"none")+". Each note explains what that particular section shows and what it means for this client, in plain English, naming the platform beside any figure. Do not reuse a sentence across sections, and set to null only the sections not listed as present.";
-    const user="Write a warm, complete monthly letter directly to "+ctx.client+", followed by two plain-language good signals, no more than two concerns, one next move, and a note for every section of this report."+notesAsk+" The letter must begin exactly with Dear "+ctx.client+", and read as a connected narrative rather than a list of metrics. It must end exactly with With care,<br>CNO Creative Co. Use only evidence present in this JSON. Evidence arrays must use metric keys, top_post_N keys, or the named context groups. The data is below.\n\n"+JSON.stringify(ctx,null,1)+"\n\nRequired JSON schema:\n"+JSON.stringify(AI_NARRATIVE_SCHEMA);
+    /* The reader is the client, not the agency. They do not make the content and cannot act on
+       production advice, so findings are written as what happened to their brand and what CNO is
+       doing about it - never as instructions to them or as internal critique of the work. */
+    const audience=" Write for "+ctx.client+" as the reader. They are the client; CNO produces the content for them, so never address them as the person who makes or edits posts, never tell them to test, post, or change anything, and never critique the content as though they wrote it. Describe what happened to their presence in plain language, what it means for their business, and what CNO is doing next. Findings and recommendations are things CNO will do on their behalf, phrased as commitments, not tasks for the client. Avoid production jargon such as caption length, hook, posting cadence, tagged samples or format tests unless the meaning is explained in everyday words.";
+    const user="Write a warm, complete monthly letter directly to "+ctx.client+", followed by two plain-language good signals, no more than two concerns, one next move, and a note for every section of this report."+audience+notesAsk+" The letter must begin exactly with Dear "+ctx.client+", and read as a connected narrative rather than a list of metrics. It must end exactly with With care,<br>CNO Creative Co. Use only evidence present in this JSON. Evidence arrays must use metric keys, top_post_N keys, or the named context groups. The data is below.\n\n"+JSON.stringify(ctx,null,1)+"\n\nRequired JSON schema:\n"+JSON.stringify(AI_NARRATIVE_SCHEMA);
     const text=await(provider==="openai"?callOpenAI(key,model,AI_SYSTEM,user,depth):callAnthropic(key,model,AI_SYSTEM,user));
     const obj=validateAINarrative(parseAIJSON(text),ctx);
     if(!obj||!obj.letter)throw new Error("the model did not return usable JSON. Try again, or try a different model.");
@@ -2843,7 +2849,7 @@ function performanceBoard(c,cur,from,to){
 function platformBreakdownHtml(c,from,to,plats){
   const pr=prevRange(from,to);
   const keys=["reach","impressions","views","engagement","er","followers_growth","profile_views","link_clicks","posts"];
-  return `<div class="platform-split">${plats.map(p=>{const set=new Set([p]),m=windowMetrics(c,from,to,set),pm=windowMetrics(c,pr.from,pr.to,set);const available=keys.filter(k=>m[k]!==null&&m[k]!==undefined).slice(0,8);return `<article class="platform-card"><h4>${escHtml(plat(p))}</h4><div class="platform-basis">${m._periods.length?"Platform account totals":"Post-derived totals"}${m._posts.length?" · post detail":""}</div><div class="platform-kpis">${available.map(k=>{const M=METRICS[k],change=k==="followers_growth"?(pm[k]!=null?m[k]-pm[k]:null):chg(m[k],pm[k]);const compare=change===null?"":k==="followers_growth"?`${change>=0?"+":""}${fmtInt(change)} vs prior`:`${change>=0?"+":""}${pct(change,0)} vs prior`;return `<div class="platform-kpi"><span>${metricLabel(k,p)}</span><b>${M.fmt(m[k])}</b>${compare?`<small>${compare}</small>`:""}</div>`;}).join("")}</div></article>`;}).join("")}</div><div class="note">Platforms are intentionally kept separate here. Their reach, view, and engagement definitions are not interchangeable, so this comparison does not add them into one performance rate.</div>`;
+  return `<div class="platform-split">${plats.map(p=>{const set=new Set([p]),m=windowMetrics(c,from,to,set),pm=windowMetrics(c,pr.from,pr.to,set);const available=keys.filter(k=>m[k]!==null&&m[k]!==undefined).slice(0,8);return `<article class="platform-card"><h4>${escHtml(plat(p))}</h4><div class="platform-basis">${m._periods.length?"Platform account totals":"Post-derived totals"}${m._posts.length?" · post detail":""}</div><div class="platform-kpis">${available.map(k=>{const M=METRICS[k],change=k==="followers_growth"?(pm[k]!=null?m[k]-pm[k]:null):chg(m[k],pm[k]);const compare=change===null?"":k==="followers_growth"?`${change>=0?"+":""}${fmtInt(change)} vs prior`:`${change>=0?"+":""}${pct(change,0)} vs prior`;return `<div class="platform-kpi"><span>${metricLabel(k,p)}</span><b>${M.fmt(m[k])}</b>${compare?`<small class="${change>=0?"pos":"neg"}">${compare}</small>`:""}</div>`;}).join("")}</div></article>`;}).join("")}</div>`;
 }
 function journeyHtml(cur,prev){
   const steps=[["Reached",cur.reach,"Unique accounts"],["Profile visits",cur.profile_views,"Looked closer"],["Website clicks",cur.link_clicks,"Left the platform"],["Leads / inquiries",cur.leads,"Raised a hand"],["Bookings",cur.bookings,"Converted"]].filter(s=>s[1]!==null&&s[1]!==undefined);
@@ -2877,7 +2883,9 @@ function benchmarkHtml(cur,plats){
 /* ==================== render ==================== */
 let CURRENT={client:null,from:null,to:null,label:""};
 let VIEW_LOCK=false;   // true when opened from a shared link: recipient sees one client, view-only
-let CURRENT_PAGE=1;
+/* The report opens on the letter, which then hands the reader on to the summary. Falls back to
+   the first available tab when there is no letter to show. */
+let CURRENT_PAGE=0;
 function sectionOrder(){
   const base=SECTION_DEFS.map(x=>x.key),stored=cget("sectionOrder",[]),saved=Array.isArray(stored)?stored.filter(k=>base.includes(k)):[];
   return saved.concat(base.filter(k=>!saved.includes(k)));
@@ -2897,14 +2905,18 @@ function applyAISectionNotes(ai){
   });
 }
 function availableReportPages(){
-  const counts={1:1,2:0,3:0,4:0};document.querySelectorAll("#report section[data-section]").forEach(s=>counts[Number(s.dataset.page)||1]++);
-  return [1,2,3,4].filter(p=>counts[p]>0);
+  const counts={0:0,1:1,2:0,3:0,4:0};document.querySelectorAll("#report section[data-section]").forEach(s=>counts[Number(s.dataset.page)||1]++);
+  /* The letter carries no data-section key, so it is counted directly or its tab never appears. */
+  if(document.querySelector("#report #story"))counts[0]++;
+  return [0,1,2,3,4].filter(p=>counts[p]>0);
 }
 function applyReportPage(scroll=false){
   const pages=availableReportPages();if(!pages.includes(CURRENT_PAGE))CURRENT_PAGE=pages[0]||1;
   document.querySelectorAll("#report section").forEach(section=>section.hidden=(Number(section.dataset.page||1)!==CURRENT_PAGE));
   $("pageTabs").innerHTML=pages.map(p=>`<button class="page-tab ${p===CURRENT_PAGE?"active":""}" type="button" data-report-page="${p}" aria-current="${p===CURRENT_PAGE?"page":"false"}">${p} · ${PAGE_LABELS[p]}</button>`).join("");
   $("pageTabs").querySelectorAll("[data-report-page]").forEach(button=>button.addEventListener("click",()=>{CURRENT_PAGE=Number(button.dataset.reportPage);applyReportPage(true);}));
+  /* The letter is the first thing a client sees; give it an explicit way onward. */
+  document.querySelectorAll("#report [data-goto-page]").forEach(button=>button.addEventListener("click",()=>{CURRENT_PAGE=Number(button.dataset.gotoPage);applyReportPage(true);}));
   const index=pages.indexOf(CURRENT_PAGE);$("prevPage").disabled=index<=0;$("nextPage").disabled=index<0||index>=pages.length-1;
   $("prevPage").onclick=()=>{if(index>0){CURRENT_PAGE=pages[index-1];applyReportPage(true);}};
   $("nextPage").onclick=()=>{if(index>=0&&index<pages.length-1){CURRENT_PAGE=pages[index+1];applyReportPage(true);}};
@@ -3146,7 +3158,7 @@ function render(){
     <div class="data-status">${dataBasis}</div>
   </div>
 
-  ${(!multiPlat||ai)?`<section class="narrative-section" id="story" data-page="1">
+  ${(!multiPlat||ai)?`<section class="narrative-section" id="story" data-page="0">
     <div class="letterleaf">
       <div class="letter-kicker"><div class="sec-label">A letter from CNO ${aiBadge}</div><div class="date">${dateSpan}</div></div>
       ${multiPlat?`<div class="platform-scope">Covering ${listWords(platsUsed.map(p=>escHtml(plat(p))))}, each on its own terms. Reach, views, and engagement rates are never added or averaged across platforms.</div>`:""}
@@ -3172,8 +3184,9 @@ function render(){
         <div class="t">${ed("best_t",stripEmDash(bestSrc.t))}</div>
         <div class="d">${ed("best_d",stripEmDash(bestSrc.d))}</div>
       </div>
+      <div class="letter-next"><button type="button" class="btn" data-goto-page="1">Continue to the summary &rarr;</button></div>
     </div>
-  </section>`:`<section class="narrative-section" id="story" data-page="1"><div class="sec-label">Cross-platform comparison</div><div class="headline">Each platform is shown on its own terms.</div><div class="letterlead">This view compares ${listWords(platsUsed.map(p=>escHtml(plat(p))))} without adding unlike reach, view, or engagement definitions together. Generate the AI analysis to add a client letter covering all of them, or select one platform above for its complete goals, funnel, content diagnostics, paid efficiency, and recommendations.</div></section>`}
+  </section>`:`<section class="narrative-section" id="story" data-page="0"><div class="sec-label">Cross-platform comparison</div><div class="headline">Each platform is shown on its own terms.</div><div class="letterlead">This view compares ${listWords(platsUsed.map(p=>escHtml(plat(p))))} without adding unlike reach, view, or engagement definitions together. Generate the AI analysis to add a client letter covering all of them, or select one platform above for its complete goals, funnel, content diagnostics, paid efficiency, and recommendations.</div></section>`}
 
   ${showSec("outcomes")&&!multiPlat?`<section id="outcomes" data-section="outcomes"><div class="sec-label">Goal snapshot</div><div class="sec-sub">The four clearest measures tied to this client's selected priority.</div>${goalSnapshot}</section>`:""}
 
