@@ -8,7 +8,7 @@ Most users should keep the hosted report bookmarked or install the web app; no s
 
 ## Fastest installation: save the hosted report as an app
 
-Open `https://cno-analytics-report.onrender.com/`, then click **Get the app** in the top toolbar for device-specific instructions.
+Open `https://cno-analytics-report-5hi6.onrender.com/`, then click **Get the app** in the top toolbar for device-specific instructions. The older non-suffixed Render address is retired.
 
 - **Chrome or Edge:** use the install icon in the address bar or the browser menu's **Install CNO Reports** command.
 - **Mac Safari (macOS Sonoma 14+):** choose **File → Add to Dock**.
@@ -68,7 +68,7 @@ team tool this is optional; the right-click-open step is a one-time thing per ma
 - Everything works exactly like the web version: upload CSVs, load the demo, customize report
   pages, generate the required AI client letter with CNO's key, and print/PDF.
 - **Share links created inside the desktop app point to the hosted site**
-  (`https://cno-analytics-report.onrender.com/`), so a client can open the link in a normal
+  (`https://cno-analytics-report-5hi6.onrender.com/`), so a client can open the link in a normal
   browser. If you move the hosted site, update `HOSTED_BASE` near the top of the script in
   `index.html`.
 

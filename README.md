@@ -14,7 +14,7 @@ Most social tools show isolated platform numbers. This one turns them into a **v
 
 **One clear manual import.** Click **Import data** once, then add one file, many files, or a whole client/month folder. The same panel audits each file's platform, row type, row count, and date coverage, safely removes exact duplicate rows, and can download one standardized combined master CSV without losing original source columns. See [`DATA_IMPORT_GUIDE.md`](DATA_IMPORT_GUIDE.md).
 
-**Native sync foundation.** A separate CNO-only OAuth service now handles Meta, TikTok, and LinkedIn authorization server-side, encrypts tokens before storage, requires an exact client-to-native-account assignment, and transfers normalized analytics into the report through ten-minute, single-use links. Manual refresh works once deployed; the included protected scheduler workflow activates only after its deployment secrets and provider approvals are configured. See [`sync-service/README.md`](sync-service/README.md).
+**Native sync foundation.** A separate CNO-only OAuth service is live at `https://cno-native-sync-gp4h.onrender.com`, uses durable Postgres storage, handles Meta, TikTok, and LinkedIn authorization server-side, encrypts tokens before storage, requires an exact client-to-native-account assignment, and transfers normalized analytics into the report through ten-minute, single-use links. Manual refresh becomes available for each provider after its CNO-owned app is approved and the account is authorized; the protected scheduler workflow activates only after its deployment secrets and provider approvals are configured. See [`sync-service/README.md`](sync-service/README.md).
 
 **Interactive, like a real dashboard.**
 - Pick any **time period inside the report** — a month, last 30/90 days, all time, or a custom date range — and everything recomputes vs. the previous comparable period. No re-uploading.
@@ -47,7 +47,7 @@ Most social tools show isolated platform numbers. This one turns them into a **v
 
 **Private, view-only sharing.**
 - A share link contains **only one client's selected platform data** — never another client or an unselected platform — and opens at the **AI-approved reporting period** as a locked, view-only report: no uploading, period/client switching, editing, or staff export. Charts, page turning, and approved historical comparisons stay interactive. This holds even without a password, so one client can never reach another's results.
-- When the private service is deployed, reports use short, cross-device links backed by encrypted server storage. CNO can revoke them from the staff console. Optional report passwords add browser-side encryption, so the password is never sent to the service. Older data-in-the-URL links remain readable, but the app warns when one is too long for reliable email or chat delivery.
+- Reports use short, cross-device links backed by encrypted server storage at the live private service. CNO can revoke them from the staff console. Optional report passwords add browser-side encryption, so the password is never sent to the service. Older data-in-the-URL links remain readable, but the app warns when one is too long for reliable email or chat delivery.
 
 **Clear CNO and client experiences.**
 - The working application is labeled **CNO workspace · staff tools** and contains import, sync, audit, AI, editing, and publishing controls.
@@ -74,6 +74,8 @@ The account-transfer runbook is in [`MIGRATE_TO_CNO_ACCOUNTS.md`](MIGRATE_TO_CNO
 The complete verification record is in [`RELEASE_AUDIT_v1.8.0.md`](RELEASE_AUDIT_v1.8.0.md), including what was *not* verified and why. The previous release's record is [`RELEASE_AUDIT_v1.7.0.md`](RELEASE_AUDIT_v1.7.0.md).
 
 The full product, architecture, request history, limitations, and prioritized roadmap for another developer are in [`DEVELOPER_HANDOFF.md`](DEVELOPER_HANDOFF.md).
+
+The latest manager feedback, active Render-domain registry, and low-risk implementation plan are in [`MANAGER_FEEDBACK_AUGUST_2026.md`](MANAGER_FEEDBACK_AUGUST_2026.md).
 
 ## Keeping reports refreshed
 
@@ -114,6 +116,7 @@ Static site, no build. On [Render](https://render.com): connect the repo, choose
 | `CLOUD_AUTOMATION_BLUEPRINT.md` | Managed accounts, report archive, monthly delivery, and production security plan |
 | `MIGRATE_TO_CNO_ACCOUNTS.md` | Transfer checklist for CNO-owned GitHub, Render, domains, secrets, and callbacks |
 | `DEVELOPER_HANDOFF.md` | Complete developer handoff: requirements, architecture, current status, risks, and roadmap |
+| `MANAGER_FEEDBACK_AUGUST_2026.md` | August feedback triage, active domains, quick wins, dependencies, and implementation batches |
 | `sync-service/` | Private OAuth, encrypted token storage, exact account assignment, scheduler-ready native sync, and one-use report imports |
 
 ## Brand

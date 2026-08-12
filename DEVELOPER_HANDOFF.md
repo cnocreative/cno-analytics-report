@@ -1,12 +1,16 @@
 # CNO Reports — Developer handoff
 
-Last updated: July 31, 2026
+Last updated: August 12, 2026
 
-Current release: `v1.8.0`
+Current web build: `main` / package version `1.8.0`
+
+Latest tagged desktop release: `v1.7.0`
 
 Current repository: `https://github.com/cnocreative/cno-analytics-report` (CNO-owned)
 
-Live pilot: `https://cno-analytics-report-5hi6.onrender.com/#demo` (CNO-owned Render account)
+Live pilot: `https://cno-analytics-report-5hi6.onrender.com/#demo` (CNO-owned Render account; the non-suffixed Render site is retired)
+
+Live native sync/share service: `https://cno-native-sync-gp4h.onrender.com` (durable Postgres storage; the non-suffixed service address is retired)
 
 Latest installers: `https://github.com/cnocreative/cno-analytics-report/releases`
 
@@ -28,8 +32,8 @@ The current release is a controlled pilot:
 - The report generator, multi-format importer, deterministic calculations, interactive visualizations, AI-assisted client letter, customization, PWA, Windows installer, and Mac ARM installer are implemented.
 - The importer reads CSV, TSV, Excel `.xlsx` workbooks, `.zip` platform downloads, and JSON exports, in whatever text encoding the platform used.
 - The static website works without a database for manual reporting.
-- A Node OAuth, sync, and short-link service is implemented in the repository. It runs with or without Postgres, and the report app drives it directly: connection state, refresh, and data load all happen inside the report window.
-- The public native-sync service is **not deployed and configured yet**, and no provider app has completed review.
+- A Node OAuth, sync, and short-link service is implemented and deployed. The report app drives it directly: connection state, refresh, and data load all happen inside the report window. Its live health check reports durable Postgres storage and complete server configuration.
+- Live provider authorization and metric validation still depend on CNO-owned provider apps, exact callback registration, provider approval, and real-account testing. Automated native pulling should not be represented as fully complete until those checks pass.
 - Individual staff accounts, client accounts, a cloud report archive, server-side AI, automatic monthly generation, approval workflow, and email delivery are **future secured backend work**, not completed features.
 
 Private client data is intentionally excluded from this public repository. The bundled demo and test fixtures use only the fictional `Example Brand`.
@@ -416,12 +420,12 @@ Implemented:
 - Damaged/truncated links show an explicit error rather than opening an empty normal workspace.
 - The private service includes short random report IDs, encrypted-at-rest payload storage, optional client-side password encryption, one-year expiry, access tracking, and revocation.
 
-Current production limitation:
+Current production boundary:
 
-- The private service is not deployed at the configured public hostname.
-- Until it is deployed, the app falls back to data-in-the-URL links.
-- Long URL links can be truncated by email, SMS, or chat applications.
-- Reliable cross-device short links and central revocation therefore remain unavailable on the public pilot.
+- The private service is live at the suffixed Render hostname and uses durable Postgres storage.
+- Short links and central revocation are available through that service; the app refuses to pretend an unreliable fallback link is permanent.
+- Older data-in-the-URL links remain readable for compatibility, but they can be truncated by email, SMS, or chat applications.
+- Full tenant-authenticated client access and immutable cloud report archives remain future work.
 
 ### 3.13 Downloadable and offline versions
 
@@ -696,12 +700,11 @@ Until step 1 completes, the panel says so instead of offering a button that fail
    - Optional: move both to `reports.cnocreative.co` and `sync.cnocreative.co`.
    - Keep secrets out of GitHub; Render generates the three service secrets itself.
 
-2. **Deploy the private service**
-   - Provision persistent Postgres.
-   - Deploy `cno-native-sync`.
-   - Configure encryption/admin/cron secrets.
-   - Verify `/health`.
-   - Confirm short links open on another device and can be revoked.
+2. **Validate and harden the deployed private service**
+   - Preserve the active `-gp4h` Render address until a custom-domain cutover is fully tested.
+   - Keep persistent Postgres, encryption/admin/cron secrets, and `/health` monitoring in place.
+   - Add automated smoke tests for short links on another device, password protection, expiry, and revocation.
+   - Monitor free-tier sleeping and service availability before relying on unattended delivery.
 
 3. **Complete provider setup** — see `PROVIDER_APP_REVIEW.md` for the submissions
    - Register CNO-owned Meta, TikTok, and LinkedIn apps.
@@ -773,8 +776,8 @@ Until step 1 completes, the panel says so instead of offering a button that fail
 
 1. `index.html` is large and tightly coupled.
 2. There is no full automated test runner in the root app.
-3. The public sync hostname is not live, and no provider app has completed review.
-4. Cross-device short links depend on that undeployed service.
+3. The public sync hostname is live, but provider OAuth approvals and real-account metric coverage still need end-to-end validation.
+4. Cross-device short links depend on the live service and its database availability; they are not a substitute for future authenticated client accounts.
 5. Browser API-key storage is not a production security boundary.
 6. CNO/client labels are not authentication.
 7. Manual browser state is device-specific and can be lost when storage is cleared.
@@ -805,6 +808,7 @@ Until step 1 completes, the panel says so instead of offering a button that fail
 | `RELEASE_AUDIT_v1.8.0.md` | Current release verification and honest limitations |
 | `RELEASE_AUDIT_v1.7.0.md` | Previous release verification |
 | `MIGRATE_TO_CNO_ACCOUNTS.md` | GitHub/Render/domain/provider migration runbook |
+| `MANAGER_FEEDBACK_AUGUST_2026.md` | Current domain registry, latest stakeholder feedback, implementation difficulty, and recommended next batches |
 | `PROVIDER_APP_REVIEW.md` | Ready-to-paste Meta/TikTok/LinkedIn app-review submissions and per-permission justifications |
 | `RUNNING_COSTS.md` | What is free permanently, what the free tier costs in behaviour, and the Postgres trap |
 | `resources/brand-style.md` | Brand colors, fonts, voice, and assets |
@@ -918,8 +922,8 @@ The system should not be called fully automated or production secure until:
 2. Run the demo and import every test CSV.
 3. Trace one metric from raw CSV heading through normalization, calculation, visualization, AI context, and client bundle.
 4. Transfer or fork the repository into the CNO-owned GitHub account.
-5. Deploy a non-production CNO-owned sync service and Postgres instance.
-6. Make short report links work across two devices.
+5. Verify the CNO-owned sync service, Postgres retention, and every configured secret from the Render dashboard without changing the active domain.
+6. Add a repeatable cross-device test for short report links, passwords, expiry, and revocation.
 7. Validate one provider OAuth flow with a CNO-owned test account.
 8. Propose the module/test refactor before adding large new visualization features.
 9. Create a production backlog from the P0/P1 priorities above.
