@@ -1,0 +1,27 @@
+name: Month close
+
+# Refreshes every client's just-ended month and reports what is ready to build.
+# Runs on the first of the month, and on demand from the Actions tab.
+#
+# It reports counts only, never client names: this repository is public, so these logs are public.
+
+on:
+  schedule:
+    - cron: "0 15 1 * *" # 08:00 America/Los_Angeles on the 1st (07:00 when Pacific is on standard time)
+  workflow_dispatch:
+
+jobs:
+  close:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Refresh the closed month
+        env:
+          CNO_SYNC_SERVICE_URL: ${{ secrets.CNO_SYNC_SERVICE_URL }}
+          CNO_ADMIN_TOKEN: ${{ secrets.CNO_ADMIN_TOKEN }}
+        run: python automation/month_close.py

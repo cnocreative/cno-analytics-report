@@ -21,7 +21,7 @@ has to be convinced of.
 | Sharing | Reports go to the client as a private link scoped to that one client |
 | Deletion | Disconnecting removes the stored authorization and the analytics pulled with it |
 
-**Service base URL:** `https://cno-native-sync.onrender.com`
+**Service base URL:** `https://cno-native-sync-gp4h.onrender.com`
 (change everywhere below if you move to `sync.cnocreative.co`)
 
 ---
@@ -37,7 +37,7 @@ longest.
 **Valid OAuth Redirect URI:**
 
 ```
-https://cno-native-sync.onrender.com/oauth/meta/callback
+https://cno-native-sync-gp4h.onrender.com/oauth/meta/callback
 ```
 
 **Prerequisites on the client side** — check these before submitting, they cause most "cannot
@@ -100,7 +100,7 @@ list is a contradiction a reviewer will see.
 **Redirect URI:**
 
 ```
-https://cno-native-sync.onrender.com/oauth/tiktok/callback
+https://cno-native-sync-gp4h.onrender.com/oauth/tiktok/callback
 ```
 
 ### Scopes to request
@@ -144,7 +144,7 @@ Page itself.
 **Redirect URL:**
 
 ```
-https://cno-native-sync.onrender.com/oauth/linkedin/callback
+https://cno-native-sync-gp4h.onrender.com/oauth/linkedin/callback
 ```
 
 Then request the **Community Management API** product. This is a separate application form.
