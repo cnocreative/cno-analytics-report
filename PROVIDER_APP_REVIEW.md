@@ -28,11 +28,31 @@ has to be convinced of.
 
 ## Meta — Instagram and Facebook
 
-Start at [developers.facebook.com](https://developers.facebook.com) → **My Apps** → **Create App** →
-type **Business**. Complete **Business Verification** first; it gates everything else and takes the
-longest.
+Start at [developers.facebook.com](https://developers.facebook.com) → **My Apps** → **Create App**.
 
-**Products to add:** Facebook Login for Business, Instagram Graph API.
+**Choose the use cases on the creation screen. This is the step that matters.** Meta attaches
+permissions to an app through its use cases, and a use case is one "you added to your app during
+the app creation process" — there is no way to add a business use case to an app that was created
+without one. Pick:
+
+- **Manage everything on your Page** — carries `pages_show_list` and the rest of the Page reads;
+- the **Instagram** use case for Instagram API setup with Facebook login.
+
+An app created with only **Authenticate and request data from users with Facebook Login** is a
+dead end for this project. Its Permissions and Features list will only ever offer `email`,
+`public_profile` and the personal `user_*` permissions, no matter how many products you look for
+or whether Business Verification has completed. If that has already happened, create a second app
+with the right use cases. Nothing is wasted: the privacy policy URL, data deletion URL, icon,
+category and redirect URI all paste straight across.
+
+Complete **Business Verification** as well; it gates advanced access and takes the longest. It is
+necessary but not sufficient — verification alone adds no permissions.
+
+**Check before you start:** Meta's Pages API documentation states that an app needing "business
+data owned by other business portfolios" must become a **Tech Provider**, which is a heavier
+review than ordinary verification. Whether this applies depends on who owns each client's Page.
+If client Pages sit inside CNO's own Business Portfolio, it does not. If clients keep their Pages
+in their own portfolios, it does. Confirm this before investing in the submission.
 
 **Valid OAuth Redirect URI:**
 
