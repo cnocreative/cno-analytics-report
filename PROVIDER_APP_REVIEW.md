@@ -36,7 +36,13 @@ the app creation process" — there is no way to add a business use case to an a
 without one. Pick:
 
 - **Manage everything on your Page** — carries `pages_show_list` and the rest of the Page reads;
-- the **Instagram** use case for Instagram API setup with Facebook login.
+- **Manage messaging & content on Instagram** — despite the name, this is the only Instagram use
+  case on offer. On its setup page, click **"switch to the API setup with Facebook login"** (the
+  default is Instagram-native login, which does not carry insights). Then click **only** "Add
+  required content permissions" — it brings `instagram_basic`, `pages_read_engagement`,
+  `pages_show_list`, `business_management`. Do **not** click "Add required messaging permissions";
+  that requests `instagram_manage_messages`, DM read/send access this project never uses and a
+  reviewer will question on a reporting tool.
 
 An app created with only **Authenticate and request data from users with Facebook Login** is a
 dead end for this project. Its Permissions and Features list will only ever offer `email`,
@@ -44,6 +50,11 @@ dead end for this project. Its Permissions and Features list will only ever offe
 or whether Business Verification has completed. If that has already happened, create a second app
 with the right use cases. Nothing is wasted: the privacy policy URL, data deletion URL, icon,
 category and redirect URI all paste straight across.
+
+After adding both use cases, go to **Permissions and features** and add `instagram_manage_insights`
+by hand — it is not in either bundle above and it is where every Instagram number in the report
+comes from. Also remove `instagram_content_publishing` if the content bundle added it; this
+project never posts.
 
 Complete **Business Verification** as well; it gates advanced access and takes the longest. It is
 necessary but not sufficient — verification alone adds no permissions.
@@ -71,10 +82,10 @@ reproduce" rejections:
 | Permission | What to tell the reviewer |
 |---|---|
 | `pages_show_list` | Lists the Pages this person administers so CNO can pick the one Page belonging to this client. Without it we cannot identify which account to report on, and we would risk pulling a different client's data. |
-| `pages_read_engagement` | Reads the selected Page's own engagement figures for the monthly report. |
-| `read_insights` | Reads the Page and Instagram insight metrics (reach, impressions, views, profile visits, link clicks, follower change) that form the body of the report. |
+| `pages_read_engagement` | Reads the selected Page's own engagement figures and Page insights (reach, impressions, views, profile visits, link clicks, follower change) for the monthly report. Meta deprecated `read_insights` as a standalone permission — this is what covers Page insights now. Do not request `read_insights`; it is no longer a valid scope and including it in an OAuth request can fail the whole sign-in. |
 | `instagram_basic` | Resolves the Instagram Business account attached to the chosen Page and reads its media list, so each post can be shown with its own performance. |
 | `instagram_manage_insights` | Reads per-account and per-post Instagram insights: reach, impressions, saves, shares, total interactions, video views. These are the primary numbers in the report; without this the Instagram report is empty. |
+| `business_management` | Resolves which Pages and Instagram accounts belong to a connected business portfolio. Comes bundled with the "Manage everything on your Page" use case's content permissions. |
 | `ads_read` | **Only request if CNO reports on paid media.** Reads Ads Manager spend, paid reach, paid impressions, clicks and results so paid performance is reported with paid-only denominators, never mixed into organic figures. Drop this permission if CNO does not run ads for clients — an unused permission invites rejection. |
 
 ### Screencast to record

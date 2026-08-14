@@ -66,7 +66,7 @@ export function buildAuthorizationUrl(provider, state) {
   const callback = redirectUri(provider);
   if (provider === "meta") {
     const version = process.env.META_API_VERSION || "v25.0";
-    const p = new URLSearchParams({ client_id: required("META_CLIENT_ID"), redirect_uri: callback, response_type: "code", state, scope: envList("META_SCOPES", "pages_show_list,pages_read_engagement,read_insights,instagram_basic,instagram_manage_insights,ads_read").join(",") });
+    const p = new URLSearchParams({ client_id: required("META_CLIENT_ID"), redirect_uri: callback, response_type: "code", state, scope: envList("META_SCOPES", "pages_show_list,pages_read_engagement,instagram_basic,instagram_manage_insights,business_management,ads_read").join(",") });
     return `https://www.facebook.com/${version}/dialog/oauth?${p}`;
   }
   if (provider === "tiktok") {
