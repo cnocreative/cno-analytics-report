@@ -13,7 +13,7 @@
 <meta name="apple-mobile-web-app-title" content="CNO Reports">
 <!-- Change these three values when CNO moves the app to its permanent GitHub/Render accounts. -->
 <meta name="cno-report-base" content="https://cno-analytics-report-5hi6.onrender.com/">
-<meta name="cno-sync-base" content="https://cno-native-sync-gp4h.onrender.com">
+<meta name="cno-sync-base" content="https://sync.cnocreative.co">
 <meta name="cno-repository" content="https://github.com/cnocreative/cno-analytics-report">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
@@ -1588,7 +1588,7 @@ async function decryptStr(payload,pw){const parts=payload.split(".");const key=a
 // move GitHub/Render accounts without hunting through the reporting engine.
 const metaConfig=name=>(document.querySelector(`meta[name="${name}"]`)?.content||"").trim();
 const HOSTED_BASE=metaConfig("cno-report-base")||"https://cno-analytics-report-5hi6.onrender.com/";
-const SYNC_BASE=metaConfig("cno-sync-base")||"https://cno-native-sync-gp4h.onrender.com";
+const SYNC_BASE=metaConfig("cno-sync-base")||"https://sync.cnocreative.co";
 const REPO_BASE=(metaConfig("cno-repository")||"https://github.com/cnocreative/cno-analytics-report").replace(/\/$/,"");
 /* A client link has to open on somebody else's device. localhost, 127.0.0.1, and the desktop app's
    file:// origin only exist on this machine, so those fall back to the published report address
@@ -3488,7 +3488,10 @@ $("syncClose").addEventListener("click",()=>closeWorkspacePanel("sync"));
 /* This address is remembered per device and outranks the built-in default, so a device that saved
    the previous service keeps writing links to it long after the default moved - and those links
    die with that service. Retire a saved address that names a service this build has superseded. */
-const RETIRED_SYNC_BASES=["https://cno-native-sync.onrender.com"];
+/* Addresses the service used to answer on. A device that still has one saved is moved to the
+   current address on load, so nobody has to retype it and nobody is left pointing at a host that
+   may stop answering. A genuinely custom address a CNO owner typed is left alone. */
+const RETIRED_SYNC_BASES=["https://cno-native-sync.onrender.com","https://cno-native-sync-gp4h.onrender.com"];
 let savedSyncUrl=localStorage.getItem("cno_sync_service_url");
 if(savedSyncUrl&&RETIRED_SYNC_BASES.includes(String(savedSyncUrl).trim().replace(/\/$/,""))){
   localStorage.removeItem("cno_sync_service_url");
