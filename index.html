@@ -2280,43 +2280,78 @@ const SECTION_DEFS=[
   {key:"benchmarks",label:"Benchmark context",page:4},{key:"effort",label:"Effort vs. return",page:4},{key:"matrix",label:"Metrics matrix",page:4},{key:"data",label:"Full data table",page:4}
 ];
 const PAGE_LABELS={0:"Letter",1:"Summary",2:"Performance",3:"Content",4:"Full data"};
+/* Every metric the engine computes is targetable. A metric that can be reported but not aimed at
+   is a gap CNO has to explain to a client, and a target for something never computed would render
+   as a permanently unmet goal, so this list and METRICS are kept in step deliberately. */
 const TARGET_DEFS=[
   {key:"reach",group:"Organic visibility",unit:"count",direction:"min"},
   {key:"impressions",group:"Organic visibility",unit:"count",direction:"min"},
+  {key:"views",group:"Organic visibility",unit:"count",direction:"min"},
+  {key:"organic_reach",group:"Organic visibility",unit:"count",direction:"min"},
+  {key:"organic_impressions",group:"Organic visibility",unit:"count",direction:"min"},
+  {key:"reach_rate",group:"Organic visibility",unit:"percent",direction:"min"},
+  {key:"followers_total",group:"Organic visibility",unit:"count",direction:"min"},
   {key:"followers_growth",group:"Organic visibility",unit:"count",direction:"min"},
   {key:"follower_growth_rate",group:"Organic visibility",unit:"percent",direction:"min"},
   {key:"engagement",group:"Organic response",unit:"count",direction:"min"},
   {key:"er",group:"Organic response",unit:"percent",direction:"min"},
+  {key:"likes",group:"Organic response",unit:"count",direction:"min"},
+  {key:"comments",group:"Organic response",unit:"count",direction:"min"},
+  {key:"shares",group:"Organic response",unit:"count",direction:"min"},
+  {key:"saves",group:"Organic response",unit:"count",direction:"min"},
+  {key:"follows",group:"Organic response",unit:"count",direction:"min"},
+  {key:"amplification",group:"Organic response",unit:"multiple",direction:"min"},
   {key:"profile_views",group:"Organic response",unit:"count",direction:"min"},
+  {key:"profile_to_click",group:"Organic response",unit:"percent",direction:"min"},
   {key:"link_clicks",group:"Organic response",unit:"count",direction:"min"},
+  {key:"click_through_rate",group:"Organic response",unit:"percent",direction:"min"},
   {key:"dms",group:"Organic response",unit:"count",direction:"min"},
   {key:"meaningful_comments",group:"Organic response",unit:"count",direction:"min"},
+  {key:"comment_replies",group:"Organic response",unit:"count",direction:"min"},
+  {key:"posts",group:"Content output",unit:"count",direction:"min"},
+  {key:"total_watch_time_seconds",group:"Video & stories",unit:"seconds",direction:"min"},
+  {key:"average_view_duration_seconds",group:"Video & stories",unit:"seconds",direction:"min"},
+  {key:"video_completion_rate",group:"Video & stories",unit:"percent",direction:"min"},
+  {key:"story_views",group:"Video & stories",unit:"count",direction:"min"},
+  {key:"story_completion_rate",group:"Video & stories",unit:"percent",direction:"min"},
+  /* Exits are the one organic rate where a lower number is the better outcome. */
+  {key:"story_exit_rate",group:"Video & stories",unit:"percent",direction:"max"},
   {key:"leads",group:"Business outcomes",unit:"count",direction:"min"},
   {key:"bookings",group:"Business outcomes",unit:"count",direction:"min"},
   {key:"membership_signups",group:"Business outcomes",unit:"count",direction:"min"},
   {key:"retail_sales",group:"Business outcomes",unit:"count",direction:"min"},
   {key:"revenue",group:"Business outcomes",unit:"money",direction:"min"},
+  {key:"conversions",group:"Business outcomes",unit:"count",direction:"min"},
+  {key:"reach_to_lead",group:"Business outcomes",unit:"percent",direction:"min"},
+  {key:"lead_to_booking",group:"Business outcomes",unit:"percent",direction:"min"},
   {key:"event_reach",group:"Campaign & events",unit:"count",direction:"min"},
+  {key:"event_engagement",group:"Campaign & events",unit:"count",direction:"min"},
   {key:"event_registrations",group:"Campaign & events",unit:"count",direction:"min"},
   {key:"event_attendees",group:"Campaign & events",unit:"count",direction:"min"},
+  {key:"event_conversion",group:"Campaign & events",unit:"percent",direction:"min"},
   {key:"paid_reach",group:"Paid media",unit:"count",direction:"min"},
   {key:"paid_impressions",group:"Paid media",unit:"count",direction:"min"},
   {key:"paid_clicks",group:"Paid media",unit:"count",direction:"min"},
   {key:"paid_leads",group:"Paid media",unit:"count",direction:"min"},
+  {key:"paid_follows",group:"Paid media",unit:"count",direction:"min"},
   {key:"paid_conversions",group:"Paid media",unit:"count",direction:"min"},
   {key:"paid_revenue",group:"Paid media",unit:"money",direction:"min"},
   {key:"paid_ctr",group:"Paid media",unit:"percent",direction:"min"},
   {key:"roas",group:"Paid media",unit:"multiple",direction:"min"},
+  /* Budgets and costs are ceilings: the target is met by coming in at or under it. */
+  {key:"spend",group:"Paid efficiency limits",unit:"money",direction:"max"},
+  {key:"paid_frequency",group:"Paid efficiency limits",unit:"multiple",direction:"max"},
   {key:"paid_cpm",group:"Paid efficiency limits",unit:"money",direction:"max"},
   {key:"cost_per_paid_click",group:"Paid efficiency limits",unit:"money",direction:"max"},
   {key:"cost_per_paid_lead",group:"Paid efficiency limits",unit:"money",direction:"max"},
+  {key:"cost_per_paid_follow",group:"Paid efficiency limits",unit:"money",direction:"max"},
   {key:"cost_per_paid_conversion",group:"Paid efficiency limits",unit:"money",direction:"max"}
 ];
 function targetStoreKey(key){return String(key||"").replace(/[^a-z0-9]/gi,"").toLowerCase();}
 function targetDef(key){const normalized=targetStoreKey(key);return TARGET_DEFS.find(item=>targetStoreKey(item.key)===normalized)||null;}
 function targetInputValue(def,value){if(value===undefined||value===null||value==="")return"";return def.unit==="percent"?+(Number(value)*100).toFixed(4):Number(value);}
 function targetStoredValue(def,value){const n=num(value);if(n===null||n<0)return null;return def.unit==="percent"?n/100:n;}
-function targetUnitLabel(def){return def.unit==="percent"?"%":def.unit==="money"?"$":def.unit==="multiple"?"×":"";}
+function targetUnitLabel(def){return def.unit==="percent"?"%":def.unit==="money"?"$":def.unit==="multiple"?"×":def.unit==="seconds"?"s":"";}
 
 /* ==================== customization + edits ==================== */
 const LSK="cno_report_v2";
@@ -2922,10 +2957,42 @@ function applyReportPage(scroll=false){
   $("nextPage").onclick=()=>{if(index>=0&&index<pages.length-1){CURRENT_PAGE=pages[index+1];applyReportPage(true);}};
   if(scroll)document.querySelector(".wrap").scrollIntoView({behavior:"smooth",block:"start"});
 }
+/* A client should never be handed a card, table or page that has nothing in it. Where a figure is
+   genuinely absent the honest move is to drop the container rather than print an empty one: a
+   dashed placeholder reads as a broken report, and inventing a number to fill it is never an
+   option. What is missing is still recorded for CNO in the data audit, which is where a gap
+   belongs. Runs before the page tabs are counted so a pruned page loses its tab too. */
+function pruneEmptyReportContent(){
+  const report=$("report"),blank=text=>{const t=text.trim();return t===""||t==="—";};
+  /* Charts that never received a metric, including their CNO-facing "upload this" prompt. */
+  report.querySelectorAll(".vizcard").forEach(card=>{if(card.querySelector(".emptyviz"))card.remove();});
+  report.querySelectorAll("table").forEach(table=>{
+    /* A row whose every data cell is empty carries nothing; one with some figures still does. */
+    table.querySelectorAll("tbody tr").forEach(row=>{
+      const cells=[...row.cells].slice(1);
+      if(cells.length&&cells.every(cell=>blank(cell.textContent)))row.remove();
+    });
+    if(!table.querySelector("tbody tr"))(table.closest(".datawrap")||table).remove();
+  });
+  /* Cards left with only a heading, and grids left with no cards. */
+  report.querySelectorAll(".vizcard").forEach(card=>{
+    if(card.querySelector("svg,canvas,table,img"))return;
+    const rest=card.cloneNode(true);rest.querySelectorAll(".viztitle,.vizsub").forEach(el=>el.remove());
+    if(blank(rest.textContent))card.remove();
+  });
+  report.querySelectorAll(".vizgrid").forEach(grid=>{if(!grid.children.length)grid.remove();});
+  report.querySelectorAll("#report section[data-section]").forEach(section=>{
+    if(section.querySelector("svg,canvas,table,img"))return;
+    const rest=section.cloneNode(true);
+    rest.querySelectorAll(".sec-label,.sec-sub,h2,h3,.ai-section-note").forEach(el=>el.remove());
+    if(blank(rest.textContent))section.remove();
+  });
+}
 function organizeReportPages(ai,multiPlat){
   const report=$("report"),foot=report.querySelector(".foot");
   sectionOrder().forEach(key=>{const section=report.querySelector(`section[data-section="${key}"]`);if(section){section.dataset.page=String(sectionPage(key));if(foot)report.insertBefore(section,foot);}});
   applyAISectionNotes(ai);
+  pruneEmptyReportContent();
   if(!ai&&!VIEW_LOCK){
     const head=report.querySelector(".rhead"),banner=document.createElement("div");banner.className="ai-required-banner";banner.innerHTML='<div><b>AI analysis is required before this report is client-ready.</b><br>Add the CNO key once, then generate the plain-language letter and section explanations.</div><button class="btn solid" type="button">Write required analysis</button>';
     head.insertAdjacentElement("afterend",banner);banner.querySelector("button").addEventListener("click",()=>openWorkspacePanel("ai"));
