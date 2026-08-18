@@ -14,7 +14,15 @@ content.csv
 
 # local dev helper, not needed for deployment
 serve.ps1
-.claude/
+.claude/*
+# ...except shared skills, which are how CNO staff run the monthly process. Git will not look
+# inside an excluded directory, so the contents are excluded and the skills path re-included.
+!.claude/skills/
+!.claude/skills/**
+
+# The client name list the privacy scan greps for. Local only: the names are the thing being
+# protected, so committing the list to a public repository would defeat the scan it feeds.
+client-names.txt
 _seed.html
 _verify_*
 

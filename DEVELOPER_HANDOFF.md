@@ -10,7 +10,7 @@ Current repository: `https://github.com/cnocreative/cno-analytics-report` (CNO-o
 
 Live pilot: `https://cno-analytics-report-5hi6.onrender.com/#demo` (CNO-owned Render account; the non-suffixed Render site is retired)
 
-Live native sync/share service: `https://cno-native-sync-gp4h.onrender.com` (durable Postgres storage; the non-suffixed service address is retired)
+Live native sync/share service: `https://sync.cnocreative.co` (durable Postgres storage; the non-suffixed service address is retired)
 
 Latest installers: `https://github.com/cnocreative/cno-analytics-report/releases`
 

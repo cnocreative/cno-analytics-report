@@ -115,7 +115,7 @@ Use persistent PostgreSQL for production. Render's free Postgres expires after 3
 
 `.github/workflows/native-sync.yml` calls the protected cron endpoint every day. Add these GitHub repository secrets:
 
-- `CNO_SYNC_SERVICE_URL` — currently `https://cno-native-sync-gp4h.onrender.com`; do not use the retired non-suffixed Render address
+- `CNO_SYNC_SERVICE_URL` — currently `https://sync.cnocreative.co`; do not use the retired non-suffixed Render address
 - `CNO_SYNC_CRON_SECRET` — exactly the same random value as the service's `SYNC_CRON_SECRET`
 
 The job stores the latest 90 days for every connected client. A provider failure returns a non-success status so the scheduler cannot silently report a successful run. In the internal console, click **Open latest in CNO Reports** to create a one-use import link. The report consumes the link, loads the normalized rows, and invalidates it.

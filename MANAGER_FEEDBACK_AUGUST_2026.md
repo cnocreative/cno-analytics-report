@@ -25,23 +25,24 @@ Do not redesign or replace these working systems during the feedback pass. Make 
 
 ## 2. Production address registry
 
-Use these exact addresses until CNO intentionally completes and verifies custom-domain DNS:
+Use these exact addresses. The sync service's custom domain is verified and live; the report site has not moved.
 
 | Surface | Active address | Status |
 |---|---|---|
 | Report website | `https://cno-analytics-report-5hi6.onrender.com/` | Active CNO-owned static site |
 | Demo | `https://cno-analytics-report-5hi6.onrender.com/#demo` | Active fictional demo |
-| Native sync/share service | `https://cno-native-sync-gp4h.onrender.com` | Active; health check reports Postgres, durable storage, and setup complete |
+| Native sync/share service | `https://sync.cnocreative.co` | Active on CNO's own domain; health check reports Postgres, durable storage, and setup complete |
 | Repository | `https://github.com/cnocreative/cno-analytics-report` | Active CNO-owned repository |
 
 Retired/suspended addresses that must not be restored in app links or instructions:
 
 - `https://cno-analytics-report.onrender.com/`
 - `https://cno-native-sync.onrender.com`
+- `https://cno-native-sync-gp4h.onrender.com` (still answers, but Meta will not accept a shared hosting domain, so the service moved to CNO's own)
 
 Domain rules:
 
-1. The Render-generated suffixes (`-5hi6` and `-gp4h`) are part of the active addresses, not accidental text.
+1. The Render-generated suffix `-5hi6` is part of the report site's address, not accidental text.
 2. Do not set `PUBLIC_BASE_URL` to a proposed custom domain before that domain resolves publicly.
 3. OAuth callback URLs must exactly match the address that the sync service is actually using, including the `-gp4h` suffix and no trailing slash after `/callback`.
 4. If custom domains are added later, update the app metadata, Render origins, provider callback registrations, legal pages, desktop documentation, and scheduled-sync secret together.
