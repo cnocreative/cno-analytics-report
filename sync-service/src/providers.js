@@ -66,7 +66,13 @@ export function buildAuthorizationUrl(provider, state) {
   const callback = redirectUri(provider);
   if (provider === "meta") {
     const version = process.env.META_API_VERSION || "v25.0";
-    const p = new URLSearchParams({ client_id: required("META_CLIENT_ID"), redirect_uri: callback, response_type: "code", state, scope: envList("META_SCOPES", "pages_show_list,pages_read_engagement,instagram_basic,instagram_manage_insights,business_management,ads_read").join(",") });
+    const p = new URLSearchParams({ client_id: required("META_CLIENT_ID"), redirect_uri: callback, response_type: "code", state });
+    /* Facebook Login for Business takes its permissions from a saved configuration, not a scope
+       list, and ignores scope when one exists. Send the configuration id when CNO has created one
+       and fall back to scopes for a plain Facebook Login app, so both kinds of app can sign in. */
+    const configId = String(process.env.META_LOGIN_CONFIG_ID || "").trim();
+    if (configId) p.set("config_id", configId);
+    else p.set("scope", envList("META_SCOPES", "pages_show_list,pages_read_engagement,instagram_basic,instagram_manage_insights,business_management,ads_read").join(","));
     return `https://www.facebook.com/${version}/dialog/oauth?${p}`;
   }
   if (provider === "tiktok") {
