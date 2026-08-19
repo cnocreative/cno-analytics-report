@@ -1859,6 +1859,11 @@ function auditData(c,from,to){
   const sources=[...new Set([...periods,...posts].map(auditSource))];
   const issues=[];
   const add=(level,title,detail)=>issues.push({level,title,detail});
+  /* A connector records why a platform refused a metric, then the reason was written into the row
+     and never shown, so a missing figure looked like CNO forgot to import something. Surface it
+     here, where CNO looks and a client never does. */
+  const notes=[...new Set([...periods,...posts].map(r=>String(r.sync_note||r.raw&&r.raw.sync_note||"")).filter(Boolean))];
+  notes.forEach(note=>add("warn","A platform did not return every metric",note));
   if(plats.length>1)add("info","Portfolio comparison is active","The client report keeps platform KPIs and trend charts separate. Campaign and publishing tables may still summarize cross-channel work when their rows are explicitly tagged.");
   if(!periods.length)add("warn","No account-level totals","Headline metrics are being reconstructed from post rows. Upload the platform overview/account export for authoritative totals.");
   if(!posts.length)add("warn","No post-level detail","Headline totals can still be accurate, but format, campaign, pillar, consistency, and creative-pattern analysis cannot be validated.");
@@ -2848,7 +2853,10 @@ function consistency(posts){
 }
 function goalMetricRow(cur,prev,key){
   const M=METRICS[key],v=cur[key],pv=prev?prev[key]:null;
-  const value=(v===null||v===undefined)?'<span class="missing">Add data</span>':M.fmt(v);
+  /* A metric this client's exports never carried is not a finding, and a row reading "Add data"
+     tells them only that the report is generic. Leave it out; the data audit records the gap. */
+  if(v===null||v===undefined)return"";
+  const value=M.fmt(v);
   let delta="";if(v!==null&&v!==undefined&&pv!==null&&pv!==undefined&&!M.snapshot){const d=chg(v,pv);if(d!==null)delta=`<small class="${d>=0?"pos":"neg"}">${d>=0?"↑":"↓"} ${pct(Math.abs(d),0)}</small>`;}
   const tkey=targetStoreKey(key);
   const target=cur._targets?cur._targets[tkey]:undefined;
@@ -2869,7 +2877,11 @@ function goalsHtml(cur,prev){
     ["03","Position for What’s Next","Track whether campaign and event content creates momentum and action.",["event_reach","event_engagement","event_registrations","event_attendees","event_conversion"]],
     ["04","Drive Business Growth","Connect social presence to inquiries, bookings, memberships, sales, and revenue.",["leads","bookings","membership_signups","retail_sales","revenue"]]
   ];
-  return `<div class="goalgrid">${goals.map((g,i)=>`<article class="goalcard"><div class="goalnum">${g[0]}</div><h3>${g[1]}</h3><p>${g[2]}</p><div class="goaltrack">We’ll track</div>${g[3].map(k=>goalMetricRow(cur,prev,k)).join("")}</article>`).join("")}</div><div class="note">“Add data” means the selected exports do not contain that business outcome yet. CNO sets client-approved targets under <b>Customize → Client targets</b>; approved <b>&lt;metric&gt;_target</b> CSV columns can also be used. Blank metrics have no numeric target, and AI is not allowed to invent one.</div>`;
+  /* A goal with nothing measured behind it is not reported at all. Showing the heading over an
+     empty list reads as a template the client was dropped into rather than a report about them. */
+  const measured=goals.map(g=>[g,g[3].map(k=>goalMetricRow(cur,prev,k)).join("")]).filter(([,rows])=>rows);
+  if(!measured.length)return"";
+  return `<div class="goalgrid">${measured.map(([g,rows])=>`<article class="goalcard"><div class="goalnum">${g[0]}</div><h3>${g[1]}</h3><p>${g[2]}</p><div class="goaltrack">We’ll track</div>${rows}</article>`).join("")}</div>`;
 }
 function horizontalBars(rows,valueKey,formatter=fmtInt){const max=Math.max(1,...rows.map(r=>r[valueKey]||0));return `<div class="hbars">${rows.map(r=>`<div class="hbarrow"><span>${escHtml(r.name)}</span><div class="track"><div class="fill" style="width:${Math.max(2,(r[valueKey]||0)/max*100)}%"></div></div><span class="hv">${formatter(r[valueKey])}</span></div>`).join("")}</div>`;}
 function performanceBoard(c,cur,from,to){
@@ -2879,7 +2891,8 @@ function performanceBoard(c,cur,from,to){
     ["Audience quality","Signals with more intent than a like.",["meaningful_comments","saves","shares"]],
     ["Business outcomes","Actions closest to company growth.",["leads","bookings","membership_signups","retail_sales","revenue"]]
   ];
-  return `<div class="vizgrid">${groups.map(g=>{const keys=g[2].filter(k=>cur[k]!==null&&cur[k]!==undefined);if(!keys.length)return `<article class="vizcard"><div class="viztitle">${g[0]}</div><div class="vizsub">${g[1]}</div><div class="emptyviz">Upload a matching metric to activate this view.</div></article>`;const key=keys[0],M=METRICS[key];return `<article class="vizcard"><div class="viztitle">${g[0]}</div><div class="vizsub">${g[1]}</div><div class="vizvalue">${M.fmt(cur[key])} <span>${M.label}</span></div>${chartHolder(seriesFor(c,key,from,to),{big:true,fmt:M.fmt})}<div class="vizfoot">${keys.slice(1).map(k=>`<span><b>${METRICS[k].fmt(cur[k])}</b> ${METRICS[k].label}</span>`).join("")}</div></article>`;}).join("")}</div>`;
+  return `<div class="vizgrid">${groups.map(g=>{const keys=g[2].filter(k=>cur[k]!==null&&cur[k]!==undefined);/* Nothing measured here for this client, so the card is not drawn at all. */
+    if(!keys.length)return "";const key=keys[0],M=METRICS[key];return `<article class="vizcard"><div class="viztitle">${g[0]}</div><div class="vizsub">${g[1]}</div><div class="vizvalue">${M.fmt(cur[key])} <span>${M.label}</span></div>${chartHolder(seriesFor(c,key,from,to),{big:true,fmt:M.fmt})}<div class="vizfoot">${keys.slice(1).map(k=>`<span><b>${METRICS[k].fmt(cur[k])}</b> ${METRICS[k].label}</span>`).join("")}</div></article>`;}).join("")}</div>`;
 }
 function platformBreakdownHtml(c,from,to,plats){
   const pr=prevRange(from,to);
