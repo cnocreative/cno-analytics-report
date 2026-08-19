@@ -2,6 +2,11 @@ const envList = (name, fallback) => String(process.env[name] || fallback).split(
 const publicBase = () => (process.env.PUBLIC_BASE_URL || (process.env.RENDER_EXTERNAL_HOSTNAME ? `https://${process.env.RENDER_EXTERNAL_HOSTNAME}` : "http://localhost:10000")).replace(/\/$/, "");
 const redirectUri = provider => `${publicBase()}/oauth/${provider}/callback`;
 const isoDay = value => new Date(value).toISOString().slice(0, 10);
+
+/* Cutting text at a fixed length can split an emoji down the middle, leaving half a character
+   that Postgres refuses to store as JSON and that no reader would want to see anyway. Count in
+   whole characters instead, so a caption is trimmed between characters rather than inside one. */
+const snippet = (value, limit) => Array.from(String(value ?? "")).slice(0, limit).join("");
 const unixMs = value => new Date(`${value}T00:00:00Z`).getTime();
 
 function required(name) {
@@ -268,13 +273,13 @@ async function syncMeta(accessToken, clientRef, from, to, metadata) {
       } catch (error) { metricErrors.push(`${metricName}: ${error.message}`); }
     }
     if (!accountByDate.size) accountByDate.set(to, { record_type: "account_daily", data_source: "meta_api", aggregation: "daily", client: clientRef, platform: "instagram", date: to });
-    if (metricErrors.length) accountByDate.get([...accountByDate.keys()][0]).sync_note = `Unavailable metrics: ${metricErrors.join("; ").slice(0, 500)}`;
+    if (metricErrors.length) accountByDate.get([...accountByDate.keys()][0]).sync_note = `Unavailable metrics: ${snippet(metricErrors.join("; "), 500)}`;
     for (const row of accountByDate.values()) rows.push({ followers_total: ig.followers_count, ...row });
 
     const mediaParams = new URLSearchParams({ fields: "id,caption,media_type,media_product_type,timestamp,permalink,like_count,comments_count", since: new Date(`${from}T00:00:00Z`).toISOString(), until: new Date(`${to}T23:59:59Z`).toISOString(), limit: "100", access_token: page.access_token });
     const media = await paged(`https://graph.facebook.com/${version}/${ig.id}/media?${mediaParams}`);
     for (const item of media) {
-      const post = { record_type: "post", data_source: "meta_api", aggregation: "post", client: clientRef, platform: "instagram", date: isoDay(item.timestamp), published_hour: new Date(item.timestamp).getUTCHours(), post_id: item.id, post_type: item.media_product_type || item.media_type, caption_snippet: String(item.caption || "").slice(0, 500), caption_length: String(item.caption || "").length, likes: item.like_count, comments: item.comments_count, permalink: item.permalink };
+      const post = { record_type: "post", data_source: "meta_api", aggregation: "post", client: clientRef, platform: "instagram", date: isoDay(item.timestamp), published_hour: new Date(item.timestamp).getUTCHours(), post_id: item.id, post_type: item.media_product_type || item.media_type, caption_snippet: snippet(item.caption, 500), caption_length: String(item.caption || "").length, likes: item.like_count, comments: item.comments_count, permalink: item.permalink };
       try {
         const ip = new URLSearchParams({ metric: "reach,impressions,plays,saved,shares,total_interactions,video_views", access_token: page.access_token });
         const details = await apiJson(`https://graph.facebook.com/${version}/${item.id}/insights?${ip}`);
@@ -404,7 +409,7 @@ async function syncLinkedIn(accessToken, clientRef, from, to, metadata) {
 
     if (!successfulSources) throw new Error(`LinkedIn returned no supported analytics: ${errors.join("; ").slice(0, 260)}`);
     const ordered = [...daily.values()].sort((a, b) => a.date.localeCompare(b.date));
-    if (errors.length && ordered.length) ordered[0].sync_note = `Unavailable metrics: ${errors.join("; ").slice(0, 500)}`;
+    if (errors.length && ordered.length) ordered[0].sync_note = `Unavailable metrics: ${snippet(errors.join("; "), 500)}`;
     rows.push(...ordered);
   }
   if (!rows.length) throw new Error("The assigned LinkedIn organization returned no analytics rows for this period");

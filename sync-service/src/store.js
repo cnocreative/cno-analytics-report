@@ -18,6 +18,15 @@ const now = () => new Date();
 const later = seconds => new Date(Date.now() + seconds * 1000);
 const alive = value => value && new Date(value).getTime() > Date.now();
 
+/* Postgres refuses JSON containing half a character or a NUL byte, and rejects the whole write
+   with a message naming neither the field nor the provider. Social captions carry emoji, and an
+   emoji cut in half by a length limit is exactly that. Clean strings on the way in so one caption
+   cannot fail a whole month's sync, and so this cannot return through another provider or a field
+   added later. */
+const LONE_SURROGATE = /[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?<![\uD800-\uDBFF])[\uDC00-\uDFFF]/g;
+const jsonText = value => JSON.stringify(value, (_key, item) =>
+  typeof item === "string" ? item.replace(LONE_SURROGATE, "").replace(/\u0000/g, "") : item);
+
 /* ------------------------------------------------------------------ Postgres */
 
 async function postgresStore() {
@@ -63,7 +72,7 @@ async function postgresStore() {
         VALUES($1,$2,$3,$4,$5,$6,$7,$8)
         ON CONFLICT(client_ref,provider) DO UPDATE SET access_token_cipher=EXCLUDED.access_token_cipher,refresh_token_cipher=EXCLUDED.refresh_token_cipher,token_expires_at=EXCLUDED.token_expires_at,scopes=EXCLUDED.scopes,metadata=EXCLUDED.metadata,last_synced_at=NULL,last_error=NULL,updated_at=NOW()
         RETURNING id`,
-        [row.id, row.clientRef, row.provider, row.accessToken, row.refreshToken, row.tokenExpiresAt, row.scopes, JSON.stringify(row.metadata || {})]);
+        [row.id, row.clientRef, row.provider, row.accessToken, row.refreshToken, row.tokenExpiresAt, row.scopes, jsonText(row.metadata || {})]);
       const id = saved.rows[0].id;
       await q("DELETE FROM sync_runs WHERE connection_id=$1", [id]);
       return id;
@@ -79,7 +88,7 @@ async function postgresStore() {
       return found.rowCount ? normalizeConnection(found.rows[0]) : null;
     },
     async saveAccountAssignment(id, metadata) {
-      await q("UPDATE connections SET metadata=$2,last_error=NULL,last_synced_at=NULL,updated_at=NOW() WHERE id=$1", [id, JSON.stringify(metadata)]);
+      await q("UPDATE connections SET metadata=$2,last_error=NULL,last_synced_at=NULL,updated_at=NOW() WHERE id=$1", [id, jsonText(metadata || {})]);
       await q("DELETE FROM sync_runs WHERE connection_id=$1", [id]);
     },
     async saveRefreshedToken(id, token) {
@@ -102,7 +111,7 @@ async function postgresStore() {
     async putSyncRun(run) {
       await q("DELETE FROM sync_runs WHERE connection_id=$1", [run.connectionId]);
       await q("INSERT INTO sync_runs(id,connection_id,client_ref,provider,date_from,date_to,rows) VALUES($1,$2,$3,$4,$5,$6,$7)",
-        [run.id, run.connectionId, run.clientRef, run.provider, run.from, run.to, JSON.stringify(run.rows)]);
+        [run.id, run.connectionId, run.clientRef, run.provider, run.from, run.to, jsonText(run.rows || [])]);
     },
     async latestRuns(clientRef) {
       return (await q("SELECT provider,date_from,date_to,rows,created_at FROM sync_runs WHERE client_ref=$1 ORDER BY created_at DESC", [clientRef])).rows
