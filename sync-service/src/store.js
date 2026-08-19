@@ -101,6 +101,16 @@ async function postgresStore() {
     async markError(id, message) {
       await q("UPDATE connections SET last_error=$2,updated_at=NOW() WHERE id=$1", [id, message]);
     },
+    async moveConnection(id, clientRef) {
+      /* The synced rows carry the client they were pulled for, so they move with the connection.
+         Leaving them behind would keep a client's figures filed under a workspace nobody opens. */
+      await q("UPDATE connections SET client_ref=$2,updated_at=NOW() WHERE id=$1", [id, clientRef]);
+      await q("UPDATE sync_runs SET client_ref=$2 WHERE connection_id=$1", [id, clientRef]);
+    },
+    async connectionForProvider(clientRef, provider) {
+      const found = await q("SELECT * FROM connections WHERE client_ref=$1 AND provider=$2", [clientRef, provider]);
+      return found.rowCount ? normalizeConnection(found.rows[0]) : null;
+    },
     async deleteConnection(id) {
       await q("DELETE FROM connections WHERE id=$1", [id]);
     },
@@ -259,6 +269,16 @@ async function fileStore() {
       if (!data.connections[id]) return;
       Object.assign(data.connections[id], { lastSyncedAt: now().toISOString(), lastError: null, updatedAt: now().toISOString() });
       persist();
+    },
+    async moveConnection(id, clientRef) {
+      if (!data.connections[id]) return;
+      data.connections[id].clientRef = clientRef;
+      data.connections[id].updatedAt = now().toISOString();
+      if (data.syncRuns[id]) data.syncRuns[id].clientRef = clientRef;
+      persist();
+    },
+    async connectionForProvider(clientRef, provider) {
+      return connectionList().find(c => c.clientRef === clientRef && c.provider === provider) || null;
     },
     async markError(id, message) {
       if (!data.connections[id]) return;

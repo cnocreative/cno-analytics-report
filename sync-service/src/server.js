@@ -65,6 +65,13 @@ const day = date => (date ? new Date(date).toISOString().slice(0, 10) : "");
 const daysAgo = count => day(Date.now() - count * 86400000);
 const cookies = req => Object.fromEntries(String(req.headers.cookie || "").split(";").map(x => x.trim().split(/=(.*)/s)).filter(x => x[0]).map(([k, v]) => [decodeURIComponent(k), decodeURIComponent(v || "")]));
 const clientRefOf = value => String(value || "").trim().slice(0, 120);
+/* "CNO Creative Co" and "cno.creative.co" are one client typed twice, and the service filed them
+   as two isolated workspaces, so a report built from one silently missed the other's platforms.
+   Names are never merged automatically — two real clients can have near-identical names, and
+   guessing would put one client's figures in another's report — but a name that reduces to the
+   same letters and digits as an existing one is worth saying out loud before it is created. */
+const clientKey = value => String(value || "").toLowerCase().replace(/[^a-z0-9]/g, "");
+const matchingClient = (value, existing) => existing.find(name => clientKey(name) === clientKey(value) && name !== value) || null;
 
 function layout(title, body) {
   return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(title)} · CNO Native Sync</title><style>
@@ -244,6 +251,16 @@ app.get("/admin", requireAdmin, async (req, res) => {
   const requestedClient = clientRefOf(req.query.client_ref);
   const connections = await store.listConnections();
   const configured = configuredProviders();
+  const allClientNames = [...new Set(connections.map(c => c.clientRef))];
+  /* Same client, typed twice, becomes two workspaces that never appear in one report. Offer the
+     repair here rather than making someone disconnect and re-authorise the client all over again. */
+  const moveForm = c => {
+    const others = allClientNames.filter(name => name !== c.clientRef);
+    if (!others.length) return "";
+    const twin = matchingClient(c.clientRef, others);
+    const nudge = twin ? `<p class="quiet">This looks like the same client as <b>${esc(twin)}</b>, filed under a second name. Moving it puts both platforms in one report.</p>` : "";
+    return `<form class="assign" method="post" action="/admin/connections/${esc(c.id)}/client">${csrfField(req)}<label>Move to another client workspace</label>${nudge}<select name="client_ref">${others.map(name => `<option${twin === name ? " selected" : ""}>${esc(name)}</option>`).join("")}</select><p><button class="quietbtn" type="submit">Move connection</button></p></form>`;
+  };
   const connectionCards = connections.map(c => {
     const info = connectionStatus(c);
     const status = info.state === "reconnect"
@@ -252,9 +269,10 @@ app.get("/admin", requireAdmin, async (req, res) => {
         ? `<span class="status choose">Choose account</span><p class="quiet">${esc(info.detail)}</p>`
         : `<span class="status">Ready</span><p class="quiet">${esc(info.detail)}</p>`;
     const choices = info.accounts.map(account => `<label class="choice"><input type="${c.provider === "meta" ? "checkbox" : "radio"}" name="account_id" value="${esc(account.id)}" ${info.selectedIds.has(String(account.id)) ? "checked" : ""}><span>${esc(account.name || account.id)}</span><span class="kind">${esc(String(account.kind || "account").replace("_", " "))}</span></label>`).join("");
-    return `<div class="card connection"><div><div class="k">${esc(c.clientRef)} · ${esc(c.provider)}</div><h3>${info.selected.length ? esc(info.selected.map(x => x.name || x.id).join(" + ")) : "Account not assigned"}</h3>${status}${c.lastError ? `<p class="error">${esc(c.lastError)}</p>` : ""}<p><a class="btn quietbtn" href="/admin/connections/${esc(c.id)}/disconnect">Disconnect</a></p></div><div><div class="k">Exact client assignment</div>${choices ? `<form class="assign" method="post" action="/admin/connections/${esc(c.id)}/accounts">${csrfField(req)}${choices}<p class="quiet">${c.provider === "meta" ? "Choose at most one Instagram profile and one matching ad account. Ads are skipped unless their exact account is selected." : "Choose exactly one native account for this client workspace."}</p><button type="submit">Save account assignment</button></form>` : `<p class="quiet">No native accounts were discovered. Reconnect this provider after confirming the app permissions.</p>`}</div></div>`;
+    return `<div class="card connection"><div><div class="k">${esc(c.clientRef)} · ${esc(c.provider)}</div><h3>${info.selected.length ? esc(info.selected.map(x => x.name || x.id).join(" + ")) : "Account not assigned"}</h3>${status}${c.lastError ? `<p class="error">${esc(c.lastError)}</p>` : ""}<p><a class="btn quietbtn" href="/admin/connections/${esc(c.id)}/disconnect">Disconnect</a></p>${moveForm(c)}</div><div><div class="k">Exact client assignment</div>${choices ? `<form class="assign" method="post" action="/admin/connections/${esc(c.id)}/accounts">${csrfField(req)}${choices}<p class="quiet">${c.provider === "meta" ? "Choose at most one Instagram profile and one matching ad account. Ads are skipped unless their exact account is selected." : "Choose exactly one native account for this client workspace."}</p><button type="submit">Save account assignment</button></form>` : `<p class="quiet">No native accounts were discovered. Reconnect this provider after confirming the app permissions.</p>`}</div></div>`;
   }).join("");
-  const clientOptions = [...new Set(connections.map(c => c.clientRef))].map(c => `<option>${esc(c)}</option>`).join("");
+  const clientNames = [...new Set(connections.map(c => c.clientRef))];
+  const clientOptions = clientNames.map(c => `<option>${esc(c)}</option>`).join("");
   const storageWarning = store.durable ? "" : `<div class="banner"><b>Local storage mode.</b> No <code>DATABASE_URL</code> is configured, so connections live in a file on this server and are lost whenever it redeploys, restarts, or goes idle long enough to be shut down. A connection disappearing on its own is this, not a failed sign-in. Add a persistent Postgres database before connecting live client accounts.</div>`;
   const missing = providerNames.filter(p => !configured.includes(p));
   const providerWarning = missing.length ? `<div class="banner">${esc(missing.map(m => m[0].toUpperCase() + m.slice(1)).join(" and "))} ${missing.length === 1 ? "is" : "are"} not configured yet. Add the app ID and secret in this service's environment settings, then reload this page. The callback URL to register is <code>${esc(publicBase)}/oauth/PROVIDER/callback</code>.</div>` : "";
@@ -289,6 +307,16 @@ app.get("/admin/connect/:provider", requireAdmin, async (req, res) => {
   const provider = req.params.provider;
   const clientRef = clientRefOf(req.query.client_ref);
   if (!providerNames.includes(provider) || !clientRef) return res.status(400).send(layout("Invalid connection", `<div class="card"><h1>Missing provider or client</h1><a class="btn" href="/admin">Return</a></div>`));
+  /* Catch the second spelling of an existing client before the sign-in, not after: once connected
+     under a new name the platforms sit in separate workspaces and no report shows them together. */
+  if (req.query.confirm !== "1") {
+    const existing = [...new Set((await store.listConnections()).map(c => c.clientRef))];
+    const twin = matchingClient(clientRef, existing);
+    if (twin) {
+      const proceed = `/admin/connect/${esc(provider)}?client_ref=${encodeURIComponent(clientRef)}&confirm=1`;
+      return res.send(layout("Check the client name", `<div class="card" style="max-width:620px;margin:50px auto"><h1>Is this the same client?</h1><p>You are connecting <b>${esc(provider)}</b> for <b>${esc(clientRef)}</b>, but <b>${esc(twin)}</b> already exists and reduces to the same name.</p><p class="quiet">Each name is a separate workspace. Connecting under a second spelling puts this platform where the other one's report will not find it.</p><p><a class="btn solid" href="/admin/connect/${esc(provider)}?client_ref=${encodeURIComponent(twin)}">Use ${esc(twin)}</a> <a class="btn" href="${esc(proceed)}">${esc(clientRef)} is a different client</a></p></div>`));
+    }
+  }
   if (!configuredProviders().includes(provider)) {
     return res.status(400).send(layout("Provider not configured", `<div class="card"><h1>${esc(provider)} is not set up yet</h1><p>Add this provider's app ID and secret to the service environment, and register <code>${esc(publicBase)}/oauth/${esc(provider)}/callback</code> as its redirect URL.</p><a class="btn" href="/admin">Return</a></div>`));
   }
@@ -357,6 +385,24 @@ app.post("/admin/connections/:id/accounts", requireAdmin, requireSameSite, async
     res.redirect(`/admin?client_ref=${encodeURIComponent(connection.clientRef)}`);
   } catch (error) {
     res.status(400).send(layout("Assignment not saved", `<div class="card"><h1>Assignment not saved</h1><p class="error">${esc(error.message)}</p><a class="btn" href="/admin?client_ref=${encodeURIComponent(connection.clientRef)}">Return</a></div>`));
+  }
+});
+
+app.post("/admin/connections/:id/client", requireAdmin, requireSameSite, async (req, res) => {
+  const connection = await store.getConnection(req.params.id);
+  if (!connection) return res.status(404).send(layout("Connection not found", `<div class="card"><h1>Connection not found</h1><a class="btn" href="/admin">Return</a></div>`));
+  const target = clientRefOf(req.body.client_ref);
+  try {
+    if (!target) throw new Error("Choose the client workspace to move this connection into");
+    if (target === connection.clientRef) throw new Error("This connection is already in that workspace");
+    /* One connection per provider per client is what guarantees a report has exactly one account
+       for each platform. Refuse rather than overwrite: the other connection may be the live one. */
+    const clash = await store.connectionForProvider(target, connection.provider);
+    if (clash) throw new Error(`${target} already has a ${connection.provider} connection. Disconnect that one first, then move this.`);
+    await store.moveConnection(connection.id, target);
+    res.redirect(`/admin?client_ref=${encodeURIComponent(target)}`);
+  } catch (error) {
+    res.status(400).send(layout("Not moved", `<div class="card"><h1>Not moved</h1><p class="error">${esc(error.message)}</p><a class="btn" href="/admin?client_ref=${encodeURIComponent(connection.clientRef)}">Return</a></div>`));
   }
 });
 
