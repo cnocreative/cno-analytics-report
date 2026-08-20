@@ -1,107 +1,137 @@
 ---
 name: month-close
-description: Run CNO's monthly client reporting, end to end. Use when a month has ended and reports need building, when someone says "run the month close", "do this month's reports", "monthly reports", or names a client and a month. Walks refreshing the data, importing what is still manual, checking the figures, writing and reviewing the letter, creating the client link, and drafting the email for a person to send.
+description: Run CNO's monthly client reporting, end to end. Use when a month has ended and reports need building, when someone says "run the month close", "do this month's reports", "monthly reports", or names a client and a month. Covers where clients come from, refreshing connected platforms, importing what is still manual, checking the figures, writing and reviewing the letter, creating the client link, and drafting the email for a person to send.
 ---
 
 # CNO month close
 
 Run this with the person, not at them. They may not be technical. Explain each step in plain
-language, do the parts you can do, and stop where a human has to decide.
+language, do what you can, and stop where a human has to decide.
 
-## Before anything
+## The two surfaces, and which one does what
 
-Check the service is up and durable:
+This trips people up constantly. There are two different web pages.
+
+| Surface | Where | What it is for |
+|---|---|---|
+| **The report** | https://cno-analytics-report-5hi6.onrender.com | Importing files, building and reading the report, creating the client link |
+| **The connection console** | https://sync.cnocreative.co/admin | Connecting platforms, assigning accounts, running a sync, pushing data into the report |
+
+The console needs CNO's internal access token to sign in. If the person does not have it, they can
+still do the whole manual path in the report; only the connected-platform refresh needs the console.
+
+## Where clients come from
+
+**There is no "create a client" button anywhere.** Do not go looking for one, and do not tell
+someone to make one.
+
+- In **the report**, the Client dropdown is built from the data currently loaded. No data means no
+  options. That is normal on a fresh page, not a fault.
+- In **the console**, a client exists because someone typed its name when connecting a platform.
+  That typed name is the workspace key.
+
+So on a freshly opened report the dropdown is empty and **"Refresh and load into this report" is
+disabled**, because it needs a client selected and there is nothing to select. That is the expected
+starting state.
+
+**The way through:** in the console, go to **Refresh and open the report**, choose the client, and
+press **Open latest in CNO Reports**. That pushes the stored rows into the report window and fills
+the dropdown. After that the in-report refresh button works normally.
+
+Importing a CSV also fills the dropdown, from the client column in the file.
+
+## Client names are exact
+
+`CNO Creative Co` and `cno.creative.co` are two separate workspaces holding different platforms.
+When connecting, reuse the existing name character for character. The console now warns when a new
+name reduces to an existing one, and each connection card has **Move to another client workspace**
+to repair a split. Never merge two names without asking — near-identical names can be real,
+different clients.
+
+## The one rule that outranks everything
+
+**Nothing reaches a client without a person reading it first.** CNO's published privacy policy
+promises clients that staff review every sentence. Draft the email, never send it.
+
+Two more that matter as much:
+
+- **One client per report.** If a figure could belong to another client, stop and say so.
+- **Never invent a number.** Missing data means the report says less. It never estimates.
+
+## Step 1 — check the service
 
 ```bash
 curl -s https://sync.cnocreative.co/health
 ```
 
-`"durable": true` must be present. If it says `false`, stop and tell them: links created now would
-die within hours and read to a client as an expiry. That is a Render configuration problem, not
-something to work around.
+`"durable": true` must be present. If it is `false`, stop: links made now would die within hours
+and read to the client as an expiry.
 
-## The one rule that outranks everything
+## Step 2 — refresh the connected platforms
 
-**Nothing reaches a client without a person reading it first.** CNO's published privacy policy
-promises clients that staff review every sentence. Draft the email, never send it. Show the letter,
-never assume it is fine.
-
-Two more that matter just as much:
-
-- **One client per report.** If a figure could belong to another client, stop and say so.
-- **Never invent a number.** If data is missing, the report says less. It never estimates.
-
-## Step 1 — refresh what is automatic
-
-Connected platforms refresh themselves daily. To pull the closed month explicitly:
+Connected platforms refresh daily on their own. To pull the closed month explicitly, either use
+**Sync now** in the console, or run:
 
 ```bash
 python automation/month_close.py
 ```
 
-Needs `CNO_SYNC_SERVICE_URL` and `CNO_ADMIN_TOKEN` in the environment. Without them it prints a
-line and exits — that is fine, it just means this machine is not set up for it, and the manual
-path below still works.
+It needs `CNO_SYNC_SERVICE_URL` and `CNO_ADMIN_TOKEN` in the environment; without them it prints one
+line and exits, which is fine. It reports counts only, never client names, because it also runs in
+public build logs.
 
-It prints counts, never client names, because it also runs in public build logs.
+Currently connected: **TikTok** and **Meta** (Instagram). **LinkedIn is not configured** — the
+console will say it is waiting on the CNO app credentials. That is a known state, not a fault.
 
-## Step 2 — collect what is still manual
+## Step 3 — collect what is still manual
 
-Only TikTok is connected today. Until Meta and LinkedIn approvals land, ask the person to export:
+Ask the person to export whatever is not connected for this client:
 
-- **Instagram and Facebook** — Meta Business Suite, the month's date range
 - **LinkedIn** — the Page's own export
+- **Facebook or Instagram**, if the Meta connection does not cover this client — Meta Business Suite
 - Anything else the client uses
 
-Tell them where the files are going and that these files must never be committed to the repository.
+These files are client data. They must never be committed or shared outside CNO.
 
-## Step 3 — build the report
+## Step 4 — build the report
 
-Open the report site, then:
+1. **Import data** — every file at once, or a whole folder
+2. Choose the **client** and the **period**
+3. Open **Data audit** and read it with them
 
-1. **Import data** — drop in every file at once, a whole folder is fine
-2. Pick the **client** and the **period**
-3. Open **Data audit** and read it aloud with them. Flag anything that looks thin: a platform with
-   no rows, a date range that stops early, a file that mapped few columns.
+The audit now surfaces connector notes as "A platform did not return every metric", carrying the
+platform's own wording. If a metric is missing, that is where the reason is. Flag anything thin: a
+platform with no rows, a date range stopping early, a file where few columns mapped.
 
-If something looks wrong, say so now. It is much cheaper than after a client has seen it.
+## Step 5 — the letter
 
-## Step 4 — the letter
+Run **AI analysis**, then read it with them and check:
 
-Run **AI analysis**. Then read the letter with them and check three things:
-
-- Does it describe what actually happened, matching the figures on screen?
+- Does it match the figures on screen?
 - Is it written to the client, who does not make the content? No production advice, no critique of
   work they did not do.
 - Does any sentence claim something the data does not show?
 
-Edit anything that fails. This is the step the privacy policy is about.
+Edit anything that fails. This step is what the privacy policy is about.
 
-## Step 5 — the link
+## Step 6 — the link
 
-Use **Share link**. It expires in a year and can be revoked. Check it opens and shows the right
-client before it goes anywhere.
+Use **Share link**. It lasts a year and can be revoked. Open it and confirm it shows the right
+client and month before it goes anywhere.
 
-## Step 6 — draft the email, do not send
+## Step 7 — draft the email, do not send
 
-Write a short covering note and give it to them to send. Keep it plain: what the month looked like
-in a sentence or two, the link, and an offer to talk it through. No jargon.
-
-Then confirm out loud which client each link belongs to, so a wrong link cannot go to the wrong
-person.
+Write a short covering note: how the month went in a sentence or two, the link, an offer to talk it
+through. No jargon. Hand it to them to send, and confirm out loud which client each link belongs to.
 
 ## If asked to commit anything
-
-Run the privacy scan first, always:
 
 ```bash
 git ls-files | xargs grep -lIF -f client-names.txt
 ```
 
 `client-names.txt` holds one client or staff name per line and is deliberately never committed —
-the names are the thing being protected, so a list of them in a public repository would defeat the
-check it feeds. If the file is missing, ask which names to scan for and create it locally.
+the names are the thing being protected. If it is missing, ask which names to scan for and create it
+locally. Any output means a real name is about to reach a public repository. Stop.
 
-Any output means a real name is about to be committed to a public repository. Stop.
-
-Never commit client CSVs, exports, tokens, API keys, or anything from Render's environment.
+Never commit client exports, tokens, API keys, or anything out of Render's environment.

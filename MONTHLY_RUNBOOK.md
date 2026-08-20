@@ -55,6 +55,18 @@ It reads CSV, Excel, and zip files, and works out which platform each one came f
 
 Then choose the **client** and the **period** at the top.
 
+**If the Client dropdown is empty, nothing is broken.** There is no "create a client" step in this
+system. The dropdown is built from whatever data is loaded, so it is empty until you import a file
+or pull data in. For the same reason, *Refresh and load into this report* stays greyed out until a
+client is selected.
+
+To pull in data from a connected platform instead of a file, open the connection console at
+https://sync.cnocreative.co/admin, scroll to **Refresh and open the report**, pick the client, and
+press **Open latest in CNO Reports**. That fills the dropdown, and the buttons work from then on.
+
+The grey **CNO workspace · staff tools** label in the top right is just a label. It is not a button
+and there is nothing behind it.
+
 ---
 
 ## 4. Check the data before trusting it
