@@ -249,6 +249,7 @@ function connectionStatus(connection) {
 
 app.get("/admin", requireAdmin, async (req, res) => {
   const requestedClient = clientRefOf(req.query.client_ref);
+  const movedProvider = String(req.query.moved || "").trim();
   const connections = await store.listConnections();
   const configured = configuredProviders();
   const allClientNames = [...new Set(connections.map(c => c.clientRef))];
@@ -259,7 +260,7 @@ app.get("/admin", requireAdmin, async (req, res) => {
     if (!others.length) return "";
     const twin = matchingClient(c.clientRef, others);
     const nudge = twin ? `<p class="quiet">This looks like the same client as <b>${esc(twin)}</b>, filed under a second name. Moving it puts both platforms in one report.</p>` : "";
-    return `<form class="assign" method="post" action="/admin/connections/${esc(c.id)}/client">${csrfField(req)}<label>Move to another client workspace</label>${nudge}<select name="client_ref">${others.map(name => `<option${twin === name ? " selected" : ""}>${esc(name)}</option>`).join("")}</select><p><button class="quietbtn" type="submit">Move connection</button></p></form>`;
+    return `<div class="banner" style="margin:14px 0 0"><form class="assign" method="post" action="/admin/connections/${esc(c.id)}/client">${csrfField(req)}<label><b>Move to another client workspace</b></label>${nudge || `<p class="quiet">Wrong workspace? Move this connection without disconnecting it.</p>`}<select name="client_ref">${others.map(name => `<option${twin === name ? " selected" : ""}>${esc(name)}</option>`).join("")}</select><p><button type="submit">Move connection</button></p></form></div>`;
   };
   const connectionCards = connections.map(c => {
     const info = connectionStatus(c);
@@ -277,7 +278,8 @@ app.get("/admin", requireAdmin, async (req, res) => {
   const missing = providerNames.filter(p => !configured.includes(p));
   const providerWarning = missing.length ? `<div class="banner">${esc(missing.map(m => m[0].toUpperCase() + m.slice(1)).join(" and "))} ${missing.length === 1 ? "is" : "are"} not configured yet. Add the app ID and secret in this service's environment settings, then reload this page. The callback URL to register is <code>${esc(publicBase)}/oauth/PROVIDER/callback</code>.</div>` : "";
   res.send(layout("Connections", `${setupBanner()}${storageWarning}${providerWarning}<h1>Connect once. Refresh automatically.</h1><p>Choose a platform, sign in on its own website, and approve read-only analytics access. Refreshable authorization is encrypted on this server so routine reports do not require another sign-in.</p>
-  ${requestedClient ? `<div class="card"><div class="k">Connecting for</div><h2>${esc(requestedClient)}</h2><p class="quiet">Select each platform this client uses. You will return here after every approval.</p></div>` : ""}
+  ${movedProvider && requestedClient ? `<div class="card"><div class="k">Moved</div><h2>${esc(movedProvider)} is now filed under ${esc(requestedClient)}</h2><p>Data already synced moved with it. The report has not picked this up yet: use <b>Refresh and open the report</b> below, or press <b>Refresh and load into this report</b> inside the report itself, so every connected platform for ${esc(requestedClient)} shows together.</p></div>` : ""}
+  ${requestedClient && !movedProvider ? `<div class="card"><div class="k">Connecting for</div><h2>${esc(requestedClient)}</h2><p class="quiet">Select each platform this client uses. You will return here after every approval.</p></div>` : ""}
   <div class="grid">${providerNames.map(p => {
     const ready = configured.includes(p);
     return `<div class="card provider${ready ? "" : " off"}"><div class="k">${esc(p)}</div><h2>Connect ${esc(p[0].toUpperCase() + p.slice(1))}</h2>${ready ? `<form method="get" action="/admin/connect/${p}">${requestedClient ? `<input type="hidden" name="client_ref" value="${esc(requestedClient)}">` : `<label>Client reference</label><input name="client_ref" placeholder="Client display name" required>`}<p><button type="submit">Continue to ${esc(p)}</button></p></form>` : `<p class="quiet">Waiting on the CNO-owned ${esc(p)} app ID and secret.</p>`}</div>`;
@@ -400,7 +402,7 @@ app.post("/admin/connections/:id/client", requireAdmin, requireSameSite, async (
     const clash = await store.connectionForProvider(target, connection.provider);
     if (clash) throw new Error(`${target} already has a ${connection.provider} connection. Disconnect that one first, then move this.`);
     await store.moveConnection(connection.id, target);
-    res.redirect(`/admin?client_ref=${encodeURIComponent(target)}`);
+    res.redirect(`/admin?client_ref=${encodeURIComponent(target)}&moved=${encodeURIComponent(connection.provider)}`);
   } catch (error) {
     res.status(400).send(layout("Not moved", `<div class="card"><h1>Not moved</h1><p class="error">${esc(error.message)}</p><a class="btn" href="/admin?client_ref=${encodeURIComponent(connection.clientRef)}">Return</a></div>`));
   }

@@ -44,9 +44,16 @@ Importing a CSV also fills the dropdown, from the client column in the file.
 
 `CNO Creative Co` and `cno.creative.co` are two separate workspaces holding different platforms.
 When connecting, reuse the existing name character for character. The console now warns when a new
-name reduces to an existing one, and each connection card has **Move to another client workspace**
-to repair a split. Never merge two names without asking — near-identical names can be real,
-different clients.
+name reduces to an existing one, and each connection card has a highlighted **Move to another
+client workspace** box to repair a split. Never merge two names without asking — near-identical
+names can be real, different clients.
+
+**Moving a connection does not update the report by itself.** The move happens on the server; the
+report is a snapshot already sitting in someone's browser. After a move, the console shows a
+"Moved" banner naming the exact next step: go to **Refresh and open the report** and press **Open
+latest in CNO Reports** for that client, or press **Refresh and load into this report** inside an
+already-open report. Skipping this is the single most common reason a move looks like it "didn't
+work" — the platforms are combined server-side, the report just has not been told to look again.
 
 ## The one rule that outranks everything
 
