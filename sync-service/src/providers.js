@@ -7,6 +7,20 @@ const isoDay = value => new Date(value).toISOString().slice(0, 10);
    that Postgres refuses to store as JSON and that no reader would want to see anyway. Count in
    whole characters instead, so a caption is trimmed between characters rather than inside one. */
 const snippet = (value, limit) => Array.from(String(value ?? "")).slice(0, limit).join("");
+
+/* Instagram refuses an insights request spanning more than 30 days, so a routine 90-day sync
+   returned nothing at all for every account metric and the report looked empty rather than
+   rejected. Walk the period in windows the API will actually answer. */
+function dateWindows(from, to, days = 28) {
+  const windows = [], end = new Date(`${to}T00:00:00Z`).getTime();
+  let start = new Date(`${from}T00:00:00Z`).getTime();
+  while (start <= end) {
+    const stop = Math.min(start + (days - 1) * 86400000, end);
+    windows.push([isoDay(start), isoDay(stop)]);
+    start = stop + 86400000;
+  }
+  return windows;
+}
 const unixMs = value => new Date(`${value}T00:00:00Z`).getTime();
 
 function required(name) {
@@ -255,26 +269,54 @@ async function syncMeta(accessToken, clientRef, from, to, metadata) {
     const ig = page.instagram_business_account;
     if (!ig) continue;
     const accountByDate = new Map();
-    const metricMap = { reach: "reach", impressions: "impressions", views: "views", profile_views: "profile_views", total_interactions: "engagement", website_clicks: "link_clicks" };
+    /* Instagram splits its account metrics in two. These return a value per day. "impressions" is
+       not among them any more: Meta removed it for Instagram accounts, and asking for it failed
+       the call it was bundled with rather than being quietly ignored. */
+    const dailyMap = { reach: "reach", profile_views: "profile_views", website_clicks: "link_clicks" };
+    /* These are only available as one total for the whole period, and only when asked for with
+       metric_type=total_value. Requesting them per day is refused outright. */
+    const totalMap = { views: "views", total_interactions: "engagement", likes: "likes", comments: "comments", shares: "shares", saves: "saves" };
     const metricErrors = [];
-    for (const metricName of Object.keys(metricMap)) {
+    const windows = dateWindows(from, to);
+
+    for (const [windowFrom, windowTo] of windows) {
       try {
-        const metricParams = new URLSearchParams({ metric: metricName, period: "day", since: from, until: to, access_token: page.access_token });
+        const metricParams = new URLSearchParams({ metric: Object.keys(dailyMap).join(","), period: "day", since: windowFrom, until: windowTo, access_token: page.access_token });
         const insight = await apiJson(`https://graph.facebook.com/${version}/${ig.id}/insights?${metricParams}`);
         for (const metric of insight.data || []) {
-        for (const point of metric.values || []) {
-          const date = isoDay(point.end_time || to);
-          const row = accountByDate.get(date) || { record_type: "account_daily", data_source: "meta_api", aggregation: "daily", client: clientRef, platform: "instagram", date };
-          const value = typeof point.value === "object" ? null : point.value;
-          if (metricMap[metric.name] && value != null) row[metricMap[metric.name]] = value;
-          accountByDate.set(date, row);
+          for (const point of metric.values || []) {
+            const date = isoDay(point.end_time || windowTo);
+            const row = accountByDate.get(date) || { record_type: "account_daily", data_source: "meta_api", aggregation: "daily", client: clientRef, platform: "instagram", date };
+            const value = typeof point.value === "object" ? null : point.value;
+            if (dailyMap[metric.name] && value != null) row[dailyMap[metric.name]] = value;
+            accountByDate.set(date, row);
+          }
         }
-      }
-      } catch (error) { metricErrors.push(`${metricName}: ${error.message}`); }
+      } catch (error) { metricErrors.push(`daily ${windowFrom}..${windowTo}: ${error.message}`); }
     }
+
+    /* Period totals are reported as their own row rather than pinned to one arbitrary day, so a
+       month's total interactions is never read as having happened on a single date. */
+    const periodTotals = { record_type: "account_monthly", data_source: "meta_api", aggregation: "period", client: clientRef, platform: "instagram", period_start: from, period_end: to };
+    let gotTotals = false;
+    for (const [windowFrom, windowTo] of windows) {
+      try {
+        const totalParams = new URLSearchParams({ metric: Object.keys(totalMap).join(","), metric_type: "total_value", period: "day", since: windowFrom, until: windowTo, access_token: page.access_token });
+        const insight = await apiJson(`https://graph.facebook.com/${version}/${ig.id}/insights?${totalParams}`);
+        for (const metric of insight.data || []) {
+          const value = metric.total_value ? metric.total_value.value : null;
+          if (totalMap[metric.name] && value != null) {
+            periodTotals[totalMap[metric.name]] = (periodTotals[totalMap[metric.name]] || 0) + Number(value);
+            gotTotals = true;
+          }
+        }
+      } catch (error) { metricErrors.push(`totals ${windowFrom}..${windowTo}: ${error.message}`); }
+    }
+
     if (!accountByDate.size) accountByDate.set(to, { record_type: "account_daily", data_source: "meta_api", aggregation: "daily", client: clientRef, platform: "instagram", date: to });
     if (metricErrors.length) accountByDate.get([...accountByDate.keys()][0]).sync_note = `Unavailable metrics: ${snippet(metricErrors.join("; "), 500)}`;
     for (const row of accountByDate.values()) rows.push({ followers_total: ig.followers_count, ...row });
+    if (gotTotals) rows.push(periodTotals);
 
     const mediaParams = new URLSearchParams({ fields: "id,caption,media_type,media_product_type,timestamp,permalink,like_count,comments_count", since: new Date(`${from}T00:00:00Z`).toISOString(), until: new Date(`${to}T23:59:59Z`).toISOString(), limit: "100", access_token: page.access_token });
     const media = await paged(`https://graph.facebook.com/${version}/${ig.id}/media?${mediaParams}`);
