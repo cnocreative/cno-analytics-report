@@ -1864,6 +1864,19 @@ function auditData(c,from,to){
      here, where CNO looks and a client never does. */
   const notes=[...new Set([...periods,...posts].map(r=>String(r.sync_note||r.raw&&r.raw.sync_note||"")).filter(Boolean))];
   notes.forEach(note=>add("warn","A platform did not return every metric",note));
+  /* Two sources describing the same posts do not cancel out: the importer only collapses rows that
+     match on every value, and a native pull and a Rella pull never do, so every post is counted
+     twice and every total is inflated. Mixing grains is fine and often necessary - a native daily
+     account series alongside Rella's post detail - so only the same platform at the same grain is
+     a problem. */
+  [["post",posts],["account",periods]].forEach(([grain,rows])=>{
+    const byPlatform={};
+    rows.forEach(r=>{const p=r.platform||"unknown";(byPlatform[p]=byPlatform[p]||new Set()).add(auditSource(r));});
+    Object.entries(byPlatform).filter(([,sources])=>sources.size>1).forEach(([platform,sources])=>{
+      add("bad",`${plat(platform)} ${grain} rows came from more than one source`,
+        `${[...sources].join(" and ")} both provided ${grain}-level ${plat(platform)} rows. These do not deduplicate against each other, so each post is counted twice and every total, rate and ranking for ${plat(platform)} is overstated. Keep one source per platform: the native connector for Meta, and Rella for LinkedIn and TikTok.`);
+    });
+  });
   if(plats.length>1)add("info","Portfolio comparison is active","The client report keeps platform KPIs and trend charts separate. Campaign and publishing tables may still summarize cross-channel work when their rows are explicitly tagged.");
   if(!periods.length)add("warn","No account-level totals","Headline metrics are being reconstructed from post rows. Upload the platform overview/account export for authoritative totals.");
   if(!posts.length)add("warn","No post-level detail","Headline totals can still be accurate, but format, campaign, pillar, consistency, and creative-pattern analysis cannot be validated.");

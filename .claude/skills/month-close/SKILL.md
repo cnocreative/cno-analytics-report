@@ -74,31 +74,77 @@ curl -s https://sync.cnocreative.co/health
 `"durable": true` must be present. If it is `false`, stop: links made now would die within hours
 and read to the client as an expiry.
 
-## Step 2 — refresh the connected platforms
+## Step 2 — pull everything the native connectors can reach
 
-Connected platforms refresh daily on their own. To pull the closed month explicitly, either use
-**Sync now** in the console, or run:
+Native first, always. It is the source CNO controls, it refreshes itself, and for Meta it returns a
+real daily series that Rella does not carry.
+
+Sync it. Either use **Sync now** in the console for the client and date range, or run:
 
 ```bash
 python automation/month_close.py
 ```
 
-It needs `CNO_SYNC_SERVICE_URL` and `CNO_ADMIN_TOKEN` in the environment; without them it prints one
-line and exits, which is fine. It reports counts only, never client names, because it also runs in
-public build logs.
+which needs `CNO_SYNC_SERVICE_URL` and `CNO_ADMIN_TOKEN` in the environment and prints counts only,
+never client names, because it also runs in public build logs.
 
-Currently connected: **TikTok** and **Meta** (Instagram). **LinkedIn is not configured** — the
-console will say it is waiting on the CNO app credentials. That is a known state, not a fault.
+**What each native connector actually returns.** Do not expect more than this:
 
-## Step 3 — collect what is still manual
+| Platform | Native gives | Verdict |
+|---|---|---|
+| Meta (Instagram) | Daily reach, profile visits, website clicks; period totals for views, interactions, likes, comments, shares, saves; full post detail | **Use native.** Richest source available. |
+| TikTok | One snapshot row: follower count, total likes, video count. Plus basic post counters. No reach, no impressions, no profile visits, no daily series — the Display API does not have them | **Use Rella instead.** |
+| LinkedIn | Nothing. No CNO app exists yet, so the console shows it waiting on credentials | **Use Rella.** |
 
-Ask the person to export whatever is not connected for this client:
+## Step 3 — fill the gaps from Rella
 
-- **LinkedIn** — the Page's own export
-- **Facebook or Instagram**, if the Meta connection does not cover this client — Meta Business Suite
-- Anything else the client uses
+Rella carries what the connectors cannot reach. Use it for **LinkedIn and TikTok**, and for any
+platform where native returned nothing.
 
-These files are client data. They must never be committed or shared outside CNO.
+This needs the Rella connector enabled in this Cowork session. If the Rella tools are not available,
+say so plainly and fall back to asking the person for a manual export — do not pretend to have data.
+
+**Do this in order:**
+
+1. `get_rella_social_space_context` to see the spaces, then `set_rella_social_space` with the id of
+   the space matching **this client**. Confirm the space name out loud before pulling. A wrong space
+   here puts one client's posts in another's report.
+2. `get_rella_social_content_performance` with `from_date` and `to_date` covering the period,
+   `sort_by: "date_desc"`, and `include_caption_snippets: false` — asking for snippets has caused
+   the call to fail. Page with `cursor` until `pagination.hasMore` is false and keep every item.
+3. Save the collected items to a JSON file **outside the repository**, then convert:
+
+```bash
+python automation/rella_to_csv.py <saved.json> "<Client name>" <output.csv>
+```
+
+4. Import that CSV in the report alongside the native data.
+
+The converter keeps whole timestamps, because two posts on one day are two posts and truncating to
+the date makes them collide into one. It also maps Rella's single `viewsOrImpressions` figure to
+`views`, which is the column meaning the same thing on every platform now that Meta has retired
+impressions for Instagram.
+
+## The rule that keeps the two sources honest
+
+**One source per platform, per grain.** Never import native posts and Rella posts for the same
+platform into the same report.
+
+They do not deduplicate against each other. The importer only collapses rows matching on every
+value, and two sources never match, so every post is counted twice and every total, rate and
+ranking for that platform is overstated. This is verified behaviour, not a theory.
+
+Mixing *grains* is fine and often right: Meta's native daily account series alongside Rella's post
+detail is a legitimate combination.
+
+The report now checks this itself. If both sources land on one platform at one grain, the data audit
+raises **"came from more than one source"** as a serious issue. If you see it, remove one source and
+re-import rather than explaining it away.
+
+**When native and Rella disagree about the same platform**, that is a finding, not a nuisance. Say
+so, show both numbers, and let the person decide. One real example from this project: a single
+TikTok account was connected to two different Rella spaces and returned identical analytics for two
+different clients. Cross-checking is what exposes that kind of misconfiguration.
 
 ## Step 4 — build the report
 
