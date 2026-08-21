@@ -269,13 +269,18 @@ async function syncMeta(accessToken, clientRef, from, to, metadata) {
     const ig = page.instagram_business_account;
     if (!ig) continue;
     const accountByDate = new Map();
-    /* Instagram splits its account metrics in two. These return a value per day. "impressions" is
-       not among them any more: Meta removed it for Instagram accounts, and asking for it failed
-       the call it was bundled with rather than being quietly ignored. */
-    const dailyMap = { reach: "reach", profile_views: "profile_views", website_clicks: "link_clicks" };
-    /* These are only available as one total for the whole period, and only when asked for with
-       metric_type=total_value. Requesting them per day is refused outright. */
-    const totalMap = { views: "views", total_interactions: "engagement", likes: "likes", comments: "comments", shares: "shares", saves: "saves" };
+    /* "impressions" is gone entirely: Meta removed it for Instagram accounts, and asking for it
+       failed the whole call it was bundled with rather than being quietly ignored.
+       Confirmed against a live sync: reach is the one metric Meta still returns as a true daily
+       series without metric_type. profile_views and website_clicks look like the same kind of
+       metric but are not - Meta's own error names them by number and rejects the daily call
+       outright, insisting on metric_type=total_value like the period-only metrics below. Trust
+       that error over what looks symmetrical; the previous version of this fix trusted the
+       symmetry and was wrong for exactly these two. */
+    const dailyMap = { reach: "reach" };
+    /* Only available as one total for the whole period, and only when asked for with
+       metric_type=total_value. Requesting any of these per day is refused outright. */
+    const totalMap = { profile_views: "profile_views", website_clicks: "link_clicks", views: "views", total_interactions: "engagement", likes: "likes", comments: "comments", shares: "shares", saves: "saves" };
     const metricErrors = [];
     const windows = dateWindows(from, to);
 
