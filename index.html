@@ -129,6 +129,10 @@
   .syncconns{margin:12px 0 4px;border:1px solid var(--sand);background:#fff}.syncconn{display:grid;grid-template-columns:minmax(96px,.55fr) minmax(0,1.5fr) auto;gap:12px;align-items:center;padding:11px 13px;border-bottom:1px solid var(--sand);font-size:12px}.syncconn:last-child{border-bottom:0}.syncconn b{font-weight:600}.syncconn .sdetail{color:var(--ink-soft);font-size:11px;line-height:1.4}.sflag{font-size:9px;letter-spacing:.1em;text-transform:uppercase;padding:3px 7px;white-space:nowrap}.sflag.ready{background:rgba(136,142,111,.16);color:var(--sage-deep)}.sflag.choose,.sflag.reconnect{background:rgba(219,155,127,.2);color:var(--burnt)}.sflag.none{background:var(--sand-2);color:var(--ink-soft)}
   .aistatus.busy::before{content:"";display:inline-block;width:11px;height:11px;margin-right:7px;border:2px solid var(--terra-soft);border-top-color:var(--burnt);border-radius:50%;vertical-align:-1px;animation:aispin .8s linear infinite}
   @keyframes aispin{to{transform:rotate(360deg)}}
+  .agent-handoff{margin-top:18px;padding-top:16px;border-top:1px solid var(--sand)}
+  .agent-handoff h4{font-family:var(--serif);font-size:19px;font-weight:400;margin:0 0 4px}
+  .agent-handoff p{font-size:11.5px;color:var(--ink-soft);margin:0 0 10px;max-width:88ch}
+  .agent-handoff textarea{width:100%;min-height:120px;margin-top:9px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:11px}
   .ai-evidence{display:none;margin-top:14px;border-top:1px solid var(--sand);padding-top:12px}.ai-evidence.show{display:block}.ai-evidence h4{font-family:var(--serif);font-size:18px;font-weight:400;margin:0 0 8px}.ai-evidence-row{display:grid;grid-template-columns:66px 1fr;gap:10px;padding:8px 0;border-bottom:1px solid rgba(226,214,193,.65);font-size:11px;line-height:1.45}.ai-evidence-row:last-child{border-bottom:0}.ai-confidence{text-transform:uppercase;letter-spacing:.1em;font-size:8px;font-weight:700;color:var(--ink-soft)}.ai-confidence.high{color:var(--sage-deep)}.ai-confidence.low{color:var(--burnt)}.ai-evidence-row b{font-weight:600}.ai-evidence-row span{color:var(--ink-soft)}
   /* CNO-side data quality audit */
   .quality-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.quality-card{border:1px solid var(--sand);background:var(--sand-2);padding:15px}.quality-card .qk{font-size:8.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-soft)}.quality-card .qv{font-family:var(--serif);font-size:26px;line-height:1.05;margin-top:5px}.quality-card .qd{font-size:10.5px;color:var(--ink-soft);margin-top:5px;line-height:1.45}.quality-section{margin-top:18px}.quality-section h4{font-family:var(--serif);font-size:20px;font-weight:400;margin:0 0 9px}.qissue{display:grid;grid-template-columns:90px 1fr;gap:12px;padding:10px 12px;border:1px solid var(--sand);border-bottom:0;font-size:11.5px}.qissue:last-child{border-bottom:1px solid var(--sand)}.qstatus{font-size:8.5px;letter-spacing:.1em;text-transform:uppercase;font-weight:700}.qstatus.good{color:var(--sage-deep)}.qstatus.warn{color:var(--burnt)}.qstatus.info{color:var(--ink-soft)}.qissue b{font-weight:600}.qissue span{color:var(--ink-soft)}
@@ -496,6 +500,18 @@
     <label class="chk" style="margin-top:10px"><input type="checkbox" id="aiRemember" checked>Remember this API key on this CNO device</label>
     <div class="aidesc">Default: GPT-5 mini with low reasoning and concise structured output. At its published token rates, this compact report is designed to stay below about $0.04 per generation; actual cost depends on report size. <a href="https://developers.openai.com/api/docs/models/gpt-5-mini" target="_blank" rel="noopener">Official model details</a></div>
     <div class="aistatus" id="aiStatus"></div>
+    <div class="agent-handoff">
+      <h4>Or let an agent write it, with no API key</h4>
+      <p>Copy the evidence below into Claude Cowork, or any assistant already working on this report. It writes the letter, you paste the result back, and it lands here exactly as a generated one would: fully editable, and enough to unlock sharing and PDF.</p>
+      <div class="airow">
+        <button class="btn" id="aiCopyBrief" type="button">Copy the data brief</button>
+        <button class="btn" id="aiPasteToggle" type="button">Paste a written analysis</button>
+      </div>
+      <div id="aiPasteWrap" hidden>
+        <textarea id="aiPaste" placeholder="Paste the JSON the assistant returned."></textarea>
+        <div class="airow"><button class="btn solid" id="aiApplyPaste" type="button">Apply this analysis</button></div>
+      </div>
+    </div>
     <div class="ai-evidence" id="aiEvidence"></div>
   </div>
 </div>
@@ -3508,6 +3524,43 @@ $("qualityBtn").addEventListener("click",()=>toggleWorkspacePanel("quality"));
 $("qualityClose").addEventListener("click",()=>closeWorkspacePanel("quality"));
 $("aiBtn").addEventListener("click",()=>toggleWorkspacePanel("ai"));
 $("aiClose").addEventListener("click",()=>closeWorkspacePanel("ai"));
+/* The letter can come from an agent already working on this report instead of a paid API key.
+   The pasted result goes through exactly the same validation a generated one does, so an agent
+   cannot put a claim into a client's report that the evidence does not support. */
+$("aiCopyBrief").addEventListener("click",async()=>{
+  const ctx=buildAIContext();
+  if(!ctx){aiSay("Load data and pick a client first.");return;}
+  const present=[...document.querySelectorAll("#report section[data-section]")].map(el=>el.dataset.section);
+  const brief=["Write this client's monthly report letter as JSON.","",
+    "Write to "+ctx.client+" as the reader. They are the client. CNO makes the content for them, so never address them as the person who posts, never tell them to change anything, and never critique the work as though they made it. Say what happened, what it means for their business, and what CNO is doing next.","",
+    "Use only the evidence in the data below. Never invent, estimate or round a number, and never state a target that is not in approved_targets. Where a figure is missing, say less rather than filling the gap.","",
+    "The letter must begin exactly with: Dear "+ctx.client+",",
+    "It must end exactly with: With care,<br>CNO Creative Co","",
+    "section_notes must contain a genuine one or two sentence note for each of these sections, naming the platform beside any figure, and null for every other key: "+(present.join(", ")||"none"),"",
+    "Return only JSON matching this schema:",JSON.stringify(AI_NARRATIVE_SCHEMA,null,1),"",
+    "The data:",JSON.stringify(ctx,null,1)].join("\n");
+  try{await navigator.clipboard.writeText(brief);aiSay("The data brief is on the clipboard. Paste it to the assistant, then bring its JSON back with <b>Paste a written analysis</b>.");}
+  catch(e){aiSay("This browser blocked the clipboard. Use Export data and hand the assistant the file instead.");}
+});
+$("aiPasteToggle").addEventListener("click",()=>{const w=$("aiPasteWrap");w.hidden=!w.hidden;if(!w.hidden)$("aiPaste").focus();});
+$("aiApplyPaste").addEventListener("click",()=>{
+  if(VIEW_LOCK)return;
+  const ctx=buildAIContext();
+  if(!ctx){aiSay("Load data and pick a client first.");return;}
+  const raw=$("aiPaste").value.trim();
+  if(!raw){aiSay("Paste the JSON the assistant returned first.");return;}
+  let obj;
+  try{obj=validateAINarrative(parseAIJSON(raw),ctx);}catch(e){obj=null;}
+  if(!obj||!obj.letter){aiSay("That did not contain a usable letter. It must be the JSON described in the brief, including a letter field.");return;}
+  obj._generated_at=new Date().toISOString();
+  obj._written_by="agent";
+  obj._context={client:ctx.client,period:ctx.period,platforms:ctx.platforms,date_from:CURRENT.from?ymd(CURRENT.from):null,date_to:CURRENT.to?ymd(CURRENT.to):null};
+  AINARR[CTX]=obj;saveAINarr();
+  $("aiPaste").value="";$("aiPasteWrap").hidden=true;
+  CURRENT_PAGE=1;render();renderAIEvidence();
+  const check=obj._validation||{};
+  aiSay(`Applied. ${check.refs||0} evidence reference${check.refs===1?"":"s"} checked${check.invalid?`; ${check.invalid} unfamiliar reference${check.invalid===1?"":"s"} should be reviewed before sending`:""}. Every line is editable, and this report can now be shared or printed.`);
+});
 $("aiForget").addEventListener("click",()=>{localStorage.removeItem("cno_ai_cfg");localStorage.removeItem("cno_ai_key");sessionStorage.removeItem("cno_ai_key");$("aiKey").value="";aiSay("API key removed from this CNO device.");});
 $("syncBtn").addEventListener("click",()=>toggleWorkspacePanel("sync"));
 $("syncClose").addEventListener("click",()=>closeWorkspacePanel("sync"));
