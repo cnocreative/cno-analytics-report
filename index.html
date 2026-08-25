@@ -591,10 +591,14 @@ const fmtX=n=>(n===null||n===undefined)?"—":n.toFixed(2)+"×";
 const fmtMoney=n=>(n===null||n===undefined)?"—":"$"+Number(n).toFixed(2);
 const fmtDuration=s=>{if(s===null||s===undefined)return"—";s=Math.max(0,Number(s));if(s<10)return `${s.toLocaleString(undefined,{minimumFractionDigits:Number.isInteger(s)?0:1,maximumFractionDigits:1})}s`;s=Math.round(s);const h=Math.floor(s/3600),m=Math.floor((s%3600)/60),sec=s%60;return h?`${h}h ${m}m`:m?`${m}m ${sec}s`:`${sec}s`;};
 const fmtMinutes=s=>(s===null||s===undefined)?"—":(s/60).toLocaleString(undefined,{maximumFractionDigits:1})+" min";
+/* A bare password input invites the browser's credential manager in: it fills the password and
+   then hunts for a username field to fill too, landing on whatever text input is on the page.
+   That silently locked share links with a password nobody chose, and overwrote a client's display
+   name with the saved sign-in for the connection console. The attributes below decline all of it. */
 function appDialog({title="CNO Reports",message="",input=false,inputType="text",value="",confirmText="OK",cancelText=null,readOnly=false,selectInput=false}={}){
   return new Promise(resolve=>{
     const wrap=document.createElement("div");wrap.className="app-dialog";wrap.setAttribute("role","dialog");wrap.setAttribute("aria-modal","true");
-    wrap.innerHTML=`<div class="app-dialog-card"><h3>${escHtml(title)}</h3><p>${escHtml(message)}</p>${input?`<input type="${inputType}" value="${escHtml(value)}" aria-label="${escHtml(title)}"${readOnly?" readonly":""}>`:""}<div class="app-dialog-actions">${cancelText?`<button class="btn" data-cancel>${escHtml(cancelText)}</button>`:""}<button class="btn solid" data-confirm>${escHtml(confirmText)}</button></div></div>`;
+    wrap.innerHTML=`<div class="app-dialog-card"><h3>${escHtml(title)}</h3><p>${escHtml(message)}</p>${input?`<input type="${inputType}" value="${escHtml(value)}" aria-label="${escHtml(title)}" name="cno-dialog-field" autocomplete="${inputType==="password"?"new-password":"off"}" autocapitalize="off" autocorrect="off" spellcheck="false" data-lpignore="true" data-1p-ignore data-form-type="other"${readOnly?" readonly":""}>`:""}<div class="app-dialog-actions">${cancelText?`<button class="btn" data-cancel>${escHtml(cancelText)}</button>`:""}<button class="btn solid" data-confirm>${escHtml(confirmText)}</button></div></div>`;
     const finish=v=>{wrap.remove();resolve(v);};
     wrap.querySelector("[data-confirm]").addEventListener("click",()=>finish(input?wrap.querySelector("input").value:true));
     const cancel=wrap.querySelector("[data-cancel]");if(cancel)cancel.addEventListener("click",()=>finish(input?null:false));
@@ -1655,18 +1659,20 @@ async function makeShareLink(){
   }catch(e){shareError=e;}
   let copied=false;
   try{await navigator.clipboard.writeText(url);copied=true;}catch(e){}
-  const lockNote=pw.trim()?"🔒 Password-protected — it only opens with the password you set. Share the password separately.\n\n":"";
-  if(!copied){
-    await appDialog({
-      title:"Copy the client report link",
-      message:lockNote+"This browser blocked automatic copying. The complete link is selected below — press Ctrl+C (Windows) or Command+C (Mac), then paste it into your message.",
-      input:true,value:url,readOnly:true,selectInput:true,confirmText:"Done"
-    });
-    return;
-  }
-  if(shortLink){appAlert("Reliable client link copied ✓\n\n"+lockNote+"This short link loads the saved report on another phone or computer without asking the client to upload anything.","Link ready");}
-  else if(url.length>8000){appAlert("A portable link was copied, but it is too long to trust in email or chat.\n\nThe private short-link service is not connected yet"+(shareError?.status===401?" or this CNO device is not signed in to it":"")+". Deploy or sign in to the CNO sync service, then create the link again. The report data itself has not been uploaded.","Short-link service needed");}
-  else{appAlert("Portable client link copied ✓\n\n"+lockNote+"The private short-link service is not connected, so this version carries the report inside the URL. Test it in a private browser before sending.","Link ready");}
+  const lockNote=pw.trim()?"This report is password-protected. Share the password separately.\n\n":"";
+  /* Always show the link itself, whether the clipboard worked or not. A link that exists only on
+     the clipboard cannot be checked before sending, cannot be recovered if something else copies
+     over it, and cannot be read back by anyone helping with the month. */
+  const reach=shortLink
+    ?"This link loads the saved report on any phone or computer."
+    :(url.length>8000
+      ?"The saved-link service did not answer, so this link carries the whole report inside it. It is too long to trust in email; create it again once the service is reachable."
+      :"The saved-link service did not answer, so this link carries the report inside it. Test it in a private window before sending.");
+  await appDialog({
+    title:"Link for "+client,
+    message:lockNote+reach+(copied?" It is already on your clipboard.":" Copying was blocked, so select it below and copy it by hand.")+"\n\nOpen it once before sending, and check it shows "+client+".",
+    input:true,value:url,readOnly:true,selectInput:true,confirmText:"Done"
+  });
 }
 function reportWindowRows(c,from,to){
   const chosen=selectedPlats(c),fs=ymd(from),ts=ymd(to);
@@ -2009,7 +2015,10 @@ function clients(){return [...new Set([...POSTS.map(p=>p.client),...PERIODS.map(
 let PLATSEL={};
 function platsFor(c){return [...new Set([...POSTS.filter(p=>p.client===c).map(p=>p.platform),...PERIODS.filter(p=>p.client===c).map(p=>p.platform)])].sort();}
 function defaultPlat(c){const n={};POSTS.filter(p=>p.client===c).forEach(p=>n[p.platform]=(n[p.platform]||0)+1);PERIODS.filter(p=>p.client===c).forEach(p=>n[p.platform]=(n[p.platform]||0)+1);return Object.keys(n).sort((a,b)=>n[b]-n[a])[0]||null;}
-function selectedPlats(c){let s=PLATSEL[c];if(!s||!s.size){const d=defaultPlat(c);s=new Set(d?[d]:platsFor(c));PLATSEL[c]=s;}return s;}
+/* A client opening their own report should see everything CNO reported on, not the busiest
+   platform with the rest hidden behind chips they may not notice. CNO staff still start on one
+   platform, because that is the view most of the month's work happens in. */
+function selectedPlats(c){let s=PLATSEL[c];if(!s||!s.size){const d=VIEW_LOCK?null:defaultPlat(c);s=new Set(d?[d]:platsFor(c));PLATSEL[c]=s;}return s;}
 function platOK(c,p){return selectedPlats(c).has(p.platform);}
 function monthsFor(c){return [...new Set([...POSTS.filter(p=>p.client===c).map(p=>p.month),...PERIODS.filter(p=>p.client===c).map(p=>p.month)])].sort();}
 function extentFor(c){const ds=[...POSTS,...PERIODS].filter(p=>p.client===c&&p.date).map(p=>p.date);if(!ds.length){const ms=monthsFor(c);if(!ms.length)return null;return{from:new Date(ms[0]+"-01T00:00:00Z"),to:new Date(Date.UTC(+ms[ms.length-1].slice(0,4),+ms[ms.length-1].slice(5,7),0))};}return{from:new Date(Math.min(...ds)),to:new Date(Math.max(...ds))};}
