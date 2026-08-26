@@ -2023,11 +2023,21 @@ function platOK(c,p){return selectedPlats(c).has(p.platform);}
 function monthsFor(c){return [...new Set([...POSTS.filter(p=>p.client===c).map(p=>p.month),...PERIODS.filter(p=>p.client===c).map(p=>p.month)])].sort();}
 function extentFor(c){const ds=[...POSTS,...PERIODS].filter(p=>p.client===c&&p.date).map(p=>p.date);if(!ds.length){const ms=monthsFor(c);if(!ms.length)return null;return{from:new Date(ms[0]+"-01T00:00:00Z"),to:new Date(Date.UTC(+ms[ms.length-1].slice(0,4),+ms[ms.length-1].slice(5,7),0))};}return{from:new Date(Math.min(...ds)),to:new Date(Math.max(...ds))};}
 function monthsInRange(from,to){const set=[];let d=new Date(Date.UTC(from.getUTCFullYear(),from.getUTCMonth(),1));const end=new Date(Date.UTC(to.getUTCFullYear(),to.getUTCMonth(),1));while(d<=end){set.push(ym(d));d=new Date(Date.UTC(d.getUTCFullYear(),d.getUTCMonth()+1,1));}return set;}
-function periodRowsForWindow(c,from,to,platformSet){
+/* `forTrend` asks a different question of the same rows. A headline wants the most exact figure for
+   the window, which is the period total: reach counts unique accounts, so a month total is right
+   where a sum of weeks would double-count anyone reached twice. A chart wants a shape over time,
+   and a single period total cannot draw one - it produced a flat line on zero, because the rows
+   that survived this function carried no date for the series to bucket. So a chart takes the dated
+   rows when they exist and a headline keeps the exact total, and one import can serve both. */
+function periodRowsForWindow(c,from,to,platformSet,forTrend){
   const fs=ymd(from),ts=ymd(to),mons=monthsInRange(from,to),out=[];
   const chosen=platformSet||selectedPlats(c);
   [...chosen].forEach(platform=>{
     const all=PERIODS.filter(p=>p.client===c&&p.platform===platform);
+    if(forTrend){
+      const series=all.filter(p=>p.date&&ymd(p.date)>=fs&&ymd(p.date)<=ts);
+      if(series.length){out.push(...series);return;}
+    }
     const exact=all.filter(p=>p.period_start&&p.period_end&&ymd(p.period_start)===fs&&ymd(p.period_end)===ts);
     if(exact.length){out.push(...exact);return;}
     const isWholeMonths=from.getUTCDate()===1&&to.getUTCDate()===new Date(Date.UTC(to.getUTCFullYear(),to.getUTCMonth()+1,0)).getUTCDate();
@@ -2218,7 +2228,7 @@ function contentSeries(c,key,from,to,grain,platformSet){
 }
 const SNAPSHOT_METRICS=new Set(["followers_total"]);
 function accountSeries(c,key,from,to,grain,platformSet){
-  const rows=periodRowsForWindow(c,from,to,platformSet).filter(p=>p.date&&p[key]!==null&&p[key]!==undefined);
+  const rows=periodRowsForWindow(c,from,to,platformSet,true).filter(p=>p.date&&p[key]!==null&&p[key]!==undefined);
   const map={};rows.forEach(p=>{const b=ymd(bucketStart(p.date,grain));if(SNAPSHOT_METRICS.has(key)){if(!map[b]||p.date>map[b].date)map[b]={date:p.date,value:p[key]};}else map[b]=(map[b]||0)+p[key];});
   const out=[];let d=bucketStart(from,grain),end=bucketStart(to,grain),g=0;
   while(d<=end&&g++<500){const b=ymd(d),v=SNAPSHOT_METRICS.has(key)?(map[b]?map[b].value:null):(map[b]||0);out.push({label:bLabel(d,grain),full:bFull(d,grain),value:v});d=bucketNext(d,grain);}return out;
