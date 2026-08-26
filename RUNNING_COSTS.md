@@ -30,18 +30,24 @@ takes roughly 30–60 seconds to wake it. That affects:
 keep-warm pinger to defeat the sleep: it burns the monthly allowance and can take the service down
 entirely, which is worse than a slow first load.
 
-## The one place "free" actually bites: the database
+## The database: resolved
 
-Right now the service runs with **no database**. `/health` reports `"storage":"file"` and
-`"durable":false`, and the console shows a standing warning.
+The service runs on a free Postgres database. `/health` reports `"storage":"postgres"` and
+`"durable":true`, which is what you want to see.
 
-That means connections, saved report links, and pulled analytics live in a file on the container.
-**A redeploy or restart wipes them.** Every push to `main` redeploys. So today:
+This matters because of what it replaced. Without a database, connections, saved report links and
+pulled analytics lived in a file on the container, and **a redeploy or restart wiped them** — every
+push to `main` redeploys. Client links in an inbox stopped working within hours and read to the
+client as an expiry.
 
-- a client short link can stop working after any deploy; and
-- a connected platform account would have to be reconnected.
+Two protections now exist so this cannot come back quietly:
 
-Fine for finishing setup and testing. Not fine once a client link is in someone's inbox.
+- the service **refuses to create a client link at all** if it is running without a database, rather
+  than minting one that is already doomed; and
+- the monthly job **stops and reports** rather than building a month on storage that cannot keep it.
+
+If `/health` ever shows `"durable":false`, stop and get the `DATABASE_URL` restored before creating
+any client link.
 
 ### Render's free Postgres is a 30-day timer, not a free tier
 
