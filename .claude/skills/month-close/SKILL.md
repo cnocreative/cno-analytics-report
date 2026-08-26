@@ -125,6 +125,42 @@ the date makes them collide into one. It also maps Rella's single `viewsOrImpres
 `views`, which is the column meaning the same thing on every platform now that Meta has retired
 impressions for Instagram.
 
+## Getting a real trend, not a single dot
+
+A month total is one reading. One reading cannot draw a line, so a report built from month totals
+alone shows a dot per chart and reads as broken even though every figure in it is right.
+
+**Pull weekly figures using cumulative windows, then difference them.** For each client, call
+`get_rella_social_analytics` five times, always starting on the first of the month:
+
+```
+2026-07-01 -> 2026-07-07     2026-07-01 -> 2026-07-21     2026-07-01 -> 2026-07-31
+2026-07-01 -> 2026-07-14     2026-07-01 -> 2026-07-28
+```
+
+Week one is the first result; every later week is that result minus the one before it.
+
+**Why cumulative rather than five separate week windows.** Views, engagement, profile views and
+follower growth are additive and agree either way. Reach does not: it counts unique accounts, so
+somebody reached in two different weeks is counted twice by separate windows. On real client data
+that overstated a month by 3%, 24% and 65%. Differencing a cumulative series gives newly reached
+accounts per week, which is additive and sums to the true month figure.
+
+**Do not chase daily.** Single-day windows return zeros. Weekly is the finest grain worth the calls.
+
+**Print a reconciliation before building anything:** each platform's five weekly values and their
+sum against the month total, for reach, views, engagement, profile visits and follower growth. Every
+row must sum exactly. If one does not, stop and say so rather than adjusting a number to balance it.
+
+**Include both the weekly rows and the month total row.** The report uses the dated rows for the
+charts and the exact period total for the headline figures, so one import gives a true weekly line
+and an exact monthly reach. Earlier builds had to choose one or the other; that is fixed, and a
+report that drops the month row will report reach as a sum of weeks and overstate it.
+
+**Verify a chart by its values, not its point count.** Read the `cy` attributes and the axis
+maximum. A series of points all sitting on zero looks like a chart and is not one. If the letter
+says the trend reports zeros, that is a finding to disprove, not noise to route around.
+
 ## The rule that keeps the two sources honest
 
 **One source per platform, per grain.** Never import native posts and Rella posts for the same
@@ -169,8 +205,18 @@ Edit anything that fails. This step is what the privacy policy is about.
 
 ## Step 6 — the link
 
-Use **Share link**. It lasts a year and can be revoked. Open it and confirm it shows the right
-client and month before it goes anywhere.
+Use **Share link**. It lasts a year and can be revoked.
+
+Leave the password blank for a normal view-only link. The field used to refill itself from the
+browser's saved passwords between being cleared and submitted, producing links locked with a
+password nobody knew; that is fixed, but glance at it before creating.
+
+The link is shown in a read-only field when it is created, titled with the client's name. Copy it
+from there. Never transcribe a link from a screenshot — a link read off pixels was wrong by a
+character and simply did not open.
+
+**Open every link before it goes anywhere** and confirm the client name, the period, and that the
+charts show a line rather than a dot. A link nobody has opened is not a finished link.
 
 ## Step 7 — draft the email, do not send
 
