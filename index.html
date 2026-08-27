@@ -2237,11 +2237,25 @@ function accountSeries(c,key,from,to,grain,platformSet){
 function seriesFor(c,key,from,to,platformSet){
   const grain=cget("grain","week");
   const chosen=platformSet||selectedPlats(c);
-  if(PERIODS.some(p=>p.client===c&&chosen.has(p.platform)&&p.date&&p[key]!==null&&p[key]!==undefined))return accountSeries(c,key,from,to,grain,chosen);
-  if(grain!=="month"&&CONTENT_TREND.has(key)&&POSTS.some(p=>p.client===c&&chosen.has(p.platform)&&p.date))return contentSeries(c,key,from,to,grain,chosen);
-  return monthlySeries(c,key,chosen);
+  let out;
+  if(PERIODS.some(p=>p.client===c&&chosen.has(p.platform)&&p.date&&p[key]!==null&&p[key]!==undefined)){out=accountSeries(c,key,from,to,grain,chosen);out.grain=grain;}
+  else if(grain!=="month"&&CONTENT_TREND.has(key)&&POSTS.some(p=>p.client===c&&chosen.has(p.platform)&&p.date)){out=contentSeries(c,key,from,to,grain,chosen);out.grain=grain;}
+  /* Fell back to whole months: the caption must say so rather than inherit the requested grain. */
+  else{out=monthlySeries(c,key,chosen);out.grain="month";}
+  return out;
 }
-function grainAvail(c){return POSTS.some(p=>p.client===c&&p.date)||PERIODS.some(p=>p.client===c&&p.date);}
+/* A platform that never reports a metric must not be charted as if it scored zero. Absence of the
+   figure and a measured zero are different claims, and only one of them is true here. */
+function metricObserved(c,key,from,to,platformSet){
+  const chosen=platformSet||selectedPlats(c);
+  const seen=v=>v!==null&&v!==undefined;
+  if(periodRowsForWindow(c,from,to,chosen,true).some(p=>seen(p[key])))return true;
+  const fs=ymd(from),ts=ymd(to);
+  /* valueOfPost coerces a missing field to 0, so test the raw field. "posts" and "engagement" are
+     derived from the row itself and count as observed wherever a post exists. */
+  const rawSeen=p=>key==="posts"||key==="engagement"?true:seen(p[key]);
+  return CONTENT_TREND.has(key)&&POSTS.some(p=>p.client===c&&chosen.has(p.platform)&&p.date&&ymd(p.date)>=fs&&ymd(p.date)<=ts&&rawSeen(p));
+}
 
 /* ==================== metric registry ==================== */
 const METRICS={
@@ -2656,7 +2670,9 @@ const AI_FINDING_SCHEMA={type:"object",additionalProperties:false,required:["t",
 /* Every section gets its own note, and the list is derived from the sections themselves so a new
    section cannot be added without the model being asked to explain it. Eleven sections used to
    share a neighbour's sentence, which read as canned because it was written about something else. */
-const AI_NOTE_KEYS=SECTION_DEFS.map(x=>x.key);
+/* "data" is the raw source table and shows no note, so it is not worth asking the model to write
+   one. applyAISectionNotes drops it too, which also covers narratives saved before this change. */
+const AI_NOTE_KEYS=SECTION_DEFS.map(x=>x.key).filter(k=>k!=="data");
 const AI_SECTION_NOTES_SCHEMA={type:"object",additionalProperties:false,required:AI_NOTE_KEYS,properties:Object.fromEntries(AI_NOTE_KEYS.map(k=>[k,{type:["string","null"]}]))};
 const AI_NARRATIVE_SCHEMA={type:"object",additionalProperties:false,required:["headline","letter","working_now","needs_attention","best_move","paid_takeaway","section_notes","analyst_note"],properties:{
   headline:{type:"string"},letter:{type:"string"},
@@ -3011,7 +3027,10 @@ function applyAISectionNotes(ai){
   document.querySelectorAll("#report section[data-section]").forEach(section=>{
     /* Own note first. The map stays as a fallback for a model that skipped a key, but a section
        that has its own sentence must never show a neighbour's. */
-    const key=section.dataset.section,note=ai.section_notes[key]!=null?ai.section_notes[key]:ai.section_notes[map[key]||key];if(!note)return;
+    const key=section.dataset.section;
+    /* Full data is the raw source table. It carries no narration — the numbers stand alone. */
+    if(key==="data")return;
+    const note=ai.section_notes[key]!=null?ai.section_notes[key]:ai.section_notes[map[key]||key];if(!note)return;
     const anchor=section.querySelector(".sec-sub")||section.querySelector(".sec-label");
     const box=document.createElement("div");box.className="ai-section-note";box.innerHTML=edBlock("ai_note_"+key,note);
     if(anchor)anchor.insertAdjacentElement("afterend",box);else section.prepend(box);
@@ -3112,15 +3131,20 @@ function render(){
   const profileGrid=profileKeys.map(k=>metricCard(c,k,cur,prev,false)).join("");
   const contentGrid=contentKeys.map(k=>metricCard(c,k,cur,prev,false)).join("");
 
-  // trend charts — honor the chosen grain for content metrics
-  const grain=cget("grain","week");
-  const grainWord={day:"day",week:"week",month:"month"}[grain];
+  // trend charts — each caption reports the grain its own series actually resolved to
   const trendKeys=["reach","impressions","engagement","views","profile_views","link_clicks"].filter(k=>cur[k]!==null&&cur[k]!==undefined).slice(0,4);
   if(!trendKeys.length)trendKeys.push("engagement");
-  const trendCharts=(multiPlat?platsUsed.flatMap(p=>trendKeys.slice(0,2).map(k=>({p,k}))):trendKeys.map(k=>({p:null,k}))).map(({p,k})=>{
+  /* trendKeys comes from the combined total, so a metric a single platform reports would otherwise
+     be charted for every platform — TikTok and YouTube return no reach at all and were being drawn
+     as a flat zero. Each platform keeps the first two metrics it actually reports, so a platform
+     still gets its own charts instead of dropping off the page. */
+  const trendCharts=(multiPlat
+      ?platsUsed.flatMap(p=>trendKeys.filter(k=>metricObserved(c,k,from,to,new Set([p]))).slice(0,2).map(k=>({p,k})))
+      :trendKeys.filter(k=>metricObserved(c,k,from,to)).map(k=>({p:null,k})))
+    .map(({p,k})=>{
     const pts=seriesFor(c,k,from,to,p?new Set([p]):undefined);
-    const isGrain=grain!=="month"&&grainAvail(c);
-    return `<div class="chartcard"><h5>${p?escHtml(plat(p))+" · ":""}${metricLabel(k,p)}</h5><div class="cap">${isGrain?("By "+grainWord+", within this period"):"By month"}</div>${chartHolder(pts,{big:true,fmt:METRICS[k].fmt})}</div>`;
+    const isGrain=pts.grain!=="month";
+    return `<div class="chartcard"><h5>${p?escHtml(plat(p))+" · ":""}${metricLabel(k,p)}</h5><div class="cap">${isGrain?("By "+pts.grain+", within this period"):"By month"}</div>${chartHolder(pts,{big:true,fmt:METRICS[k].fmt})}</div>`;
   }).join("");
   const platformBreakdown=multiPlat?platformBreakdownHtml(c,from,to,platsUsed):"";
   const goalBoard=goalsHtml(cur,prev);
